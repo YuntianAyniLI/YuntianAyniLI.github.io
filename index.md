@@ -1,4 +1,4 @@
-**Hello, it's** ***Yuntian LI***. <br />
+<font face="黑体" size=4 color=#500650>Hello, it's Yuntian LI.</font> <br />
 I recieved my BSc in Economics and BSc in Mathematics degree from Renmin University of China, and is now an incoming MSc Economics student at Stockholm School of Economics. My research interest is in the fields of *political economcis*, *monetary policy*, and *computational social science*.
 
 ## Research
