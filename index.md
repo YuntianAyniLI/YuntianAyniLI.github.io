@@ -1,44 +1,14 @@
-# This is me.
+**Hello, it's** ***Yuntian LI***. 
+I recieved my BSc in Economics and BSc in Mathematics degree from Renmin University of China, and is now an incoming MSc Economics student at Stockholm School of Economics. My research interest is in the fields of *political economcis*, *monetary policy*, and *computational social science*.
 
-*这是斜体* 或 _这也是斜体_
-**这是粗体**
-***这是加粗斜体***
-~~这是删除线~~
+## Research
 
-# 一级标题
-## 二级标题
-### 三级标题
-#### 四级标题
-##### 五级标题
-###### 六级标题
+## Amateur Interest
+I have been an amateur in violin, singing and sprinting since young. I also have a passion for Chinese philology and history, classics and following figure skating events.
+### Figure Skating
+I will post unofficial China national figure skating competition archives of women single skaters videos on my youtube channel [youtube channel]([https://www.youtube.com/@YinYaoyaa]) and [bilibili channel]([https://space.bilibili.com/674939000?spm_id_from=333.1007.0.0]) I shot some of the videos at the spot of competition and the others are live recordings.
+I'm a huge fan of 金书贤（JIN Shuxian） and Аделия Петросян （Adeliia Petrosian） ~
 
 
-[百度](https://www.baidu.com)
-
-![网络图片——陈奕迅](https://ss1.baidu.com/6ONXsjip0QIZ8tyhnq/it/u=2989782649,1389878803&fm=58&bpow=1200&bpoh=1600)
- ![本地图片](C:\Users\JiA\Desktop\ecbe307818f6203eb49ee4f4e8de939.jpg)
-
- * 无序列表第一种方法
-+ 无序列表第二种方法
-- 无序列表第三种方法
-
-* 第一级
-  * 第二级
-    * 第三级
-
-1. 有序列表项1
-2. 有序列表项2
-3. 有序列表项3
-
-   
->第一级
->>第二级
->>>第三级
-
-|表头1|表头2|表头3|表头4|
-|-| :- | :-: | -:|
-|默认左对齐|设置左对齐|设置居中对齐|设置右对齐|
-|左对齐|左对齐|居中对齐|右对齐|
-|左对齐|左对齐|居中对齐|右对齐|
 
 
