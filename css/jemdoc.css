@@ -1,7 +1,7 @@
 /* Default css file for jemdoc. */
 @font-face {
     font-family: "汉仪昌黎宋刻本简体";
-    src: url("../fonts/汉仪昌黎宋刻本（原版）W.ttf") format(“truetype”);
+    src: url("https://github.com/YuntianAyniLI/YuntianAyniLI.github.io/blob/main/fonts/%E6%B1%89%E4%BB%AA%E6%98%8C%E9%BB%8E%E5%AE%8B%E5%88%BB%E6%9C%AC(%E5%8E%9F%E7%89%88)W.ttf") format(“truetype”);
 }
 
 table#tlayout {
