@@ -1,7 +1,7 @@
 /* Default css file for jemdoc. */
 @font-face {
-    font-family: “汉仪昌黎宋刻本简体”;
-    src: url(“YuntianAyniLI.github.io/fonts/汉仪昌黎宋刻本（原版）W.ttf”) format(“truetype”);
+    font-family: "汉仪昌黎宋刻本简体";
+    src: url("../fonts/汉仪昌黎宋刻本（原版）W.ttf") format(“truetype”);
 }
 
 table#tlayout {
@@ -21,7 +21,7 @@ html {
 }
 
 body { 
-  font-family: “汉仪昌黎宋刻本简体”, san-serif, Times;
+  font-family:"汉仪昌黎宋刻本简体", san-serif, Times;
   color: #000;
   background-color: #ffffff; 
   text-align:left; /* for IE */
