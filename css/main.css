@@ -1,9 +1,9 @@
 @font-face {
-    font-family: “汉仪昌黎宋刻本简体”;
-    src: url(“YuntianAyniLI.github.io/fonts/汉仪昌黎宋刻本（原版）W.ttf”) format(“truetype”);
+    font-family: "汉仪昌黎宋刻本简体";
+    src: url("../fonts/汉仪昌黎宋刻本（原版）W.ttf") format(“truetype”);
 }
 body { 
-  	font-family: “汉仪昌黎宋刻本简体”, sans-serif;
+  	font-family: "汉仪昌黎宋刻本简体", sans-serif;
 	color:#303030;
 	background:#fff;
 	text-align:center; /* for IE */
@@ -12,12 +12,12 @@ body {
 }
 
 table{
-	font-family: “汉仪昌黎宋刻本简体”, sans-serif;
+	font-family:  "汉仪昌黎宋刻本简体", sans-serif;
 	background-color: #ffffff;
 	text-align: center;
 }
 a, a:link, a:visited {
-  font-family: “汉仪昌黎宋刻本简体”, sans-serif;
+  font-family: "汉仪昌黎宋刻本简体", sans-serif;
   color: #1f82a9;
   background:inherit;
   background-color: transparent;
@@ -31,7 +31,7 @@ a:hover {
   text-decoration: underline;
 }
 img { border: 0; }
-h1,h2,h3 { font-family: “汉仪昌黎宋刻本简体”, san-serif; }
+h1,h2,h3 { font-family:  "汉仪昌黎宋刻本简体", san-serif; }
 
 .style1 {
 	text-align: center;
