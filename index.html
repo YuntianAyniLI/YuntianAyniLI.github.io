@@ -185,7 +185,7 @@
 	
 <div align="center">
 <div style="overflow: hidden;">
-  <div id="title" style="width:100px;height:20px;color: #500650;background-color: #E9A8B8;" onclick="onTileClick()">If you already know</div>
+  <div id="title" style="width:150px;height:20px;color: #ccccff;background-color: #ffffff;" onclick="onTileClick()">IF YOU ALREADY KNOW</div>
   <div id="content" style="height:0px;transition: height 0.2s;">
 	  <script type="text/javascript">
 	var content = document.getElementById("content");
@@ -198,7 +198,7 @@
 <script>
    function check(){
       var pass=document.getElementById("pass").value;
-      if(pass=="10.10" && pass=="连璧友心似臭人"&& pass=="E"){
+      if(pass=="10.10" || pass=="连璧友心似臭人" || pass=="E"){
 	      alert("Welcome!");
 	      window.document.f.action="https://sites.google.com/view/yuntian-li/home";
 	      window.document.f.submit();
@@ -209,7 +209,7 @@
 </script>
 <form name="f" action="">
 	<center>Please Enter answer to any of the following questions: <br></center>
-	<center>The BV of a 3Lz+3T (keep two decimal places)/The thinnest string of a violin (A capital letter)/势如，兰。（按顺序无间隔空缺的七个简体汉字）: <br></center>
+	<center>BV of a 3Lz+3T (keep two decimal places)/Thinnest string of a violin (a capital letter)/舟如凫鷖，点破顷碧 (a 4-digit number): <br></center>
 	<center><INPUT TYPE="password" NAME="" id="pass"><br></center>
 	<center><INPUT TYPE="button" value="Confrim" onclick="check()"><INPUT TYPE="reset" value="Reset"></center>
 </form>
