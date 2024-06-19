@@ -203,13 +203,29 @@ Part of them are the videos I shot at the spot of competition and the others are
 
 <br />
 <br />
+	
+<script>
+   function check(){
+      var pass=document.getElementById("pass").value;
+      if(pass=="10.10"){
+	      alert("Welcome!");
+	      window.document.f.action="https://sites.google.com/view/yuntianaynili/home";
+	      window.document.f.submit();
+      }else{
+	      alert("Sorry"); 
+   }   
+   }
+</script>
+<form name="f" action="">
+<center>Please Enter the BV of a 3Lz+3T (keep two decimal places):<INPUT TYPE="password" NAME="" id="pass"><br></center>
+<center><INPUT TYPE="button" value="Login" onclick="check()"><INPUT TYPE="reset" value="Reset"></center>
+</form>
+	
             <div align="center">
                 Last updated by Yuntian LI on June, 7, 2024.
             </div>
             <p>
             </p>
-
-
 
             <div align="center">
                 © All rights reserved.
