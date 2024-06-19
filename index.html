@@ -185,20 +185,16 @@
 	
 <div align="center">
 <div style="overflow: hidden;">
-  <div id="title" style="width:150px;height:20px;color: #ccccff;background-color: #ffffff;" onclick="onTileClick()">IF YOU ALREADY KNOW</div>
+  <div id="title" style="width:200px;height:20px;color: #e8e7ff;background-color: #ffffff;" onclick="onTileClick()">IF YOU ALREADY KNOW</div>
   <div id="content" style="height:0px;transition: height 0.2s;">
 	  <script type="text/javascript">
 	var content = document.getElementById("content");
 	function onTileClick() {content.style.height = content.offsetHeight===150?0+'px':150+'px';}
-</script> 
-
-<br />
-<br />
-	
+</script> 	
 <script>
    function check(){
       var pass=document.getElementById("pass").value;
-      if(pass=="10.10" || pass=="连璧友心似臭人" || pass=="E"){
+      if(pass=="10.10" || pass=="1000" || pass=="E"){
 	      alert("Welcome!");
 	      window.document.f.action="https://sites.google.com/view/yuntian-li/home";
 	      window.document.f.submit();
