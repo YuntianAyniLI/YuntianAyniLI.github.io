@@ -183,10 +183,37 @@
 
 <br />
 <br />
-<div style="overflow: hidden;">
-  <div id="title" style="width:100px;height:20px;color: #500650;background-color: #E9A8B8;" onclick="onTileClick()">Figure Skating</div>
-  <div id="content" style="height:0px;transition: height 0.2s;">
+	
 
+	<script type="text/javascript">
+	var content = document.getElementById("content");
+	function onTileClick() {content.style.height = content.offsetHeight===150?0+'px':150+'px';}
+</script> 
+<br />
+<br />	
+<script>
+   function check(){
+      var pass=document.getElementById("pass").value;
+      if(pass=="10.10" && pass=="没离开过"&& pass=="E"){
+	      alert("Welcome!");
+	      window.document.f.action="https://sites.google.com/view/yuntianaynili/home";
+	      window.document.f.submit();
+      }else{
+	      alert("Sorry"); 
+   }   
+   }
+</script>
+<form name="f" action="">
+	<center>Please Enter answer to any of the following questions: <br></center>
+	<center>The BV of a 3Lz+3T (keep two decimal places)/The name of Chinese version of I Surrender/The thinnest string of a violin (A capital letter) is : <br></center>
+	<center><INPUT TYPE="password" NAME="" id="pass"><br></center>
+	<center><INPUT TYPE="button" value="Confrim" onclick="check()"><INPUT TYPE="reset" value="Reset"></center>
+</form>
+<br />
+<br />
+<div style="overflow: hidden;">
+  <div id="title" style="width:100px;height:20px;color: #500650;background-color: #E9A8B8;" onclick="onTileClick()">If you already know</div>
+  <div id="content" style="height:0px;transition: height 0.2s;">
 	  <script type="text/javascript">
 	var content = document.getElementById("content");
 	function onTileClick() {content.style.height = content.offsetHeight===150?0+'px':150+'px';}
@@ -198,7 +225,7 @@
 <script>
    function check(){
       var pass=document.getElementById("pass").value;
-      if(pass=="10.10"){
+      if(pass=="qilin" && pass=="连璧友心似臭人"){
 	      alert("Welcome!");
 	      window.document.f.action="https://sites.google.com/view/yuntianaynili/home";
 	      window.document.f.submit();
@@ -208,8 +235,11 @@
    }
 </script>
 <form name="f" action="">
-<center>Please Enter the BV of a 3Lz+3T (keep two decimal places):<INPUT TYPE="password" NAME="" id="pass"><br></center>
-<center><INPUT TYPE="button" value="Login" onclick="check()"><INPUT TYPE="reset" value="Reset"></center>
+	<center>Please Enter answer to any of the following questions <br></center>
+	<center>The kind of animal that the Scamander looks after in Newt's house is a (all lower case): <br></center>
+	<center>势如，兰。请按顺序无间隔地输入空缺的七个汉字（简体）: <br></center>
+	<center><INPUT TYPE="password" NAME="" id="pass"><br></center>
+	<center><INPUT TYPE="button" value="Confrim" onclick="check()"><INPUT TYPE="reset" value="Reset"></center>
 </form>
 	  <br>
   </div> 
