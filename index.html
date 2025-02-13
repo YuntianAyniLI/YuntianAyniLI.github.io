@@ -1,53 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
 <head>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yuntian (Ayni) LI</title>
+    <style>
+        body {
+            display: flex;
+            font-family: Arial, sans-serif;
+            margin: 0;
+        }
+        /* 侧边导航栏 */
+        .sidebar {
+            width: 200px;
+            height: 100vh;
+            background-color: #f4f4f4;
+            position: fixed;
+            padding-top: 20px;
+            text-align: center;
+            border-right: 2px solid #ddd;
+        }
+        .sidebar a {
+            display: block;
+            color: #500650;
+            text-decoration: none;
+            padding: 10px;
+            font-size: 18px;
+        }
+        .sidebar a:hover {
+            background-color: #ddd;
+        }
+        /* 右侧主页面内容 */
+        .main-content {
+            margin-left: 220px;
+            padding: 20px;
+            flex: 1;
+        }
+        .section {
+            padding: 50px 0;
+            border-bottom: 2px solid #ddd;
+        }
+    </style>
 </head>
 
-
-
 <body>
-    <div style="margin-top:80px;margin-left:150px;margin-bottom:80px">
-        <table>
-            <tbody>
-                <tr>
-                    <td width="750">
-                        <h1> <font color="#500650"> Hello, it is Yuntian (Ayni) LI.</font></a></h1>
-                        <p>
-                          Ph.D. Economics, Stockholms Universitet (Stockholm University, SU) <br>
-			  M.Sc. Economics, Handelshögskolan i Stockholm (Stockholm School of Economics, SSE), 2026 (E)<br>
-			  B.Econ. Finance & B.Sc. Mathematics, 中国人民大学 (Renmin University of China, RUC), 2024<br>
-		            <!-- Find me at my
-                            <a href="https://sites.google.com/view/yuntian-ayni-li/home" target="Yuntian LI" rel="noopener noreferrer"> <font color="#9e8dbb">Personal Page</font></a>,
-			    <a href="https://www.linkedin.com/in/yuntian-li-68b8a5243/" target="Yuntian LI" rel="noopener noreferrer"><font color="#9e8dbb">LinkedIn</font></a>, and
-			    <a href="https://github.com/YuntianAyniLI/" target="Yuntian LI" rel="noopener noreferrer"><font color="#9e8dbb">GitHub</font></a><br>  -->
-                        </p>
-                    </td>
-                    <td>
-                    </td>
-                </tr>
-                <tr>
-                </tr>
-            </tbody>
-        </table>
-	     <h2><font color="#500650">Research Interest</font></h2>
-    <ul>
-       Political Economy, Quantitative macroeconomics 
 
+    <!-- 侧边导航栏 -->
+    <div class="sidebar">
+        <a href="#home">Home</a>
+        <a href="#research">Research</a>
+        <a href="#teaching">Teaching</a>
+        <a href="#cv">CV</a>
+        <a href="#data">Data</a>
+    </div>
 
-    </ul>
-
-<br />
-<br />
-
-
-            <div align="center">
-                Last updated by Yuntian LI on Feburary 2025
-            </div>
+    <!-- 右侧主页面内容 -->
+    <div class="main-content">
+        
+        <!-- Home -->
+        <div id="home" class="section">
+            <h1 style="color:#500650;">Hello, it is Yuntian (Ayni) LI.</h1>
             <p>
+                Ph.D. Economics, Stockholms Universitet (Stockholm University, SU) <br>
+                M.Sc. Economics, Handelshögskolan i Stockholm (Stockholm School of Economics, SSE), 2026 (E)<br>
+                B.Econ. Finance & B.Sc. Mathematics, 中国人民大学 (Renmin University of China, RUC), 2024<br>
             </p>
 
-            <div align="center">
-                © All rights reserved.
-            </div>
+            <h2 style="color:#500650;">Research Interest</h2>
+            <ul>
+                <li>Political Economy</li>
+                <li>Quantitative Macroeconomics</li>
+            </ul>
+        </div>
+
+        <!-- Research -->
+        <div id="research" class="section">
+            <h2 style="color:#500650;">Research</h2>
+        </div>
+
+        <!-- Teaching -->
+        <div id="teaching" class="section">
+            <h2 style="color:#500650;">Teaching</h2>
+        </div>
+
+        <!-- CV -->
+        <div id="cv" class="section">
+            <h2 style="color:#500650;">CV</h2>
+        </div>
+
+        <!-- Data -->
+        <div id="data" class="section">
+            <h2 style="color:#500650;">Data</h2>
+        </div>
+
+        <div align="center">
+            Last updated by Yuntian LI on February 2025
+        </div>
+        <p></p>
+        <div align="center">© All rights reserved.</div>
+
+    </div>
+
+
 	    <p>
             </p>
 <div align="center">
