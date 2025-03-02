@@ -5,11 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Yuntian (Ayni) LI</title>
     <style>
+        /* 定义中文字体 */
+        @font-face {
+            font-family: "HYCLSK";
+            src: url("/fonts/汉仪昌黎宋刻本(原版)W.ttf") format("truetype");
+        }
+
+        /* 原始样式 */
         body {
             display: flex;
-            font-family: "Times New Roman", Times, serif;
+            font-family: "Times New Roman", Times, serif; /* 英文字体 */
             margin: 0;
         }
+
+        /* 应用中文字体到中文内容 */
+        body:lang(zh-CN) {
+            font-family: "HYCLSK", "Times New Roman", Times, serif; /* 中文字体 */
+        }
+    </style>
 
 	    
 /* 侧边导航栏 */
