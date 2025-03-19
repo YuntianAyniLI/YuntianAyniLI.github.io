@@ -4,17 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Yuntian (Ayni) LI</title>
+	
     <style>
-        body {
-            display: flex;
-            font-family: "Times New Roman", Times, serif; /* 英文字体 */
-            margin: 0;
-        }
+    /* 加载自定义中文字体 */
+    @font-face {
+        font-family: 'HanYiChangLiSong';
+        src: url('fonts/汉仪昌黎宋刻本(原版)W.ttf') format('truetype');
+    }
 
-        /* 应用中文字体到中文内容 */
-        body:lang(zh-CN) {
-            font-family: "STFangsong", "SimFang", "华文仿宋", serif; /* 中文字体 */
-        }
+    body {
+        display: flex;
+        font-family: "Times New Roman", Times, serif; /* 英文字体 */
+        margin: 0;
+    }
+
+    /* 应用中文字体到中文内容 */
+    body:lang(zh-CN) {
+        font-family: 'HanYiChangLiSong', serif; /* 只使用自定义字体 */
+    }
+</style>
 
 
 	    
