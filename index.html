@@ -11,62 +11,105 @@
     @font-face {
         font-family: 'HanYiChangLiSong';
         src: url('https://cdn.jsdelivr.net/gh/YuntianAyniLI/YuntianAyniLI.github.io/fonts/汉仪昌黎宋刻本(原版)W.ttf') format('truetype');
-
     }
 
     body {
         display: flex;
-        font-family: "Times New Roman", Times, serif; /* 英文字体 */
+        flex-direction: column; /* 默认垂直布局，适合移动设备 */
+        font-family: "Times New Roman", Times, serif;
         margin: 0;
     }
 
     /* 应用中文字体到中文内容 */
     body:lang(zh-CN) {
-        font-family: 'HanYiChangLiSong', serif; /* 只使用自定义字体 */
+        font-family: 'HanYiChangLiSong', serif;
     }
 
+    /* 侧边导航栏 - 桌面版 */
+    .sidebar {
+        width: 150px;
+        height: auto;
+        min-height: 100vh;
+        background-color: #f6f5ff;
+        position: fixed;
+        padding-top: 20px;
+        text-align: center;
+        border-right: 2px solid #ddd;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
 
+    .sidebar a {
+        display: block;
+        color: #500650;
+        text-decoration: none;
+        padding: 10px;
+        font-size: 18px;
+    }
 
-	    
-/* 侧边导航栏 */
-.sidebar {
-    width: 150px;
-    height: 100vh; /* 设置高度为视口的100% */
-    background-color: #f6f5ff;
-    position: fixed;
-    padding-top: 20px;
-    text-align: center;
-    border-right: 2px solid #ddd;
-    display: flex; /* 使用 Flexbox 布局 */
-    flex-direction: column; /* 垂直排列子元素 */
-    justify-content: center; /* 垂直居中 */
-    /*align-items: center; */ /* 让所有子元素水平居中 */
-}
+    .sidebar a:hover {
+        background-color: #d9d4ee;
+    }
+    
+    /* 右侧主页面内容 */
+    .main-content {
+        margin-left: 220px;
+        margin-right: 99px;
+        padding: 20px;
+        flex: 1;
+    }
+    
+    .section {
+        padding: 50px 0;
+        border-bottom: 2px solid #ddd;
+    }
 
-.sidebar a {
-    display: block;
-    color: #500650;
-    text-decoration: none;
-    padding: 10px;
-    font-size: 18px;
-}
-
-.sidebar a:hover {
-    background-color: #d9d4ee;
-}
-
-	    
-        /* 右侧主页面内容 */
-        .main-content {
-            margin-left: 220px;
-            margin-right: 99px;
-            padding: 20px;
-            flex: 1;
+    /* 移动设备响应式设计 */
+    @media screen and (max-width: 768px) {
+        body {
+            flex-direction: column;
         }
-        .section {
-            padding: 50px 0;
+        
+        .sidebar {
+            position: relative;
+            width: 100%;
+            height: auto;
+            min-height: auto;
+            flex-direction: row;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            padding: 10px 0;
+            border-right: none;
             border-bottom: 2px solid #ddd;
         }
+        
+        .sidebar a {
+            padding: 10px 15px;
+            font-size: 16px;
+        }
+        
+        .main-content {
+            margin: 0;
+            padding: 15px;
+        }
+        
+        .section {
+            padding: 30px 0;
+        }
+    }
+
+    /* 更小的移动设备 */
+    @media screen and (max-width: 480px) {
+        .sidebar {
+            flex-direction: column;
+        }
+        
+        .sidebar a {
+            padding: 8px;
+            font-size: 15px;
+        }
+    }
     </style>
 </head>
 
@@ -74,10 +117,9 @@
 
     <!-- 侧边导航栏 -->
     <div class="sidebar">
-	
         <a href="#home">Home</a>
         <a href="#research">Research</a>
-       <!-- <a href="#teaching">Teaching</a>  -->
+        <!-- <a href="#teaching">Teaching</a>  -->
         <a href="#cv">CV</a>
         <a href="#data">Data</a>
     </div>
@@ -89,16 +131,15 @@
         <div id="home" class="section">
             <h1 style="color:#500650;">Hello, it is Yuntian LI.</h1>
             <p>
-		    I'm currently a Ph.D. student in economics at Stockholms Universitet. 
-	    </p>
-	    <p>
-		    Before doctoral studies, I obtained my bachelor degree in economics (finance specialization)
-		    and mathematics from 中国人民大学 in 2024, and spent the academy year 2024/2025 in the master of science program in economics at 
-		    Handelshögskolan i Stockholm.
+                I'm currently a Ph.D. student in economics at Stockholms Universitet. 
             </p>
-	    <p>
-		    My research interest is in 
-            
+            <p>
+                Before doctoral studies, I obtained my bachelor degree in economics (finance specialization)
+                and mathematics from 中国人民大学 in 2024, and spent the academy year 2024/2025 in the master of science program in economics at 
+                Handelshögskolan i Stockholm.
+            </p>
+            <p>
+                My research interest is in 
             </p>
             <ul>
                 <li>Political Economy</li>
@@ -111,16 +152,10 @@
             <h2 style="color:#500650;">Research</h2>
         </div>
 
-        <!-- Teaching 
-        <div id="teaching" class="section">
-            <h2 style="color:#500650;">Teaching</h2>
-        </div> -->
-
         <!-- CV -->
-<div id="cv" class="section">
-    <h2 style="color:#500650;">CV</h2>
- <!--    <p><a href="CV.pdf" target="_blank" style="color:#500650; text-decoration: none; font-weight: bold;">Click here to view my CV (PDF)</a></p>  -->
-</div>
+        <div id="cv" class="section">
+            <h2 style="color:#500650;">CV</h2>
+        </div>
 
         <!-- Data -->
         <div id="data" class="section">
@@ -133,53 +168,39 @@
         </div>
         <p></p>
         <div align="center">© All rights reserved.</div>
-	<div align="center"><img src="YuntianAyniLI.github.io/姓名章-女书.png" alt="李韵天" class="sidebar-img"></div>
+        <div align="center"><img src="YuntianAyniLI.github.io/姓名章-女书.png" alt="李韵天" class="sidebar-img"></div>
 
-		    <p>
-            </p>
-<div align="center">
-<div style="overflow: hidden;">
-  <div id="title" style="width:200px;height:20px;color: #f6f5ff;background-color: #ffffff;" onclick="onTileClick()">IF YOU ALREADY KNOW</div>
-  <div id="content" style="height:0px;transition: height 0.2s;">
-	  <script type="text/javascript">
-	var content = document.getElementById("content");
-	function onTileClick() {content.style.height = content.offsetHeight===150?0+'px':150+'px';}
-</script> 	
-<script>
-   function check(){
-      var pass=document.getElementById("pass").value;
-      if(pass=="10.1" || pass=="10.10" ||pass=="1000"){
-	      alert("Welcome!");
-	      window.document.f.action="https://sites.google.com/view/yuntian-li/home";
-	      window.document.f.submit();
-      }else{
-	      alert("Sorry"); 
-   }   
-   }
-</script>
-<form name="f" action="">
-	<center>Please Enter answer to the following question: <br></center>
-	<center>舟如凫鷖，点破顷碧&nbsp;(4-digit number) <br></center>
-	<br />
-	<center><INPUT TYPE="password" NAME="" id="pass"><br></center>
-	<center><INPUT TYPE="button" value="Confrim" onclick="check()"><INPUT TYPE="reset" value="Reset"></center>
-</form>
-	  <br>
-  </div> 
-</div>
-</div>
-
+        <div align="center">
+            <div style="overflow: hidden;">
+                <div id="title" style="width:200px;height:20px;color: #f6f5ff;background-color: #ffffff;" onclick="onTileClick()">IF YOU ALREADY KNOW</div>
+                <div id="content" style="height:0px;transition: height 0.2s;">
+                    <script type="text/javascript">
+                        var content = document.getElementById("content");
+                        function onTileClick() {content.style.height = content.offsetHeight===150?0+'px':150+'px';}
+                    </script> 	
+                    <script>
+                        function check(){
+                            var pass=document.getElementById("pass").value;
+                            if(pass=="10.1" || pass=="10.10" ||pass=="1000"){
+                                alert("Welcome!");
+                                window.document.f.action="https://sites.google.com/view/yuntian-li/home";
+                                window.document.f.submit();
+                            }else{
+                                alert("Sorry"); 
+                            }   
+                        }
+                    </script>
+                    <form name="f" action="">
+                        <center>Please Enter answer to the following question: <br></center>
+                        <center>舟如凫鷖，点破顷碧&nbsp;(4-digit number) <br></center>
+                        <br />
+                        <center><INPUT TYPE="password" NAME="" id="pass"><br></center>
+                        <center><INPUT TYPE="button" value="Confrim" onclick="check()"><INPUT TYPE="reset" value="Reset"></center>
+                    </form>
+                    <br>
+                </div> 
+            </div>
+        </div>
     </div>
-
-
-
-	
-
-
-
-    
-
-
 </body>
-
 </html>
