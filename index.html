@@ -10,7 +10,7 @@
     /* 加载自定义中文字体 */
     @font-face {
         font-family: 'HanYiChangLiSong';
-        src: url('https://raw.githubusercontent.com/YuntianAyniLI/YuntianAyniLI.github.io/main/fonts/HYCLF.ttf') format('truetype');
+        src: url('fonts/HYCLF.ttf') format('truetype');
         font-weight: normal;
         font-style: normal;
         font-display: swap;
@@ -18,7 +18,7 @@
 
     body {
         display: flex;
-        flex-direction: column; /* 默认垂直布局，适合移动设备 */
+        flex-direction: column;
         font-family: 'HanYiChangLiSong', "Times New Roman", Times, serif;
         margin: 0;
     }
@@ -35,7 +35,21 @@
         border-right: 2px solid #d9d4ee;
         display: flex;
         flex-direction: column;
-        justify-content: center;
+        justify-content: flex-start;
+        align-items: center;
+    }
+
+    .sidebar-img {
+        max-width: 120px;
+        height: auto;
+        margin-bottom: 30px;
+        margin-top: 10px;
+    }
+
+    .sidebar-nav {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
     }
 
     .sidebar a {
@@ -63,13 +77,6 @@
         border-bottom: 2px solid #d9d4ee;
     }
 
-    /* 图片样式 */
-    .sidebar-img {
-        max-width: 150px;
-        height: auto;
-        margin-top: 10px;
-    }
-
     /* 移动设备响应式设计 */
     @media screen and (max-width: 768px) {
         body {
@@ -81,12 +88,22 @@
             width: 100%;
             height: auto;
             min-height: auto;
-            flex-direction: row;
-            flex-wrap: wrap;
-            justify-content: space-around;
+            flex-direction: column;
+            justify-content: center;
             padding: 10px 0;
             border-right: none;
             border-bottom: 2px solid #d9d4ee;
+        }
+
+        .sidebar-img {
+            max-width: 100px;
+            margin-bottom: 15px;
+        }
+
+        .sidebar-nav {
+            flex-direction: row;
+            flex-wrap: wrap;
+            justify-content: space-around;
         }
         
         .sidebar a {
@@ -102,25 +119,21 @@
         .section {
             padding: 30px 0;
         }
-
-        .sidebar-img {
-            max-width: 100px;
-        }
     }
 
     /* 更小的移动设备 */
     @media screen and (max-width: 480px) {
-        .sidebar {
+        .sidebar-img {
+            max-width: 80px;
+        }
+
+        .sidebar-nav {
             flex-direction: column;
         }
         
         .sidebar a {
             padding: 8px;
             font-size: 15px;
-        }
-
-        .sidebar-img {
-            max-width: 80px;
         }
     }
     </style>
@@ -130,11 +143,14 @@
 
     <!-- 侧边导航栏 -->
     <div class="sidebar">
-        <a href="#home">Home</a>
-        <a href="#research">Research</a>
-        <!-- <a href="#teaching">Teaching</a>  -->
-        <a href="#cv">CV</a>
-        <a href="#data">Data</a>
+        <img src="https://raw.githubusercontent.com/YuntianAyniLI/YuntianAyniLI.github.io/main/NametaginNyuShu.png" alt="李韵天" class="sidebar-img">
+        <div class="sidebar-nav">
+            <a href="#home">Home</a>
+            <a href="#research">Research</a>
+            <!-- <a href="#teaching">Teaching</a>  -->
+            <a href="#cv">CV</a>
+            <a href="#data">Data</a>
+        </div>
     </div>
 
     <!-- 右侧主页面内容 -->
@@ -181,9 +197,6 @@
         </div>
         <p></p>
         <div align="center">© All rights reserved.</div>
-        <div align="center">
-            <img src="https://raw.githubusercontent.com/YuntianAyniLI/YuntianAyniLI.github.io/main/NametaginNyuShu.png" alt="李韵天" class="sidebar-img">
-        </div>
 
         <div align="center">
             <div style="overflow: hidden;">
