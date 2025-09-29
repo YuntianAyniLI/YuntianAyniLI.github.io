@@ -10,19 +10,17 @@
     /* 加载自定义中文字体 */
     @font-face {
         font-family: 'HanYiChangLiSong';
-        src: url('https://cdn.jsdelivr.net/gh/YuntianAyniLI/YuntianAyniLI.github.io/fonts/汉仪昌黎宋刻本(原版)W.ttf') format('truetype');
+        src: url('https://raw.githubusercontent.com/YuntianAyniLI/YuntianAyniLI.github.io/main/fonts/HYCLF.ttf') format('truetype');
+        font-weight: normal;
+        font-style: normal;
+        font-display: swap;
     }
 
     body {
         display: flex;
         flex-direction: column; /* 默认垂直布局，适合移动设备 */
-        font-family: "Times New Roman", Times, serif;
+        font-family: 'HanYiChangLiSong', "Times New Roman", Times, serif;
         margin: 0;
-    }
-
-    /* 应用中文字体到中文内容 */
-    body:lang(zh-CN) {
-        font-family: 'HanYiChangLiSong', serif;
     }
 
     /* 侧边导航栏 - 桌面版 */
