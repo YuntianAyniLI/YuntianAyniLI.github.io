@@ -102,50 +102,103 @@
             min-height: auto;
             flex-direction: column;
             justify-content: center;
-            padding: 10px 0;
+            padding: 20px 0;
             border-right: none;
             border-bottom: 2px solid #d9d4ee;
         }
 
         .sidebar-img {
             max-width: 100px;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
 
         .sidebar-nav {
             flex-direction: row;
             flex-wrap: wrap;
-            justify-content: space-around;
+            justify-content: center;
+            gap: 5px;
         }
         
         .sidebar a {
-            padding: 10px 15px;
+            padding: 8px 20px;
             font-size: 16px;
         }
         
         .main-content {
             margin: 0;
-            padding: 15px;
+            padding: 20px 15px;
         }
         
         .section {
             padding: 30px 0;
         }
+
+        h1 {
+            font-size: 24px;
+        }
+
+        h2 {
+            font-size: 20px;
+        }
+
+        p, li {
+            font-size: 16px;
+            line-height: 1.6;
+        }
     }
 
     /* 更小的移动设备 */
     @media screen and (max-width: 480px) {
+        .sidebar {
+            padding: 15px 0;
+        }
+
         .sidebar-img {
             max-width: 80px;
+            margin-bottom: 15px;
         }
 
         .sidebar-nav {
-            flex-direction: column;
+            gap: 3px;
         }
         
         .sidebar a {
-            padding: 8px;
+            padding: 6px 15px;
             font-size: 15px;
+        }
+
+        .main-content {
+            padding: 15px 10px;
+        }
+
+        h1 {
+            font-size: 22px;
+        }
+
+        h2 {
+            font-size: 18px;
+        }
+
+        p, li {
+            font-size: 15px;
+        }
+
+        #title {
+            width: 180px !important;
+            font-size: 14px;
+        }
+
+        input[type="password"] {
+            width: 150px;
+            padding: 8px;
+            font-size: 16px;
+        }
+
+        input[type="button"],
+        input[type="reset"] {
+            padding: 8px 15px;
+            font-size: 14px;
+            margin: 5px;
         }
     }
     </style>
@@ -205,7 +258,7 @@
 	    
         <p></p>
         <div align="center">
-            Last updated by Yuntian LI on February 2025
+            Last updated by 李韵天 on September 2025
         </div>
         <p></p>
         <div align="center">© All rights reserved.</div>
@@ -231,6 +284,19 @@
                                 alert("Sorry"); 
                             }   
                         }
+                        
+                        // 添加回车键提交功能
+                        document.addEventListener('DOMContentLoaded', function() {
+                            var passInput = document.getElementById("pass");
+                            if(passInput) {
+                                passInput.addEventListener('keypress', function(event) {
+                                    if(event.key === 'Enter') {
+                                        event.preventDefault();
+                                        check();
+                                    }
+                                });
+                            }
+                        });
                     </script>
 					<p></p>
                     <form name="f" action="">
@@ -240,7 +306,6 @@
                         <br />
 						<p></p>
                         <center><INPUT TYPE="password" NAME="" id="pass"><br></center>
-						<p></p>
                         <center><INPUT TYPE="button" value="Confrim" onclick="check()"><INPUT TYPE="reset" value="Reset"></center>
                     </form>
                     <br>
