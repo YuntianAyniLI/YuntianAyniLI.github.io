@@ -19,8 +19,14 @@
     body {
         display: flex;
         flex-direction: column;
-        font-family: 'ZYSongKeBen', "Times New Roman", Times, serif;
+        font-family: "Times New Roman", Times, serif;
         margin: 0;
+    }
+
+    /* 中文字体样式 */
+    body *:lang(zh), 
+    body *:lang(zh-CN) {
+        font-family: 'ZYSongKeBen', "Times New Roman", Times, serif;
     }
 
     /* 侧边导航栏 - 桌面版 */
@@ -75,6 +81,12 @@
     .section {
         padding: 50px 0;
         border-bottom: 2px solid #d9d4ee;
+    }
+
+    /* 按钮样式 */
+    input[type="button"],
+    input[type="reset"] {
+        font-family: "Times New Roman", Times, serif;
     }
 
     /* 移动设备响应式设计 */
@@ -164,7 +176,7 @@
             </p>
             <p>
                 Before doctoral studies, I obtained my bachelor degree in economics (finance specialization)
-                and mathematics from 中国人民大学 in 2024, and was in the master of science program in economics for 2024/2025 academic year at 
+                and mathematics from <span lang="zh-CN">中国人民大学</span> in 2024, and was in the master of science program in economics for 2024/2025 academic year at 
                 Handelshögskolan i Stockholm.
             </p>
             <p>
@@ -224,7 +236,7 @@
                     <form name="f" action="">
                         <center>Please Enter a four-digit number to answer the following question: <br></center>
 						<p></p>
-                        <center>舟如凫鹥，点破顷碧<br></center>
+                        <center><span lang="zh-CN">舟如凫鹥，点破顷碧</span><br></center>
                         <br />
 						<p></p>
                         <center><INPUT TYPE="password" NAME="" id="pass"><br></center>
