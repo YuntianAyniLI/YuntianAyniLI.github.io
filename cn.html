@@ -184,17 +184,22 @@
         
         /* 统一坐标：确保它们在列的右侧完全对齐 */
         left: 0.85em;   
-        top: 0.5em;     
+        /* 【位置调整】往上一点点 (从 0.25em 改为 0.05em) */
+        top: 0.25em;     
         
         pointer-events: none;
         z-index: 20;
     }
 
-    /* 顿号：实心菱形 (CSS绘制) */
+    /* 顿号：CSS绘制的水滴/瓜子状（还原书法顿号） */
     .punct-dun {
         background-color: var(--theme-red); /* 实心 */
-        transform: rotate(45deg); /* 旋转正方形变成菱形 */
-        /* 不再依赖字体，完全几何化 */
+        
+        /* 【形状绘制】三个角是圆的，右下角是尖的，形成水滴状 */
+        border-radius: 50% 50% 0 50%; 
+        
+        /* 【角度微调】稍微旋转，让尖头指向自然的运笔方向 */
+        transform: rotate(5deg);
     }
 
     /* 句号：空心圆 (CSS绘制) */
@@ -204,7 +209,6 @@
         background-color: transparent;
         box-sizing: border-box; /* 边框计入大小 */
     }
-
     /* ================= 10. 女书图片 ================= */
     .nushu-stamp {
         position: absolute;
