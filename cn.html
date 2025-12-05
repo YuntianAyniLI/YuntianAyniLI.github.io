@@ -17,77 +17,65 @@
 
     /* ================= 2. 全局变量 ================= */
     :root {
-        --theme-purple: #500650; /* 主色调 */
-        --theme-red: #d43628;    /* 标点红 */
-        --paper-bg: #fdfbf7;     /* 纸张底色 */
-        --outer-border: 4px;     /* 外框粗 */
-        --inner-border: 1px;     /* 内框细 */
-        --char-spacing: 0.45em;  /* 字间距 */
-        --col-gap: 3.5em;        /* 【关键】列间距加大，给右侧标点留足空间 */
+        --theme-purple: #500650; 
+        --theme-red: #d43628;    
+        --paper-bg: #fdfbf7;     /* 统一背景色 */
+        --outer-border: 4px;     
+        --inner-border: 1px;     
+        --char-spacing: 0.45em;  
+        --col-gap: 3.5em;        /* 列间距 */
     }
 
     /* ================= 3. 基础布局 ================= */
     body {
         margin: 0;
         padding: 0;
-        background-color: #e0e0e0; 
+        /* 【修改点】背景色与纸张融为一体 */
+        background-color: var(--paper-bg); 
         font-family: 'ZYSongKeBen', "Times New Roman", serif;
         
         display: flex;
         flex-direction: row; 
-        align-items: center; /* 垂直居中 */
+        /* 【修改点】让页面在屏幕中居中 */
+        justify-content: center; 
+        align-items: center;
         
-        overflow-x: auto; 
+        overflow-x: auto; /* 横向滚动 */
         overflow-y: hidden;
         height: 100vh;
         
-        gap: 50px;
-        padding: 0 50px; 
+        /* 页面之间的间距 */
+        gap: 5vw; 
+        /* 左右留白，防止居中时首尾贴边 */
+        padding: 0 5vw; 
     }
 
-    /* ================= 4. 页面容器 (16:9 宽银幕) ================= */
+    /* ================= 4. 页面容器 (16:9) ================= */
     .ancient-page {
-        /* 【修改点】改为 16/9 比例，更适配网页宽屏，不再是方方正正的 A4 */
         height: 85vh; 
         aspect-ratio: 16 / 9; 
         
         background-color: var(--paper-bg);
         position: relative; 
-        flex-shrink: 0; 
+        flex-shrink: 0; /* 防止挤压 */
         
-        /* 外边框 */
         border: var(--outer-border) solid var(--theme-purple); 
-        box-shadow: 0 10px 30px rgba(0,0,0,0.15); /* 增加一点悬浮质感 */
         box-sizing: border-box;
+        
+        /* 增加阴影区分页面与背景（因为背景色一样了） */
+        box-shadow: 0 0 30px rgba(80, 6, 80, 0.1);
     }
 
-    /* ================= 5. 内边框 (Inner Border) ================= */
-    /* 【修改点】找回消失的内边框，并使用绝对定位 */
+    /* ================= 5. 内边框 ================= */
     .inner-border-box {
         position: absolute;
         top: 12px; bottom: 12px; left: 12px; right: 12px;
-        /* 恢复显示：细实线 */
         border: var(--inner-border) solid var(--theme-purple);
-        pointer-events: none; /* 让鼠标能穿透边框选中文字 */
+        pointer-events: none; 
         z-index: 1;
     }
 
     /* ================= 6. 版心 (上下粗横线) ================= */
-    .banxin-absolute {
-        position: absolute;
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%);
-        z-index: 10; 
-        
-        writing-mode: vertical-rl; /* 名字竖排 */
-        display: flex;
-        flex-direction: row; /* 在 vertical-rl 下，row 是垂直方向（上下）吗？不，是水平。 */
-        /* CSS vertical-rl 比较绕。
-           为了稳妥，我们用 Flex column (垂直堆叠) 且容器设为 horizontal-tb */
-    }
-    
-    /* 修正版心容器：水平书写，垂直堆叠 */
     .banxin-container {
         writing-mode: horizontal-tb;
         position: absolute;
@@ -99,13 +87,12 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        gap: 0.8em; /* 线与字的距离 */
+        gap: 0.8em; 
     }
 
-    /* 粗横线样式 */
     .thick-line {
-        width: 3.5em; /* 线条宽度（稍微比名字宽一点） */
-        height: 6px;  /* 线条厚度 */
+        width: 3.5em; 
+        height: 6px;  
         background-color: var(--theme-purple);
         border-radius: 2px;
     }
@@ -122,46 +109,36 @@
     /* ================= 7. 内容区域 (严格分列) ================= */
     .content-area {
         position: absolute;
-        top: 10vh; 
-        bottom: 10vh; 
-        z-index: 5; /* 在内边框之上 */
+        top: 10vh; bottom: 10vh; 
+        z-index: 5;
         
         writing-mode: vertical-rl;
         text-orientation: upright;
         
         display: flex;
-        flex-direction: column; /* 竖排模式下，flex-direction column 意味着从右向左排类 */
-        gap: var(--col-gap);    /* 列间距 */
+        flex-direction: column; 
+        gap: var(--col-gap);    
         align-items: flex-start;
     }
 
-    /* 每一列的通用样式 */
+    /* 每一列 */
     .text-column {
         font-size: 2.0vh;
-        line-height: 2.2; /* 行距适中，太宽会散，因为我们有专门的列间距 */
+        line-height: 2.2; 
         letter-spacing: var(--char-spacing);
         color: black;
         height: 100%;
-        position: relative; /* 为标点定位做参考 */
+        position: relative; 
     }
 
-    /* 右侧区域位置 */
-    .text-right-area {
-        right: 8vh;
-        padding-right: 2vh; /* 微调 */
-    }
-
-    /* 左侧区域位置 */
-    .text-left-area {
-        left: 15vh; 
-    }
+    .text-right-area { right: 8vh; padding-right: 2vh; }
+    .text-left-area { left: 15vh; }
 
     /* ================= 8. 文本样式细节 ================= */
     .section-title {
         font-weight: bold;
         font-size: 1.3em;
         color: var(--theme-purple);
-        /* 标题单独处理 */
     }
 
     a {
@@ -184,7 +161,7 @@
         margin: 0 0.2em;
     }
 
-    /* ================= 9. 旁注标点 (精修位置) ================= */
+    /* ================= 9. 旁注标点 (样式修复) ================= */
     .punct-wrapper {
         position: relative;
         display: inline;
@@ -193,26 +170,21 @@
 
     .punct {
         position: absolute;
-        font-family: "SimSun", serif; /* 宋体标点最好看 */
+        font-family: "SimSun", serif; 
         color: var(--theme-red);
         font-weight: bold;
         
-        /* 【位置精修】 
-           在竖排 vertical-rl 中：
-           left: 正值 -> 往物理右边（上一列方向）推
-           top: 正值 -> 往物理下边推
-        */
-        left: 0.8em;  /* 距离文字中心向右偏移 */
-        top: 0.3em;   /* 稍微向下一点，对齐文字右下角 */
+        /* 【位置校准】确保在右侧 */
+        left: 0.8em;  
+        top: 0.3em;   
         
         white-space: nowrap;
         pointer-events: none;
+        z-index: 20; /* 确保不被遮挡 */
     }
 
     .punct-dun {
         font-size: 1.4em; 
-        /* 旋转顿号，让水滴头朝左上，尾朝右下，更自然 */
-        /* transform: rotate(0deg); 默认宋体顿号就是右下斜的 */
     }
 
     .punct-period {
@@ -221,7 +193,7 @@
         border: 2px solid var(--theme-red);
         border-radius: 50%;
         box-sizing: border-box;
-        top: 0.5em; /* 句号位置再低一点 */
+        top: 0.5em; 
         left: 0.9em;
     }
 
@@ -241,12 +213,14 @@
 
     /* ================= 11. 移动端适配 ================= */
     @media screen and (max-aspect-ratio: 1/1) {
-        body { align-items: flex-start; padding-top: 50px; padding-left: 20px; }
+        body { 
+            justify-content: flex-start; /* 手机上靠左开始，方便滑动 */
+            padding-left: 20px; 
+        }
         .ancient-page { 
             height: 60vh; 
-            aspect-ratio: 9/16; /* 手机上竖过来？或者保持横向让用户滑？保持横向更像卷轴 */
             aspect-ratio: 16/9;
-            margin-bottom: 20px; 
+            margin-right: 20px; 
         }
     }
     </style>
@@ -254,7 +228,6 @@
 <body>
 
     <div class="ancient-page">
-        
         <div class="inner-border-box"></div>
 
         <div class="banxin-container">
@@ -263,12 +236,10 @@
             <div class="thick-line"></div>
         </div>
 
-        <div class="content-area text-right-area" id="content-right-1">
-            
+        <div class="content-area text-right-area">
             <div class="text-column">
                 <span class="section-title">你好</span>
             </div>
-
             <div class="text-column">
                 <span>
                     目前是斯德哥尔摩大学经济学博士生。
@@ -278,20 +249,17 @@
                     学士学位，并于2024/2025学年在斯德哥尔摩经济学院攻读经济学硕士项目。
                 </span>
             </div>
-            
-             <div class="text-column">
+            <div class="text-column">
                 <span>
                     我的研究兴趣在于政治经济学与宏观定量分析。
                 </span>
             </div>
         </div>
 
-        <div class="content-area text-left-area" id="content-left-1">
-            
+        <div class="content-area text-left-area">
             <div class="text-column">
                 <span class="section-title">创作</span>
             </div>
-            
             <div class="text-column">
                 <a href="#">** 项目标题壹 **</a>
                 <br>
@@ -300,7 +268,6 @@
                     关于宏观经济模型的讨论
                 </span>
             </div>
-
             <div class="text-column">
                 <a href="#">** 项目标题贰 **</a>
                 <br>
@@ -316,16 +283,67 @@
                 <img src="https://raw.githubusercontent.com/YuntianAyniLI/YuntianAyniLI.github.io/main/NametaginNyuShu.png" alt="English" class="nushu-img">
             </a>
         </div>
-
     </div>
+
+
+    <div class="ancient-page">
+        <div class="inner-border-box"></div>
+
+        <div class="banxin-container">
+            <div class="thick-line"></div>
+            <div class="banxin-name">李韵天</div>
+            <div class="thick-line"></div>
+        </div>
+
+        <div class="content-area text-right-area">
+             </div>
+
+        <div class="content-area text-left-area">
+            
+            <div class="text-column">
+                <a href="#">** 项目标题叁 **</a>
+                <br>
+                <span class="ge-zhu">
+                    关于货币政策的历史演变<br>
+                    基于面板数据的实证研究
+                </span>
+            </div>
+
+            <div class="text-column">
+                <a href="#">** 项目标题肆 **</a>
+                <br>
+                <span class="ge-zhu">
+                    制度经济学视角的思考<br>
+                    工作论文草稿
+                </span>
+            </div>
+
+            <div class="text-column">
+                <a href="#">** 项目标题伍 **</a>
+                <br>
+                <span class="ge-zhu">
+                    关于动态随机一般均衡模型<br>
+                    代码库与数据集
+                </span>
+            </div>
+        </div>
+
+        <div class="nushu-stamp">
+            <a href="index.html">
+                <img src="https://raw.githubusercontent.com/YuntianAyniLI/YuntianAyniLI.github.io/main/NametaginNyuShu.png" alt="English" class="nushu-img">
+            </a>
+        </div>
+    </div>
+
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            const containerIds = ['content-right-1', 'content-left-1'];
+            // 【修正】选择所有 text-column 类，而不依赖具体的 ID
+            // 这样所有页面、所有列的标点都会自动生效
+            const columns = document.querySelectorAll('.text-column');
             
-            containerIds.forEach(id => {
-                const container = document.getElementById(id);
-                if(container) stylePunctuation(container);
+            columns.forEach(node => {
+                stylePunctuation(node);
             });
             
             function stylePunctuation(node) {
@@ -347,4 +365,23 @@
                             if (char === '。') {
                                 punctSpan.classList.add('punct-period');
                             } else {
-                                punctSpan.textContent = '、';
+                                punctSpan.textContent = '、'; 
+                                punctSpan.classList.add('punct-dun');
+                            }
+                            
+                            wrapper.appendChild(punctSpan);
+                            fragment.appendChild(wrapper);
+                            lastIndex = index + 1;
+                        });
+                        const remainingText = text.slice(lastIndex);
+                        if (remainingText) fragment.appendChild(document.createTextNode(remainingText));
+                        node.parentNode.replaceChild(fragment, node);
+                    }
+                } else if (node.nodeType === 1 && node.nodeName !== 'SCRIPT' && node.nodeName !== 'A') {
+                    Array.from(node.childNodes).forEach(stylePunctuation);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
