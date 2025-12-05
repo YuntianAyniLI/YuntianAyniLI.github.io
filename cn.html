@@ -6,392 +6,360 @@
     <title>李韵天 | Yuntian LI</title>
     
     <style>
-    /* ================= 1. 字体加载 ================= */
+    /* ================= 1. 字体与变量 ================= */
     @font-face {
         font-family: 'ZYSongKeBen';
         src: url('fonts/ZYSongKeBen.otf') format('opentype');
-        font-weight: normal;
-        font-style: normal;
-        font-display: swap;
+        font-weight: normal; font-style: normal; font-display: swap;
     }
 
-    /* ================= 2. 全局变量 ================= */
     :root {
         --theme-purple: #500650; 
         --theme-red: #d43628;    
         --paper-bg: #fdfbf7;     
-        --outer-border: 4px;     /* 外框粗细 */
-        --inner-border: 1px;     /* 内框细 */
+        --outer-border: 4px;     
+        --inner-border: 1px;     
         --char-spacing: 0.45em;  
-        --col-gap: 3.5em;        
+        --col-gap: 3.0em; /* 列间距 */
     }
 
-    /* ================= 3. 基础布局 (垂直堆叠) ================= */
+    /* ================= 2. 基础布局 ================= */
     body {
-        margin: 0;
-        padding: 0;
+        margin: 0; padding: 60px 0;
         background-color: var(--paper-bg); 
         font-family: 'ZYSongKeBen', "Times New Roman", serif;
-        
-        /* 垂直排列页面 */
-        display: flex;
-        flex-direction: column; 
-        align-items: center; /* 水平居中 */
-        
-        overflow-y: auto; 
-        overflow-x: hidden;
+        display: flex; flex-direction: column; align-items: center;
         min-height: 100vh;
-        
-        gap: 60px; 
-        padding: 60px 0; 
+        gap: 60px; /* 页面间距 */
+        overflow-x: hidden;
     }
 
-    /* ================= 4. 页面容器 (16:9) ================= */
+    /* ================= 3. 页面容器 (16:9) ================= */
     .ancient-page {
         height: 85vh; 
         aspect-ratio: 16 / 9; 
-        
         background-color: var(--paper-bg);
         position: relative; 
         flex-shrink: 0; 
-        
         border: var(--outer-border) solid var(--theme-purple); 
         box-shadow: 0 20px 50px rgba(80, 6, 80, 0.1); 
         box-sizing: border-box;
     }
 
-    /* ================= 5. 内边框 ================= */
     .inner-border-box {
         position: absolute;
         top: 12px; bottom: 12px; left: 12px; right: 12px;
         border: var(--inner-border) solid var(--theme-purple);
-        pointer-events: none; 
-        z-index: 1;
+        pointer-events: none; z-index: 1;
     }
 
-    /* ================= 6. 版心 (锋利横线 + 底部细线在粗线上方) ================= */
+    /* ================= 4. 版心 (修正版) ================= */
     .banxin-container {
         writing-mode: horizontal-tb;
         position: absolute;
         left: 50%; top: 50%;
         transform: translate(-50%, -50%);
         z-index: 10;
-        
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: 0.6em; /* 字与线的距离 */
+        display: flex; flex-direction: column;
+        align-items: center; justify-content: center;
+        gap: 0.6em; 
     }
 
-    /* 粗横线样式 */
     .thick-line {
-        width: 3.5em; 
-        height: var(--outer-border); /* 与外边框一样粗 */
+        width: 3.5em; height: var(--outer-border);
         background-color: var(--theme-purple);
-        border-radius: 0; /* 锋利直角 */
+        border-radius: 0;
     }
-
-    /* 底部线条包裹器 */
-    .bottom-lines-wrapper {
-        display: flex;
-        flex-direction: column;
-        gap: 1px; /* 粗细线之间留 1px 缝隙 */
-    }
-
-    /* 细横线样式 */
     .thin-line {
-        width: 3.5em;
-        height: 1px;
+        width: 3.5em; height: 1px;
         background-color: var(--theme-purple);
     }
-
+    .bottom-lines-wrapper {
+        display: flex; flex-direction: column; gap: 1px;
+    }
     .banxin-name {
         writing-mode: vertical-rl;
-        font-size: 1.8em;
-        font-weight: bold;
+        font-size: 1.8em; font-weight: bold;
         color: var(--theme-purple);
-        letter-spacing: 0.6em;
-        padding: 0.2em 0;
+        letter-spacing: 0.6em; padding: 0.2em 0;
     }
 
-    /* ================= 7. 内容区域 ================= */
-    .content-area {
+    /* ================= 5. 内容填充区 (左右两大块) ================= */
+    /* 这是自动排版的容器，分为左右两边 */
+    .content-half {
         position: absolute;
-        top: 10vh; bottom: 10vh; 
+        top: 10vh; bottom: 10vh;
         z-index: 5;
         
+        /* 核心排版：竖向书写，列从右向左排 */
         writing-mode: vertical-rl;
         text-orientation: upright;
         
+        /* 内部内容对齐：flex-start 意味着靠右（因为 vertical-rl 的起始边是右） */
         display: flex;
-        flex-direction: column; 
-        gap: var(--col-gap);    
-        align-items: flex-start;
+        flex-wrap: wrap; /* 允许换列 */
+        align-content: flex-start; /* 列靠右对齐 */
+        gap: var(--col-gap);
+        
+        /* 调试用：如果文字溢出看不到，可以临时加 outline 查看范围 */
     }
 
-    /* 列样式 */
-    .text-column {
+    .content-right {
+        right: 8vh; /* 靠右定位 */
+        left: 54%;  /* 占据右半边，留出中间版心 */
+    }
+
+    .content-left {
+        left: 15vh; /* 靠左定位 (留出女书位置) */
+        right: 54%; /* 占据左半边 */
+    }
+
+    /* ================= 6. 文本单元样式 ================= */
+    /* 每一个 p, div, h2 都会变成这样的一列 */
+    .content-block {
         font-size: 2.0vh;
-        line-height: 2.2; 
+        line-height: 2.2;
         letter-spacing: var(--char-spacing);
         color: black;
-        height: 100%;
-        position: relative; 
-    }
-
-    /* 右侧区域 */
-    .text-right-area { 
-        right: 8vh; 
-        padding-right: 2vh; 
-        max-width: 35%;
-    }
-
-    /* 左侧区域 */
-    .text-left-area { 
-        left: 15vh; 
-        max-width: 35%;
-    }
-
-    /* ================= 8. 文本与项目样式细节 ================= */
-    .section-title {
-        font-weight: bold;
-        font-size: 1.3em;
-        color: var(--theme-purple);
-    }
-
-    a {
-        text-decoration: none;
-        color: black;
-        transition: color 0.3s;
-        border-bottom: none; 
-    }
-    a:hover {
-        color: var(--theme-purple);
-        border-bottom: none; 
-    }
-
-    /* 项目标题样式 */
-    .project-title {
-        font-weight: bold;
-        font-size: 1em; 
-        color: var(--theme-purple);
-        display: block; 
-        margin-bottom: 0.3em;
-    }
-
-    /* 项目内容样式 */
-    .project-content {
-        color: black;
-        font-size: 1em; 
-    }
-
-    /* 旧割注保留 */
-    .ge-zhu {
-        display: inline-block;
-        font-size: 0.6em;
-        line-height: 1.2;
-        color: var(--theme-purple);
-        vertical-align: middle;
-        margin: 0 0.2em;
-    }
-
-    /* ================= 9. 旁注标点 (最新微调版) ================= */
-    .punct-wrapper {
         position: relative;
-        display: inline;
-        width: 0; height: 0;
+        /* 保持块状完整性，尽量不从中间切断（JS逻辑控制） */
+        height: auto; 
+        max-height: 100%;
     }
 
-    /* 通用标点定位基础 */
+    .section-title {
+        font-weight: bold; font-size: 1.3em;
+        color: var(--theme-purple);
+        margin-left: 0.5em; /* 标题稍微下沉一点 */
+    }
+
+    .project-title {
+        font-weight: bold; font-size: 1em;
+        color: var(--theme-purple);
+        display: block; margin-bottom: 0.3em;
+    }
+
+    .project-content {
+        color: black; font-size: 1em;
+    }
+
+    a { text-decoration: none; color: black; border-bottom: none; }
+    a:hover { color: var(--theme-purple); }
+
+    .ge-zhu {
+        display: inline-block; font-size: 0.6em;
+        line-height: 1.2; color: var(--theme-purple);
+        vertical-align: middle; margin: 0 0.2em;
+    }
+
+    /* ================= 7. 旁注标点 (上移修正) ================= */
+    .punct-wrapper {
+        position: relative; display: inline; width: 0; height: 0;
+    }
     .punct {
         position: absolute;
-        
-        width: 0.45em; 
-        height: 0.45em; 
-        
-        /* 统一坐标 */
+        width: 0.45em; height: 0.45em;
         left: 0.85em;   
-        /* 【核心修改】再往上提 (0.05em -> -0.15em) */
-        top: -0.15em;     
-        
-        pointer-events: none;
-        z-index: 20;
+        /* 【位置调整】继续上移 (-0.15em -> -0.25em) */
+        top: -0.35em;     
+        pointer-events: none; z-index: 20;
     }
-
-    /* 顿号：瘦长水滴状，左上角尖 */
     .punct-dun {
-        background-color: var(--theme-red); /* 实心 */
-        
-        width: 0.35em;
-        height: 0.6em;
-        
-        /* 左上角尖 */
+        background-color: var(--theme-red);
+        width: 0.35em; height: 0.6em;
         border-radius: 0 100% 100% 100%;
-        
-        /* 角度微调 */
         transform: rotate(-15deg);
-        
         margin-top: -0.1em;
     }
-
-    /* 句号：空心圆 */
     .punct-period {
-        /* 强制宽高相等 */
-        width: 0.45em;
-        height: 0.45em;
-        
-        border: 2px solid var(--theme-red); 
-        border-radius: 50%; 
+        width: 0.45em; height: 0.45em;
+        border: 2px solid var(--theme-red);
+        border-radius: 50%;
         background-color: transparent;
         box-sizing: border-box; 
     }
 
-    /* ================= 10. 女书图片 ================= */
+    /* ================= 8. 女书图片 ================= */
     .nushu-stamp {
         position: absolute;
         left: 25px; bottom: 25px;
-        z-index: 20;
-        width: 55px; 
+        z-index: 20; width: 55px; 
     }
     .nushu-img {
         width: 100%; height: auto;
-        cursor: pointer; opacity: 0.8;
-        transition: opacity 0.3s;
+        opacity: 0.8; transition: opacity 0.3s; cursor: pointer;
     }
     .nushu-img:hover { opacity: 1; }
 
-    /* ================= 11. 移动端适配 ================= */
-    @media screen and (max-aspect-ratio: 1/1) {
-        body { 
-            padding: 20px 0; 
-            gap: 20px;
-        }
-        .ancient-page { 
-            height: auto; 
-            width: 95vw; 
-            aspect-ratio: 16/9;
-        }
-    }
+    /* ================= 9. 隐藏的内容源 ================= */
+    #source-content { display: none; }
     </style>
 </head>
 <body>
 
-    <div class="ancient-page">
-        <div class="inner-border-box"></div>
-
-        <div class="banxin-container">
-            <div class="thick-line"></div>
-            
-            <div class="banxin-name">李韵天</div>
-            
-            <div class="bottom-lines-wrapper">
-                <div class="thin-line"></div> <div class="thick-line"></div> </div>
+    <div id="source-content">
+        
+        <div class="content-block">
+            <span class="section-title">你好</span>
         </div>
 
-        <div class="content-area text-right-area">
-            <div class="text-column">
-                <span class="section-title">你好</span>
-            </div>
-            <div class="text-column">
-                <span>
-                    目前是斯德哥尔摩大学经济学博士生。
-                    <span class="ge-zhu">此处为<br>个人简介</span>
-                    在此之前，我于2024年获得中国人民大学经济学（金融方向）
-                    <span class="ge-zhu">及<br>数学</span>
-                    学士学位，并于2024/2025学年在斯德哥尔摩经济学院攻读经济学硕士项目。
-                </span>
-            </div>
-            <div class="text-column">
-                <span>
-                    我的研究兴趣在于政治经济学与宏观定量分析。
-                </span>
-            </div>
+        <div class="content-block">
+            <span>
+                目前是斯德哥尔摩大学经济学博士生。
+                <span class="ge-zhu">此处为<br>个人简介</span>
+                在此之前，我于2024年获得中国人民大学经济学（金融方向）
+                <span class="ge-zhu">及<br>数学</span>
+                学士学位，并于2024/2025学年在斯德哥尔摩经济学院攻读经济学硕士项目。
+            </span>
         </div>
 
-        <div class="content-area text-left-area">
-            <div class="text-column">
-                <span class="section-title">创作</span>
-            </div>
-            
-            <div class="text-column">
-                <a href="#" class="project-title">项目标题壹</a>
-                <div class="project-content">
-                    此处为项目壹的简短摘要，关于宏观经济模型的讨论。
-                </div>
-            </div>
+        <div class="content-block">
+            <span>
+                我的研究兴趣在于政治经济学与宏观定量分析。
+            </span>
+        </div>
 
-            <div class="text-column">
-                <a href="#" class="project-title">项目标题贰</a>
-                <div class="project-content">
-                    项目贰的摘要，更多关于数据的分析。
-                </div>
+        <div class="content-block">
+            <span class="section-title">创作</span>
+        </div>
+
+        <div class="content-block">
+            <a href="#" class="project-title">项目标题壹</a>
+            <div class="project-content">
+                此处为项目壹的简短摘要，关于宏观经济模型的讨论。
             </div>
         </div>
 
-        <div class="nushu-stamp">
-            <a href="index.html">
-                <img src="https://raw.githubusercontent.com/YuntianAyniLI/YuntianAyniLI.github.io/main/NametaginNyuShu.png" alt="English" class="nushu-img">
-            </a>
+        <div class="content-block">
+            <a href="#" class="project-title">项目标题贰</a>
+            <div class="project-content">
+                项目贰的摘要，更多关于数据的分析。
+            </div>
         </div>
+
+        <div class="content-block">
+            <a href="#" class="project-title">项目标题叁</a>
+            <div class="project-content">
+                关于货币政策的历史演变，基于面板数据的实证研究。
+            </div>
+        </div>
+
+        <div class="content-block">
+            <a href="#" class="project-title">项目标题肆</a>
+            <div class="project-content">
+                制度经济学视角的思考，工作论文草稿。
+            </div>
+        </div>
+
+        <div class="content-block">
+            <a href="#" class="project-title">项目标题伍</a>
+            <div class="project-content">
+                关于动态随机一般均衡模型，代码库与数据集。
+            </div>
+        </div>
+
+        <div class="content-block">
+            <a href="#" class="project-title">测试长文排版</a>
+            <div class="project-content">
+                这是一段测试文本，用来展示当内容写满当前页面后，会自动跳转到下一页的左边，或者生成全新的页面。
+            </div>
+        </div>
+
     </div>
 
-
-    <div class="ancient-page">
-        <div class="inner-border-box"></div>
-
-        <div class="banxin-container">
-            <div class="thick-line"></div>
-            <div class="banxin-name">李韵天</div>
-            <div class="bottom-lines-wrapper">
-                <div class="thin-line"></div>
-                <div class="thick-line"></div>
-            </div>
-        </div>
-
-        <div class="content-area text-right-area">
-            
-            <div class="text-column">
-                <a href="#" class="project-title">项目标题叁</a>
-                <div class="project-content">
-                    关于货币政策的历史演变，基于面板数据的实证研究。
-                </div>
-            </div>
-
-            <div class="text-column">
-                <a href="#" class="project-title">项目标题肆</a>
-                <div class="project-content">
-                    制度经济学视角的思考，工作论文草稿。
-                </div>
-            </div>
-        </div>
-
-        <div class="content-area text-left-area">
-            <div class="text-column">
-                <a href="#" class="project-title">项目标题伍</a>
-                <div class="project-content">
-                    关于动态随机一般均衡模型，代码库与数据集。
-                </div>
-            </div>
-        </div>
-
-        <div class="nushu-stamp">
-            <a href="index.html">
-                <img src="https://raw.githubusercontent.com/YuntianAyniLI/YuntianAyniLI.github.io/main/NametaginNyuShu.png" alt="English" class="nushu-img">
-            </a>
-        </div>
-    </div>
+    <div id="book-container"></div>
 
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            // 选择所有列，脚本会自动递归处理里面的文本
-            const columns = document.querySelectorAll('.text-column');
-            columns.forEach(node => {
-                stylePunctuation(node);
-            });
+            layoutBook();
+            styleAllPunctuation();
+        });
+
+        function layoutBook() {
+            const source = document.getElementById('source-content');
+            const bookContainer = document.getElementById('book-container');
+            const blocks = Array.from(source.children); // 获取所有内容块
+
+            // 页面模板生成器
+            function createNewPage() {
+                const page = document.createElement('div');
+                page.className = 'ancient-page';
+                page.innerHTML = `
+                    <div class="inner-border-box"></div>
+                    <div class="banxin-container">
+                        <div class="thick-line"></div>
+                        <div class="banxin-name">李韵天</div>
+                        <div class="bottom-lines-wrapper">
+                            <div class="thin-line"></div>
+                            <div class="thick-line"></div>
+                        </div>
+                    </div>
+                    <div class="content-half content-right"></div>
+                    <div class="content-half content-left"></div>
+                    <div class="nushu-stamp">
+                        <a href="index.html">
+                            <img src="https://raw.githubusercontent.com/YuntianAyniLI/YuntianAyniLI.github.io/main/NametaginNyuShu.png" alt="English" class="nushu-img">
+                        </a>
+                    </div>
+                `;
+                bookContainer.appendChild(page);
+                return page;
+            }
+
+            // 初始化第一页
+            let currentPage = createNewPage();
+            let currentRight = currentPage.querySelector('.content-right');
+            let currentLeft = currentPage.querySelector('.content-left');
             
-            function stylePunctuation(node) {
+            // 填充逻辑
+            blocks.forEach(block => {
+                // 克隆节点
+                const node = block.cloneNode(true);
+                
+                // 1. 尝试放入当前页右侧
+                currentRight.appendChild(node);
+                
+                // 检查是否溢出 (scrollWidth > clientWidth 说明内容超出了容器宽度)
+                // 注意：在 vertical-rl 模式下，横向溢出意味着列数太多了
+                if (checkOverflow(currentRight)) {
+                    // 溢出了，把它拿出来
+                    currentRight.removeChild(node);
+                    
+                    // 2. 尝试放入当前页左侧
+                    currentLeft.appendChild(node);
+                    
+                    if (checkOverflow(currentLeft)) {
+                        // 左侧也溢出了，拿出来
+                        currentLeft.removeChild(node);
+                        
+                        // 3. 创建新页面
+                        currentPage = createNewPage();
+                        currentRight = currentPage.querySelector('.content-right');
+                        currentLeft = currentPage.querySelector('.content-left');
+                        
+                        // 放入新页面的右侧
+                        currentRight.appendChild(node);
+                    }
+                }
+            });
+        }
+
+        // 检查容器是否横向溢出
+        function checkOverflow(container) {
+            // 给一点容差，防止只有一点点误差就换页
+            return container.scrollWidth > container.clientWidth + 2; 
+        }
+
+        // 标点自动处理脚本 (通用版)
+        function styleAllPunctuation() {
+            const wrappers = document.querySelectorAll('.content-block, .project-content');
+            
+            wrappers.forEach(container => {
+                processNode(container);
+            });
+
+            function processNode(node) {
                 if (node.nodeType === 3) { // 文本节点
                     const text = node.nodeValue;
                     const regex = /([，、。])/g; 
@@ -410,7 +378,6 @@
                             if (char === '。') {
                                 punctSpan.classList.add('punct-period');
                             } else {
-                                // 无论输入逗号还是顿号，统一使用瘦长左尖顿号
                                 punctSpan.classList.add('punct-dun');
                             }
                             
@@ -423,11 +390,10 @@
                         node.parentNode.replaceChild(fragment, node);
                     }
                 } else if (node.nodeType === 1 && node.nodeName !== 'SCRIPT' && node.nodeName !== 'A') {
-                    // 递归处理子元素，跳过A标签
-                    Array.from(node.childNodes).forEach(stylePunctuation);
+                    Array.from(node.childNodes).forEach(processNode);
                 }
             }
-        });
+        }
     </script>
 </body>
 </html>
