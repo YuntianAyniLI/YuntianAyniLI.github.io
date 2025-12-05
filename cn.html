@@ -20,7 +20,7 @@
         --theme-purple: #500650; 
         --theme-red: #d43628;    
         --paper-bg: #fdfbf7;     
-        --outer-border: 4px;     
+        --outer-border: 4px;     /* 外框粗细 */
         --inner-border: 1px;     
         --char-spacing: 0.45em;  
         --col-gap: 3.5em;        
@@ -33,24 +33,21 @@
         background-color: var(--paper-bg); 
         font-family: 'ZYSongKeBen', "Times New Roman", serif;
         
-        /* 【核心修改】改为垂直方向 */
+        /* 垂直排列页面 */
         display: flex;
         flex-direction: column; 
         align-items: center; /* 水平居中 */
         
-        /* 恢复正常的网页垂直滚动 */
         overflow-y: auto; 
         overflow-x: hidden;
         min-height: 100vh;
         
-        /* 页面上下的间距 */
         gap: 60px; 
-        padding: 60px 0; /* 给第一页上面和最后一页下面留白 */
+        padding: 60px 0; 
     }
 
     /* ================= 4. 页面容器 (16:9) ================= */
     .ancient-page {
-        /* 固定高度或宽度，这里以高度为基准保持 16:9 */
         height: 85vh; 
         aspect-ratio: 16 / 9; 
         
@@ -59,7 +56,7 @@
         flex-shrink: 0; 
         
         border: var(--outer-border) solid var(--theme-purple); 
-        box-shadow: 0 10px 40px rgba(80, 6, 80, 0.15); /* 加强阴影，体现层叠感 */
+        box-shadow: 0 20px 50px rgba(80, 6, 80, 0.1); 
         box-sizing: border-box;
     }
 
@@ -72,7 +69,7 @@
         z-index: 1;
     }
 
-    /* ================= 6. 版心 (上下粗横线) ================= */
+    /* ================= 6. 版心 (锋利横线) ================= */
     .banxin-container {
         writing-mode: horizontal-tb;
         position: absolute;
@@ -84,14 +81,15 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        gap: 0.8em; 
+        gap: 0.6em; /* 字与线的距离 */
     }
 
+    /* 【修改点】横线样式：变细、变锋利 */
     .thick-line {
         width: 3.5em; 
-        height: 6px;  
+        height: var(--outer-border); /* 与外边框一样粗 (4px) */
         background-color: var(--theme-purple);
-        border-radius: 2px;
+        border-radius: 0; /* 锋利直角，不要圆角 */
     }
 
     .banxin-name {
@@ -103,7 +101,7 @@
         padding: 0.2em 0;
     }
 
-    /* ================= 7. 内容区域 (严格分列) ================= */
+    /* ================= 7. 内容区域 ================= */
     .content-area {
         position: absolute;
         top: 10vh; bottom: 10vh; 
@@ -118,6 +116,7 @@
         align-items: flex-start;
     }
 
+    /* 列样式 */
     .text-column {
         font-size: 2.0vh;
         line-height: 2.2; 
@@ -127,8 +126,19 @@
         position: relative; 
     }
 
-    .text-right-area { right: 8vh; padding-right: 2vh; }
-    .text-left-area { left: 15vh; }
+    /* 右侧区域 (Vertical-RL 的起始区域) */
+    .text-right-area { 
+        right: 8vh; 
+        padding-right: 2vh; 
+        /* 限制宽度，防止撞到版心 */
+        max-width: 35%;
+    }
+
+    /* 左侧区域 (Vertical-RL 的结束区域) */
+    .text-left-area { 
+        left: 15vh; 
+        max-width: 35%;
+    }
 
     /* ================= 8. 文本样式细节 ================= */
     .section-title {
@@ -157,36 +167,42 @@
         margin: 0 0.2em;
     }
 
-    /* ================= 9. 旁注标点 ================= */
+    /* ================= 9. 旁注标点 (完美对齐版) ================= */
     .punct-wrapper {
         position: relative;
         display: inline;
         width: 0; height: 0;
     }
 
+    /* 通用标点定位基础 */
     .punct {
         position: absolute;
-        font-family: "SimSun", serif; 
-        color: var(--theme-red);
-        font-weight: bold;
-        left: 0.8em;  
-        top: 0.3em;   
-        white-space: nowrap;
+        
+        /* 【核心修改】统一大小和位置 */
+        width: 0.45em;  /* 统一宽度 */
+        height: 0.45em; /* 统一高度 */
+        
+        /* 统一坐标：确保它们在列的右侧完全对齐 */
+        left: 0.85em;   
+        top: 0.5em;     
+        
         pointer-events: none;
         z-index: 20;
     }
 
+    /* 顿号：实心菱形 (CSS绘制) */
     .punct-dun {
-        font-size: 1.4em; 
+        background-color: var(--theme-red); /* 实心 */
+        transform: rotate(45deg); /* 旋转正方形变成菱形 */
+        /* 不再依赖字体，完全几何化 */
     }
 
+    /* 句号：空心圆 (CSS绘制) */
     .punct-period {
-        width: 0.45em; height: 0.45em;
-        border: 2px solid var(--theme-red);
-        border-radius: 50%;
-        box-sizing: border-box;
-        top: 0.5em; 
-        left: 0.9em;
+        border: 2px solid var(--theme-red); /* 空心线框 */
+        border-radius: 50%; /* 圆形 */
+        background-color: transparent;
+        box-sizing: border-box; /* 边框计入大小 */
     }
 
     /* ================= 10. 女书图片 ================= */
@@ -206,15 +222,12 @@
     /* ================= 11. 移动端适配 ================= */
     @media screen and (max-aspect-ratio: 1/1) {
         body { 
-            padding: 20px 0; /* 手机上减小上下边距 */
+            padding: 20px 0; 
             gap: 20px;
         }
         .ancient-page { 
-            /* 手机上保持横向比例可能会太小，如果字看不清，可以调整高度 */
             height: auto; 
-            width: 95vw; /* 占满屏幕宽度 */
-            aspect-ratio: 9/16; /* 手机上竖过来显示？或者保持 16/9 但允许缩小 */
-            /* 建议：为了保持版式，手机上最好还是横屏看，或者这里我们强制宽大于高 */
+            width: 95vw; 
             aspect-ratio: 16/9;
         }
     }
@@ -291,9 +304,7 @@
         </div>
 
         <div class="content-area text-right-area">
-             </div>
-
-        <div class="content-area text-left-area">
+            
             <div class="text-column">
                 <a href="#">** 项目标题叁 **</a>
                 <br>
@@ -311,7 +322,9 @@
                     工作论文草稿
                 </span>
             </div>
+        </div>
 
+        <div class="content-area text-left-area">
             <div class="text-column">
                 <a href="#">** 项目标题伍 **</a>
                 <br>
@@ -356,7 +369,7 @@
                             if (char === '。') {
                                 punctSpan.classList.add('punct-period');
                             } else {
-                                punctSpan.textContent = '、'; 
+                                // 无论输入逗号还是顿号，统一显示为 CSS 绘制的实心顿号
                                 punctSpan.classList.add('punct-dun');
                             }
                             
