@@ -9,7 +9,7 @@
     /* ================= 字体加载 ================= */
     @font-face {
         font-family: 'ZYSongKeBen';
-        /* 请确保路径正确 */
+        /* 请确保 fonts 文件夹和 cn.html 在同一级目录 */
         src: url('fonts/ZYSongKeBen.otf') format('opentype');
         font-weight: normal;
         font-style: normal;
@@ -23,157 +23,130 @@
         --paper-bg: #fdfbf7;     /* 仿宣纸底色 */
         --line-width: 1px;       /* 内框线细 */
         --border-width: 4px;     /* 外框线粗 */
+        
+        /* 间距控制 */
+        --char-spacing: 0.35em;  /* 字与字的垂直间距 (调整为宽松) */
     }
 
     body {
         margin: 0;
         padding: 0;
-        background-color: #e0e0e0; /* 网页背景灰，突出纸张 */
+        /* 【修改点1】背景色改为和纸张一样，去除灰色背景 */
+        background-color: var(--paper-bg); 
         font-family: 'ZYSongKeBen', "Times New Roman", serif;
-        /* 允许横向滚动 */
         overflow-x: auto; 
-        overflow-y: hidden; /* 隐藏纵向滚动 */
+        overflow-y: hidden; 
         height: 100vh;
         display: flex;
-        align-items: center; /* 垂直居中 */
-        justify-content: center; /* 【修改点】水平居中，解决错位问题 */
+        align-items: center; 
+        justify-content: center; 
     }
 
     /* ================= 古籍页面容器 (The Paper) ================= */
     .ancient-page {
-        /* 【修改点】使用 aspect-ratio 精确锁定 A4 横向比例 */
         height: 90vh; 
         aspect-ratio: 1.414 / 1; 
-        
         background-color: var(--paper-bg);
-        /* 【修改点】使用 auto 让它在水平方向自动居中 */
         margin: auto; 
         position: relative;
-        box-shadow: 5px 5px 15px rgba(0,0,0,0.2);
+        /* 移除阴影，因为背景色融为一体了，或者保留微弱阴影增加立体感 */
+        box-shadow: 0 0 20px rgba(0,0,0,0.05);
         
-        /* 核心：双重边框 */
-        border: var(--border-width) solid var(--theme-purple); /* 外粗框 */
+        /* 外粗框 */
+        border: var(--border-width) solid var(--theme-purple); 
         box-sizing: border-box;
-        padding: 10px; /* 外框与内框的距离 */
         
         /* 弹性布局，用于放置内部内容 */
         display: flex;
-        flex-direction: row-reverse; /* 竖排从右向左 */
-        flex-shrink: 0; /* 防止在移动端被挤压 */
+        flex-direction: row-reverse; 
+        flex-shrink: 0; 
     }
 
-    /* 内边框容器 */
+    /* ================= 内边框容器 (修复溢出问题) ================= */
+    /* 【修改点3】改用绝对定位，确保内边框严格在内 */
     .inner-border {
-        width: 100%;
-        height: 100%;
+        position: absolute;
+        top: 12px;    /* 距离上外框的距离 */
+        bottom: 12px; /* 距离下外框的距离 */
+        left: 12px;
+        right: 12px;
+        
         border: var(--line-width) solid var(--theme-purple); /* 内细框 */
         
-        /* ================= 核心排版引擎 ================= */
-        writing-mode: vertical-rl; /* 竖排：从右向左 */
-        text-orientation: upright; /* 汉字直立 */
+        /* 排版引擎 */
+        writing-mode: vertical-rl; 
+        text-orientation: upright; 
         
-        padding: 3vh 4vh; /* 版心内边距 */
-        font-size: 2.8vh; /* 随屏幕高度调整字号 */
-        line-height: 2;   /* 行间距宽松 */
-        color: black;     /* 正文默认黑色 */
+        padding: 3vh 4vh; 
+        
+        /* 【修改点5】字体缩小，字间距加大 */
+        font-size: 2.2vh; /* 原 2.8vh -> 缩小 */
+        line-height: 2.2; /* 行距 */
+        letter-spacing: var(--char-spacing); /* 字间距加大 */
+        
+        color: black;    
     }
 
-    /* ================= 版心 (Banxin) ================= */
+    /* ================= 版心 (Banxin) - 样式重制 ================= */
     .banxin-wrapper {
         height: 100%;
         display: flex;
         flex-direction: column;
-        justify-content: center;
+        justify-content: center; /* 垂直居中 */
         align-items: center;
-        margin-left: 3em; /* 增加一点间距 */
-        margin-right: 3em;
+        margin-left: 3.5em; 
+        margin-right: 3.5em;
     }
 
-    /* 【修改点】全新的版心样式 */
+    /* 【修改点4】参考红框图片：简单的长方框，无花哨遮罩 */
     .banxin-text {
-        font-size: 1.5em; /* 字号加大，更显庄重 */
+        /* 字体大小与标题一致或稍大 */
+        font-size: 1.4em; 
         color: var(--theme-purple);
-        letter-spacing: 0.6em;
         font-weight: bold;
         
-        position: relative;
-        /* 为上下装饰留出空间 */
-        padding-top: 1.2em;
-        padding-bottom: 1.2em;
-    }
-
-    /* 利用伪元素制作上下花样装饰 */
-    .banxin-text::before,
-    .banxin-text::after {
-        content: "";
-        position: absolute;
-        left: 50%;
-        transform: translateX(-50%);
-        /* 装饰的宽度和高度 */
-        width: 140%; 
-        height: 0.8em;
-        background-color: var(--theme-purple);
+        /* 核心样式：细实线框 */
+        border: 1px solid var(--theme-purple);
+        padding: 1.5em 0.3em; /* 拉长高度，收紧宽度 */
         
-        /* 【核心技巧】使用 CSS Mask 遮罩来雕刻出花纹形状
-           原理：用径向渐变在矩形上“挖”出两个圆弧缺口
-        */
-        --mask-bg: radial-gradient(circle at center, transparent 35%, black 36%);
-        -webkit-mask-image: var(--mask-bg);
-        mask-image: var(--mask-bg);
-        -webkit-mask-size: 50% 100%; /* 左右各一个圆 */
-        mask-size: 50% 100%;
-        -webkit-mask-repeat: no-repeat;
-        mask-repeat: no-repeat;
-    }
-
-    /* 顶部装饰 */
-    .banxin-text::before {
-        top: 0;
-        /* 圆心定位在底部边缘，形成上方的凹陷花纹 */
-        -webkit-mask-position: bottom left, bottom right;
-        mask-position: bottom left, bottom right;
-    }
-
-    /* 底部装饰 */
-    .banxin-text::after {
-        bottom: 0;
-        /* 圆心定位在顶部边缘，形成下方的凹陷花纹（镜像） */
-        -webkit-mask-position: top left, top right;
-        mask-position: top left, top right;
+        /* 如果需要那个“红框图”里的双线效果，可以用 outline */
+        /* outline: 1px solid var(--theme-purple); outline-offset: 2px; */
+        
+        background-color: transparent; /* 填充透明（即纸色） */
+        letter-spacing: 0.6em;
     }
 
     /* ================= 文本样式 ================= */
-    h2 {
+    
+    /* 【修改点2】统一“你好”和“创作”的样式 */
+    .section-title {
         font-weight: bold;
-        color: black;
+        font-size: 1.3em; /* 统一字号 */
+        color: var(--theme-purple); /* 统一深紫色 */
         margin: 0;
-        margin-left: 1em;
+        margin-left: 1em; /* 标题顶格留空 */
+        display: inline-block; /* 保持整块 */
     }
 
+    /* 链接样式 */
     a {
         text-decoration: none;
         color: black;
-        border-bottom: 1px solid transparent;
         transition: color 0.3s;
     }
     a:hover {
         color: var(--theme-purple);
     }
 
-    .big-bold {
-        font-weight: bold;
-        font-size: 1.2em;
-        color: var(--theme-purple);
-    }
-
     /* ================= 割注/双行夹注 ================= */
     .ge-zhu {
         display: inline-block;
-        font-size: 0.55em;
-        line-height: 1.3;
+        font-size: 0.6em; /* 随主字号缩小而缩小 */
+        line-height: 1.2;
         color: var(--theme-purple);
         vertical-align: middle;
-        margin: 0 0.2em;
+        margin: 0 0.3em; /* 上下留白也稍微增加 */
+        letter-spacing: 0; /* 割注内部字间距不用太大，否则太散 */
     }
 
     /* ================= 自动标点样式 ================= */
@@ -214,20 +187,19 @@
 
     /* ================= 移动端适配 ================= */
     @media screen and (max-aspect-ratio: 1/1) {
-        /* 手机竖屏时 */
         body {
-            /* 恢复从左开始，方便滑动查看超宽的纸张 */
-            justify-content: flex-start; 
+            justify-content: flex-start; /* 允许左侧开始滑动 */
+            background-color: var(--paper-bg);
         }
         .ancient-page {
             height: 80vh;      
-            /* 保持横向 A4 比例 */
             aspect-ratio: 1.414 / 1;
-            /* 左右留白，初始居中 */
             margin: 0 20px; 
+            /* 移动端恢复一点阴影以便区分 */
+            box-shadow: 0 0 10px rgba(0,0,0,0.1); 
         }
         .inner-border {
-            font-size: 2vh;
+            font-size: 1.8vh; /* 移动端再小一点 */
             padding: 2vh;
         }
         .switch-img {
@@ -242,7 +214,7 @@
         <div class="inner-border" id="text-content">
             
             <div style="margin-left: 1em;">
-                <span class="big-bold">你好</span>
+                <span class="section-title">你好</span>
                 <br><br>
                 <span>
                     目前是斯德哥尔摩大学经济学博士生。
@@ -262,9 +234,8 @@
             </div>
 
             <div style="margin-left: 1em;">
-                <h2>创作</h2>
-                <br>
-                <div>
+                <span class="section-title">创作</span>
+                <br><br> <div>
                     <a href="#">** 项目标题壹 **</a>
                     <br>
                     <span class="ge-zhu">
