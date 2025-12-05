@@ -9,7 +9,7 @@
     /* ================= 字体加载 ================= */
     @font-face {
         font-family: 'ZYSongKeBen';
-        /* 请确保路径正确，如果 cn.html 和 fonts 文件夹在同一级 */
+        /* 请确保路径正确 */
         src: url('fonts/ZYSongKeBen.otf') format('opentype');
         font-weight: normal;
         font-style: normal;
@@ -32,22 +32,22 @@
         font-family: 'ZYSongKeBen', "Times New Roman", serif;
         /* 允许横向滚动 */
         overflow-x: auto; 
-        overflow-y: hidden; /* 隐藏纵向滚动，强制横向体验 */
+        overflow-y: hidden; /* 隐藏纵向滚动 */
         height: 100vh;
         display: flex;
         align-items: center; /* 垂直居中 */
-        justify-content: flex-start; /* 从左开始 */
+        justify-content: center; /* 【修改点】水平居中，解决错位问题 */
     }
 
     /* ================= 古籍页面容器 (The Paper) ================= */
     .ancient-page {
-        /* A4 横向比例：297mm x 210mm -> 约 1.414 比例 */
-        /* 设定固定高度适配屏幕，宽度自动延伸 */
+        /* 【修改点】使用 aspect-ratio 精确锁定 A4 横向比例 */
         height: 90vh; 
-        min-width: 127vh; /* height * 1.414 */
+        aspect-ratio: 1.414 / 1; 
         
         background-color: var(--paper-bg);
-        margin: 0 40px; /* 页面之间的间距 */
+        /* 【修改点】使用 auto 让它在水平方向自动居中 */
+        margin: auto; 
         position: relative;
         box-shadow: 5px 5px 15px rgba(0,0,0,0.2);
         
@@ -58,7 +58,8 @@
         
         /* 弹性布局，用于放置内部内容 */
         display: flex;
-        flex-direction: row-reverse; /* 因为是竖排，DOM流顺序反转方便管理，或者直接用 writing-mode */
+        flex-direction: row-reverse; /* 竖排从右向左 */
+        flex-shrink: 0; /* 防止在移动端被挤压 */
     }
 
     /* 内边框容器 */
@@ -73,120 +74,131 @@
         
         padding: 3vh 4vh; /* 版心内边距 */
         font-size: 2.8vh; /* 随屏幕高度调整字号 */
-        line-height: 2;   /* 行间距宽松，方便夹注和标点 */
+        line-height: 2;   /* 行间距宽松 */
         color: black;     /* 正文默认黑色 */
     }
 
     /* ================= 版心 (Banxin) ================= */
     .banxin-wrapper {
-        /* 版心独立占一列，位于视觉中心 */
         height: 100%;
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        border-left: 0px solid transparent; /* 如果需要鱼尾纹可在此加背景图 */
-        margin-left: 2em; /* 与左侧内容的间距 */
-        margin-right: 2em; /* 与右侧内容的间距 */
+        margin-left: 3em; /* 增加一点间距 */
+        margin-right: 3em;
     }
 
+    /* 【修改点】全新的版心样式 */
     .banxin-text {
-        font-size: 0.8em;
+        font-size: 1.5em; /* 字号加大，更显庄重 */
         color: var(--theme-purple);
-        letter-spacing: 0.5em;
-        border: 1px solid var(--theme-purple);
-        padding: 1em 0.2em;
-        background-color: var(--paper-bg); /* 遮盖背景线 */
+        letter-spacing: 0.6em;
+        font-weight: bold;
+        
+        position: relative;
+        /* 为上下装饰留出空间 */
+        padding-top: 1.2em;
+        padding-bottom: 1.2em;
+    }
+
+    /* 利用伪元素制作上下花样装饰 */
+    .banxin-text::before,
+    .banxin-text::after {
+        content: "";
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        /* 装饰的宽度和高度 */
+        width: 140%; 
+        height: 0.8em;
+        background-color: var(--theme-purple);
+        
+        /* 【核心技巧】使用 CSS Mask 遮罩来雕刻出花纹形状
+           原理：用径向渐变在矩形上“挖”出两个圆弧缺口
+        */
+        --mask-bg: radial-gradient(circle at center, transparent 35%, black 36%);
+        -webkit-mask-image: var(--mask-bg);
+        mask-image: var(--mask-bg);
+        -webkit-mask-size: 50% 100%; /* 左右各一个圆 */
+        mask-size: 50% 100%;
+        -webkit-mask-repeat: no-repeat;
+        mask-repeat: no-repeat;
+    }
+
+    /* 顶部装饰 */
+    .banxin-text::before {
+        top: 0;
+        /* 圆心定位在底部边缘，形成上方的凹陷花纹 */
+        -webkit-mask-position: bottom left, bottom right;
+        mask-position: bottom left, bottom right;
+    }
+
+    /* 底部装饰 */
+    .banxin-text::after {
+        bottom: 0;
+        /* 圆心定位在顶部边缘，形成下方的凹陷花纹（镜像） */
+        -webkit-mask-position: top left, top right;
+        mask-position: top left, top right;
     }
 
     /* ================= 文本样式 ================= */
-    
-    /* 标题 */
-    h1, h2, h3 {
+    h2 {
         font-weight: bold;
         color: black;
         margin: 0;
-        margin-left: 1em; /* 标题前的空白 */
+        margin-left: 1em;
     }
 
-    /* 链接样式 - 去掉下划线，保持黑色 */
     a {
         text-decoration: none;
         color: black;
-        border-bottom: 1px solid transparent; /* 预留 */
+        border-bottom: 1px solid transparent;
         transition: color 0.3s;
     }
     a:hover {
         color: var(--theme-purple);
     }
 
-    /* 重点强调色（深紫） */
-    .purple-text {
-        color: var(--theme-purple);
-    }
-
-    /* 大号加粗（用于“你好”） */
     .big-bold {
         font-weight: bold;
         font-size: 1.2em;
         color: var(--theme-purple);
     }
 
-    /* ================= 割注/双行夹注 (The Warichu) ================= */
-    /* 用法：<span class="ge-zhu">第一行内容<br>第二行内容</span> */
+    /* ================= 割注/双行夹注 ================= */
     .ge-zhu {
-        display: inline-block; /* 变为块级盒子 */
-        font-size: 0.55em;     /* 字号缩小约一半 */
-        line-height: 1.3;      /* 行距收紧 */
+        display: inline-block;
+        font-size: 0.55em;
+        line-height: 1.3;
         color: var(--theme-purple);
         vertical-align: middle;
-        
-        /* 这里的逻辑是：在竖排模式下，block内文字默认是从右向左换行 
-           所以我们只要限制这个inline-block的“高度”（逻辑上的宽度），
-           就可以迫使它换行。但更精准的方法是让用户手动加 <br> 换列。
-           或者使用 Flexbox 让它强制两列。
-        */
-        margin: 0 0.2em; /* 上下留白 */
+        margin: 0 0.2em;
     }
 
-    /* ================= 自动标点样式 (JS生成) ================= */
+    /* ================= 自动标点样式 ================= */
     .punct {
-        color: var(--theme-red); /* 朱红 */
+        color: var(--theme-red);
         font-weight: bold;
-        font-family: "Times New Roman", serif; /* 符号形状更好看 */
-        
-        /* 位置微调：根据字体特性可能需要调整 translate 值 */
-        /* 在 vertical-rl 模式下：
-           X轴是水平（垂直于行），Y轴是垂直（平行于行）
-           我们需要把它往左推（下一行的方向），或者往右推？
-           古籍标点通常在字的右下角或正中间偏移。
-        */
+        font-family: "Times New Roman", serif;
         position: relative;
-        left: -0.2em; /* 往左偏移，挂在字旁边 */
+        left: -0.2em;
         top: 0.1em;
-        
-        /* 放大 */
         font-size: 1.1em; 
-    }
-    
-    /* 句号变成空心圆 */
-    .punct-period {
-        /* 使用 CSS 替换内容，或依赖字体。这里强制用空心圆字符 */
     }
 
     /* ================= 女书切换按钮 ================= */
     .switch-btn-container {
-        /* 强制放置在最左侧（逻辑流的最后） */
         display: flex;
         flex-direction: column;
         justify-content: flex-end;
         align-items: center;
-        padding-top: 50px; /* 距离底部（视觉左侧） */
+        padding-top: 50px;
         margin-left: 2em;
     }
 
     .switch-img {
-        width: 3vw; /* 随屏幕缩放 */
+        width: 3vw;
         max-width: 60px;
         cursor: pointer;
         opacity: 0.8;
@@ -202,14 +214,20 @@
 
     /* ================= 移动端适配 ================= */
     @media screen and (max-aspect-ratio: 1/1) {
-        /* 竖屏设备（手机） */
+        /* 手机竖屏时 */
+        body {
+            /* 恢复从左开始，方便滑动查看超宽的纸张 */
+            justify-content: flex-start; 
+        }
         .ancient-page {
-            height: 80vh;      /* 稍微留点空隙 */
-            min-width: 113vh;  /* 保持比例 */
-            margin: 0 10px;
+            height: 80vh;      
+            /* 保持横向 A4 比例 */
+            aspect-ratio: 1.414 / 1;
+            /* 左右留白，初始居中 */
+            margin: 0 20px; 
         }
         .inner-border {
-            font-size: 2vh;    /* 手机上字号相对调小 */
+            font-size: 2vh;
             padding: 2vh;
         }
         .switch-img {
@@ -225,7 +243,8 @@
             
             <div style="margin-left: 1em;">
                 <span class="big-bold">你好</span>
-                <br><br> <span>
+                <br><br>
+                <span>
                     目前是斯德哥尔摩大学经济学博士生。
                     <span class="ge-zhu">此处为<br>个人简介</span>
                     在此之前，我于2024年获得中国人民大学经济学（金融方向）
@@ -245,23 +264,12 @@
             <div style="margin-left: 1em;">
                 <h2>创作</h2>
                 <br>
-                
                 <div>
-                    <a href="project1-link.html">** 项目标题壹 **</a>
+                    <a href="#">** 项目标题壹 **</a>
                     <br>
                     <span class="ge-zhu">
                         此处为项目壹的简短摘要<br>
                         关于宏观经济模型的讨论
-                    </span>
-                </div>
-                <br>
-
-                <div>
-                    <a href="project2-link.html">** 项目标题贰 **</a>
-                    <br>
-                    <span class="ge-zhu">
-                        此处为项目贰的摘要<br>
-                        关于政治经济学的分析
                     </span>
                 </div>
             </div>
@@ -278,45 +286,24 @@
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             const container = document.getElementById('text-content');
-            
-            // 递归遍历所有文本节点
             function stylePunctuation(node) {
-                if (node.nodeType === 3) { // 文本节点
+                if (node.nodeType === 3) {
                     const text = node.nodeValue;
-                    // 正则匹配标点：逗号，句号，顿号
-                    // 注意：这里我们把 句号 替换为特殊的空心圆符号 '〇' 或 '。' 配合样式
-                    // 现在的字体 ZYSongKeBen 可能自带很好的句号，我们先只改变颜色和大小
-                    
-                    // 匹配规则：逗号(，)、句号(。)、顿号(、)
                     const regex = /([，。、])/g;
-                    
                     if (regex.test(text)) {
-                        const span = document.createElement('span');
-                        // 替换逻辑
                         const newHtml = text.replace(regex, function(match) {
-                            // 将实心句号换成空心圆(如果需要)，或者保持原样只加样式
                             let char = match;
-                            if(match === '。') char = '〇'; // 强制用空心字符，或者用 '。'
-                            
-                            // 顿号/逗号使用粗样式
-                            let className = 'punct';
-                            
-                            return `<span class="${className}">${char}</span>`;
+                            if(match === '。') char = '〇';
+                            return `<span class="punct">${char}</span>`;
                         });
-                        
-                        // 这是一个比较暴力的替换，可能会破坏纯文本结构，但在展示页没问题
-                        // 为了安全，我们只对非 script/style 标签内的文本操作
                         const wrapper = document.createElement('span');
                         wrapper.innerHTML = newHtml;
                         node.parentNode.replaceChild(wrapper, node);
                     }
                 } else if (node.nodeType === 1 && node.nodeName !== 'SCRIPT' && node.nodeName !== 'STYLE' && node.nodeName !== 'A') {
-                    // 递归处理子节点，跳过链接内部以免打断链接（可选）
-                    // 这里我们继续处理子节点
                     Array.from(node.childNodes).forEach(stylePunctuation);
                 }
             }
-
             stylePunctuation(container);
         });
     </script>
