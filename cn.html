@@ -6,316 +6,374 @@
     <title>李韵天 | Yuntian LI</title>
     
     <style>
-    /* ================= 字体加载 ================= */
+    /* ================= 1. 字体加载 ================= */
     @font-face {
         font-family: 'ZYSongKeBen';
+        /* 确保 fonts 文件夹在同级目录 */
         src: url('fonts/ZYSongKeBen.otf') format('opentype');
         font-weight: normal;
         font-style: normal;
         font-display: swap;
     }
 
-    /* ================= 全局变量 ================= */
+    /* ================= 2. 全局变量 ================= */
     :root {
-        --theme-purple: #500650; 
-        --theme-red: #d43628;    /* 朱红色：标点和红点 */
-        --paper-bg: #fdfbf7;     
+        --theme-purple: #500650; /* 主色调 */
+        --theme-red: #d43628;    /* 红点、标点 */
+        --paper-bg: #fdfbf7;     /* 纸张底色 */
         --border-width: 4px;     
-        --char-spacing: 0.4em;   /* 字间距适度 */
+        --char-spacing: 0.45em;  /* 字间距 */
     }
 
+    /* ================= 3. 基础布局 (滚动容器) ================= */
     body {
         margin: 0;
         padding: 0;
-        background-color: var(--paper-bg); 
+        background-color: #e0e0e0; /* 浏览器背景灰 */
         font-family: 'ZYSongKeBen', "Times New Roman", serif;
-        overflow-x: auto; 
-        overflow-y: hidden; 
-        height: 100vh;
+        
+        /* 允许横向排列多张纸 */
         display: flex;
-        align-items: center; 
-        justify-content: center; 
+        flex-direction: row; 
+        align-items: center;
+        
+        overflow-x: auto; /* 横向滚动 */
+        overflow-y: hidden;
+        height: 100vh;
+        
+        /* 纸张之间的间距 */
+        gap: 50px;
+        padding: 0 50px; /* 左右留白 */
     }
 
-    /* ================= 页面容器 ================= */
+    /* ================= 4. 单张页面 (The Sheet) ================= */
     .ancient-page {
+        /* 固定 A4 横向比例 */
         height: 90vh; 
         aspect-ratio: 1.414 / 1; 
         background-color: var(--paper-bg);
-        margin: auto; 
+        
+        /* 相对定位基准，所有绝对定位元素以此为界 */
         position: relative; 
-        /* 去掉外粗框？您说去掉外边框是在版心，页面整体的紫框要保留吗？
-           根据语境，您说“这样修改：去掉外边框...”，通常指页面整体的大框？
-           或者仅指版心？如果不想要页面的大方框，请把下面这行 border 注释掉。
-           暂时保留页面大框，仅去掉了版心的框。 */
+        flex-shrink: 0; /* 防止被挤压 */
+        
         border: var(--border-width) solid var(--theme-purple); 
+        box-shadow: 5px 5px 15px rgba(0,0,0,0.2);
         box-sizing: border-box;
     }
 
-    /* ================= 内边框容器 (绝对定位) ================= */
-    .inner-border {
+    /* ================= 5. 版心 (绝对居中 + 垂直堆叠) ================= */
+    /* 核心修正：使用水平书写模式容器来做垂直堆叠 */
+    .banxin-absolute {
         position: absolute;
-        top: 20px; bottom: 20px; left: 20px; right: 20px;
-        /* 如果您想让页面更干净，可以把下面这个内边框也设为 none */
-        border: 1px solid transparent; 
+        /* 绝对居中定位 */
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 10; /* 保证在最上层 */
         
-        writing-mode: vertical-rl; 
-        text-orientation: upright; 
-        
-        padding: 5vh 8vh; /* 左右留白增加，防止旁注标点溢出 */
-        
-        font-size: 2.0vh; 
-        line-height: 2.8; /* 行距必须宽，才能放得下右侧的标点 */
-        letter-spacing: var(--char-spacing); 
-        color: black;    
-    }
-
-    /* ================= 版心 (Curly Brace Style) ================= */
-    .banxin-wrapper {
-        height: 100%;
+        /* 强制内部为“水平-垂直堆叠”逻辑 */
+        writing-mode: horizontal-tb; 
         display: flex;
-        flex-direction: column; 
+        flex-direction: column; /* 上下排列：括号-名-括号 */
         align-items: center;
-        justify-content: center; 
-        margin-left: 6em; 
-        margin-right: 6em;
-    }
-
-    /* 版心容器：无边框 */
-    .banxin-container {
-        width: 3em; 
-        display: flex;
-        flex-direction: column;
-        justify-content: center; 
-        align-items: center;
-        position: relative;
+        justify-content: center;
+        
+        /* 宽度限制，防止占位太宽 */
+        width: 4em;
     }
 
     /* 花括号通用样式 */
     .curly-brace {
-        font-family: "Times New Roman", serif; /* 衬线体的括号更好看 */
-        font-size: 3em; /* 括号要大 */
+        font-family: "Times New Roman", serif; /* 衬线体括号更优美 */
+        font-size: 3.5em; /* 足够大 */
         color: var(--theme-purple);
-        line-height: 1;
+        line-height: 0.6; /* 压缩行高，让它扁一点 */
         position: relative;
-        height: 0.5em; /* 压缩高度，让它扁一点 */
-        width: 1em;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        overflow: visible;
     }
 
-    /* 这里的逻辑是：文字本身是竖排的，我们插入一个横向的括号字符，然后旋转它 */
-
-    /* 上括号 (其实是左大括号 { 顺时针转90度) */
+    /* 上括号：旋转90度 (开口向下/向内) */
     .curly-brace.top {
-        transform: rotate(90deg) scaleX(1.5); /* 拉长一点 */
-        margin-bottom: 0.5em;
+        transform: rotate(90deg) scaleY(1.5); /* 视觉拉长 */
+        margin-bottom: 0.2em;
     }
-
-    /* 下括号 (其实是左大括号 { 逆时针转90度 或 右大括号转) */
+    
+    /* 下括号：旋转-90度 (开口向上/向内) */
     .curly-brace.bottom {
-        transform: rotate(-90deg) scaleX(1.5);
-        margin-top: 0.5em;
+        transform: rotate(-90deg) scaleY(1.5);
+        margin-top: 0.2em;
     }
 
-    /* 红点点 (Red Dot) */
-    .curly-brace::after {
+    /* 红点：使用伪元素绘制 */
+    .curly-brace::before {
         content: '';
         position: absolute;
-        /* 定位在括号的尖尖上 */
-        left: -0.3em; /* 因为旋转了，坐标系变了，微调这个值 */
-        top: 50%;
-        transform: translateY(-50%);
-        
-        width: 6px;
-        height: 6px;
+        width: 5px;
+        height: 5px;
         background-color: var(--theme-red);
         border-radius: 50%;
-        z-index: 2;
+        
+        /* 定位在括号的“背部”中心 */
+        left: -10px; 
+        top: 50%;
+        transform: translateY(-50%);
     }
 
-    /* 版心文字 */
-    .banxin-text {
-        writing-mode: vertical-rl; 
-        font-size: 1.6em; /* 字号加大 */
+    /* 版心名字：单独设为竖排 */
+    .banxin-name {
+        writing-mode: vertical-rl;
+        font-size: 1.8em;
         font-weight: bold;
-        color: var(--theme-purple); 
-        letter-spacing: 0.8em; /* 字拉开 */
-        padding: 1em 0;
+        color: var(--theme-purple);
+        letter-spacing: 0.6em;
+        padding: 0.5em 0; /* 上下留白 */
     }
 
-    /* ================= 文本样式 ================= */
+
+    /* ================= 6. 正文内容区域 (左右分列) ================= */
+    .content-layer {
+        position: absolute;
+        top: 0; bottom: 0; left: 0; right: 0;
+        padding: 6vh 6vh;
+        
+        /* 竖排布局 */
+        writing-mode: vertical-rl;
+        text-orientation: upright;
+        
+        /* 让内容从右向左自然流动，遇到中间的版心会自动遮挡吗？
+           不会，绝对定位的版心浮在上面。
+           我们需要手动把内容分成“右半部分”和“左半部分”吗？
+           为了避开中间的版心，最简单的办法是用 margin 或者 padding 隔开。
+           或者，我们可以利用 flex 的 gap。
+           
+           这里采用 Flex 布局管理左右两块内容。
+        */
+        display: flex;
+        flex-direction: column; /* 竖排的主轴是垂直的？不，vertical-rl 下 column 是横向排列... */
+        /* CSS 的 vertical-rl 比较反直觉。
+           最稳妥的方法：不依赖 Flex 自动避让，而是人工把内容分成两个 div。
+        */
+        align-content: space-between; /* 拉开左右距离 */
+    }
+
+    /* 通用文本容器 */
+    .text-column {
+        font-size: 2.0vh;
+        line-height: 2.8; /* 宽行距，给旁注留位 */
+        letter-spacing: var(--char-spacing);
+        color: black;
+        height: 100%;
+        /* 允许内部自动换行（列） */
+        display: block; 
+    }
+    
+    /* 右侧区域（你好...） */
+    .text-right-area {
+        /* 位于页面右侧 */
+        position: absolute;
+        right: 6vh;
+        top: 6vh;
+        bottom: 6vh;
+        /* 限制宽度，不要盖住版心 */
+        width: 35%; 
+        
+        writing-mode: vertical-rl;
+    }
+
+    /* 左侧区域（创作...） */
+    .text-left-area {
+        /* 位于页面左侧 */
+        position: absolute;
+        left: 15vh; /* 给女书图片留点空 */
+        top: 6vh;
+        bottom: 6vh;
+        /* 限制宽度，不要盖住版心 */
+        width: 35%; 
+        
+        writing-mode: vertical-rl;
+    }
+
+
+    /* ================= 7. 文本样式细节 ================= */
     .section-title {
         font-weight: bold;
         font-size: 1.3em;
         color: var(--theme-purple);
-        margin: 0;
-        margin-left: 1em; 
         display: inline-block;
+        margin-left: 0.5em; /* 标题顶格微调 */
     }
 
     a {
         text-decoration: none;
         color: black;
         transition: color 0.3s;
+        border-bottom: 1px dashed var(--theme-purple); /* 加个虚线更有质感 */
     }
     a:hover {
         color: var(--theme-purple);
+        border-bottom: 1px solid var(--theme-purple);
     }
 
     .ge-zhu {
         display: inline-block;
-        font-size: 0.6em; 
+        font-size: 0.6em;
         line-height: 1.2;
         color: var(--theme-purple);
         vertical-align: middle;
-        margin: 0 0.2em; 
+        margin: 0 0.2em;
     }
 
-    /* ================= 旁注标点 (Side-note Punctuation) ================= */
-    /* 关键：包装器不占据任何流空间 */
+
+    /* ================= 8. 旁注标点 (右侧悬挂) ================= */
     .punct-wrapper {
-        position: relative; 
-        display: inline;    
-        width: 0;           
-        height: 0;          
+        position: relative;
+        display: inline;
+        width: 0; height: 0;
     }
 
     .punct {
         position: absolute;
-        font-family: "SimSun", serif; /* 宋体 */
-        color: var(--theme-red); 
+        font-family: "SimSun", serif;
+        color: var(--theme-red);
         font-weight: bold;
         
-        /* 【核心定位】 */
-        /* right/left: 在竖排模式下，left 是推向下一行(左边)，Right 是推向上一行(右边)？
-           实测：writing-mode: vertical-rl 中：
-           CSS left 是物理左侧。
-           我们要把标点放到当前列的右侧（物理右侧）。
+        /* 在 vertical-rl 模式下：
+           top: 0 是字符顶部
+           left: 0 是字符左侧 (下一行方向)
+           我们需要放到右侧 (上一行方向) -> left 正值还是负值？
+           通常浏览器实现中，字宽约 1em。
+           left: 0.8em 会把标点推到字的“肚子”里或左边。
+           我们需要往“右”推。在 CSS vertical-rl 坐标系里，
+           物理右侧通常需要 left: 100% 或者 margin-left。
+           
+           这里我们用 left: 1em (字宽) + 额外偏移
         */
-        left: 0.7em;  /* 正值向右推 */
-        top: -0.5em;  /* 负值向上提（跟随上一个字） */
+        left: 1.2em;  /* 往物理右侧推 */
+        top: 0.2em;   /* 跟随当前字的高度 */
         
-        /* 避免点击干扰 */
-        pointer-events: none; 
         white-space: nowrap;
+        pointer-events: none;
     }
 
-    /* 顿号：大实心水滴 */
     .punct-dun {
-        font-size: 1.2em;
-        /* 旋转一下，让水滴形状更像手写 */
-        transform: scale(1.8) rotate(0deg); 
+        /* 实心大顿号 */
+        font-size: 1.5em; 
+        transform: rotate(180deg); /* 调整水滴方向，使其更像书写 */
     }
 
-    /* 句号：大空心圆 */
     .punct-period {
-        /* 不使用字符，直接画一个圆，保证是空心且线条清晰 */
-        width: 0.6em;
-        height: 0.6em;
-        border: 2px solid var(--theme-red); /* 线条粗细 */
+        /* 空心圆 */
+        width: 0.5em;
+        height: 0.5em;
+        border: 2px solid var(--theme-red);
         border-radius: 50%;
         box-sizing: border-box;
-        
-        /* 因为是画出来的框，需要微调位置 */
-        top: -0.2em; 
-        left: 0.8em;
+        top: 0.5em; /* 句号稍微往下沉一点 */
     }
 
-    /* ================= 按钮 ================= */
-    .switch-btn-container {
-        position: absolute; 
-        left: 20px;         
-        bottom: 20px;       
-        z-index: 10;
-        writing-mode: horizontal-tb; 
+
+    /* ================= 9. 女书图片 (固定左下角) ================= */
+    .nushu-stamp {
+        position: absolute;
+        left: 20px;
+        bottom: 20px;
+        z-index: 20;
+        width: 60px; /* 固定宽度 */
     }
-    .switch-img {
-        width: 3.5vw;
-        max-width: 70px;
+    .nushu-img {
+        width: 100%;
+        height: auto;
         cursor: pointer;
         opacity: 0.8;
         transition: opacity 0.3s;
     }
-    .switch-img:hover { opacity: 1; }
+    .nushu-img:hover { opacity: 1; }
 
-    /* ================= 移动端适配 ================= */
+    /* ================= 10. 移动端适配 ================= */
     @media screen and (max-aspect-ratio: 1/1) {
-        body { justify-content: flex-start; }
-        .ancient-page {
-            height: 80vh;      
-            aspect-ratio: 1.414 / 1;
-            margin: 0 20px; 
+        body {
+            /* 手机竖屏时，纸张缩小一点以便查看 */
+            align-items: flex-start;
+            padding-top: 50px;
         }
-        .inner-border { font-size: 1.8vh; padding: 2vh; }
-        .banxin-wrapper { margin-left: 2em; margin-right: 2em; }
-        .switch-img { width: 8vw; }
+        .ancient-page {
+            height: 60vh; /* 手机上不要撑满，留点操作空间 */
+            margin-bottom: 20px;
+        }
     }
     </style>
 </head>
 <body>
 
     <div class="ancient-page">
-        <div class="inner-border" id="text-content">
-            
-            <div style="margin-left: 1em;">
-                <span class="section-title">你好</span>
-                <br><br>
-                <span>
-                    目前是斯德哥尔摩大学经济学博士生。
-                    <span class="ge-zhu">此处为<br>个人简介</span>
-                    在此之前，我于2024年获得中国人民大学经济学（金融方向）
-                    <span class="ge-zhu">及<br>数学</span>
-                    学士学位，并于2024/2025学年在斯德哥尔摩经济学院攻读经济学硕士项目。
+        
+        <div class="banxin-absolute">
+            <div class="curly-brace top">{</div>
+            <div class="banxin-name">李韵天</div>
+            <div class="curly-brace bottom">{</div>
+        </div>
+
+        <div class="text-right-area" id="content-right-1">
+            <span class="section-title">你好</span>
+            <br><br>
+            <span>
+                目前是斯德哥尔摩大学经济学博士生。
+                <span class="ge-zhu">此处为<br>个人简介</span>
+                在此之前，我于2024年获得中国人民大学经济学（金融方向）
+                <span class="ge-zhu">及<br>数学</span>
+                学士学位，并于2024/2025学年在斯德哥尔摩经济学院攻读经济学硕士项目。
+            </span>
+            <br><br>
+            <span>
+                我的研究兴趣在于政治经济学与宏观定量分析。
+            </span>
+        </div>
+
+        <div class="text-left-area" id="content-left-1">
+            <span class="section-title">创作</span>
+            <br><br>
+            <div>
+                <a href="#">** 项目标题壹 **</a>
+                <br>
+                <span class="ge-zhu">
+                    此处为项目壹的简短摘要<br>
+                    关于宏观经济模型的讨论
                 </span>
-                <br><br>
-                <span>
-                    我的研究兴趣在于政治经济学与宏观定量分析。
+            </div>
+            <br>
+            <div>
+                <a href="#">** 项目标题贰 **</a>
+                <br>
+                <span class="ge-zhu">
+                    项目贰的摘要<br>
+                    更多关于数据的分析
                 </span>
             </div>
+        </div>
 
-            <div class="banxin-wrapper">
-                <div class="banxin-container">
-                    <div class="curly-brace top">{</div>
-                    
-                    <div class="banxin-text">李韵天</div>
-                    
-                    <div class="curly-brace bottom">{</div>
-                </div>
-            </div>
-
-            <div style="margin-left: 1em;">
-                <span class="section-title">创作</span>
-                <br><br>
-                <div>
-                    <a href="#">** 项目标题壹 **</a>
-                    <br>
-                    <span class="ge-zhu">
-                        此处为项目壹的简短摘要<br>
-                        关于宏观经济模型的讨论
-                    </span>
-                </div>
-            </div>
-
-        </div> 
-
-        <div class="switch-btn-container">
+        <div class="nushu-stamp">
             <a href="index.html">
-                <img src="https://raw.githubusercontent.com/YuntianAyniLI/YuntianAyniLI.github.io/main/NametaginNyuShu.png" alt="English Version" class="switch-img">
+                <img src="https://raw.githubusercontent.com/YuntianAyniLI/YuntianAyniLI.github.io/main/NametaginNyuShu.png" alt="English" class="nushu-img">
             </a>
         </div>
+
     </div>
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            const container = document.getElementById('text-content');
+            // 需要处理标点的容器 ID 列表
+            const containerIds = ['content-right-1', 'content-left-1'];
+            
+            containerIds.forEach(id => {
+                const container = document.getElementById(id);
+                if(container) stylePunctuation(container);
+            });
             
             function stylePunctuation(node) {
                 if (node.nodeType === 3) { 
                     const text = node.nodeValue;
-                    const regex = /([，。、])/g; // 匹配逗号和句号
+                    // 匹配 逗号，顿号，句号
+                    const regex = /([，、。])/g; 
                     
                     if (regex.test(text)) {
                         const fragment = document.createDocumentFragment();
@@ -328,19 +386,15 @@
                             const wrapper = document.createElement('span');
                             wrapper.className = 'punct-wrapper';
                             
-                            // 这里我们不放文字，只放一个绝对定位的标记
-                            // 这样原来的文字流就不会被打断
-                            
                             const punctSpan = document.createElement('span');
                             punctSpan.className = 'punct';
                             
-                            if (char === '，' || char === '、') {
-                                // 强制显示为顿号
+                            if (char === '。') {
+                                punctSpan.classList.add('punct-period');
+                            } else {
+                                // 逗号和顿号都用实心顿号样式
                                 punctSpan.textContent = '、'; 
                                 punctSpan.classList.add('punct-dun');
-                            } else if (char === '。') {
-                                // 句号不需要文字内容，CSS画圈即可
-                                punctSpan.classList.add('punct-period');
                             }
                             
                             wrapper.appendChild(punctSpan);
@@ -354,11 +408,10 @@
                         
                         node.parentNode.replaceChild(fragment, node);
                     }
-                } else if (node.nodeType === 1 && node.nodeName !== 'SCRIPT' && node.nodeName !== 'STYLE' && node.nodeName !== 'A') {
+                } else if (node.nodeType === 1 && node.nodeName !== 'SCRIPT' && node.nodeName !== 'A') {
                     Array.from(node.childNodes).forEach(stylePunctuation);
                 }
             }
-            stylePunctuation(container);
         });
     </script>
 </body>
