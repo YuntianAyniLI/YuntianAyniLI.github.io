@@ -53,7 +53,7 @@
         pointer-events: none; z-index: 1;
     }
 
-    /* ================= 4. 版心 (修正版) ================= */
+    /* ================= 4. 版心 (上细下粗修正版) ================= */
     .banxin-container {
         writing-mode: horizontal-tb;
         position: absolute;
@@ -85,7 +85,6 @@
     }
 
     /* ================= 5. 内容填充区 (左右两大块) ================= */
-    /* 这是自动排版的容器，分为左右两边 */
     .content-half {
         position: absolute;
         top: 10vh; bottom: 10vh;
@@ -95,42 +94,40 @@
         writing-mode: vertical-rl;
         text-orientation: upright;
         
-        /* 内部内容对齐：flex-start 意味着靠右（因为 vertical-rl 的起始边是右） */
         display: flex;
         flex-wrap: wrap; /* 允许换列 */
         align-content: flex-start; /* 列靠右对齐 */
         gap: var(--col-gap);
         
-        /* 调试用：如果文字溢出看不到，可以临时加 outline 查看范围 */
+        /* 限制最大宽度，防止内容跑到版心里去 */
+        max-width: 38%; 
     }
 
     .content-right {
         right: 8vh; /* 靠右定位 */
-        left: 54%;  /* 占据右半边，留出中间版心 */
+        /* width auto, max-width限制 */
     }
 
     .content-left {
-        left: 15vh; /* 靠左定位 (留出女书位置) */
-        right: 54%; /* 占据左半边 */
+        left: 15vh; /* 靠左定位 */
     }
 
     /* ================= 6. 文本单元样式 ================= */
-    /* 每一个 p, div, h2 都会变成这样的一列 */
     .content-block {
         font-size: 2.0vh;
         line-height: 2.2;
         letter-spacing: var(--char-spacing);
         color: black;
         position: relative;
-        /* 保持块状完整性，尽量不从中间切断（JS逻辑控制） */
-        height: auto; 
-        max-height: 100%;
+        /* 防止块内部断裂 */
+        break-inside: avoid;
+        -webkit-column-break-inside: avoid;
     }
 
     .section-title {
         font-weight: bold; font-size: 1.3em;
         color: var(--theme-purple);
-        margin-left: 0.5em; /* 标题稍微下沉一点 */
+        margin-left: 0.5em; 
     }
 
     .project-title {
@@ -152,7 +149,7 @@
         vertical-align: middle; margin: 0 0.2em;
     }
 
-    /* ================= 7. 旁注标点 (上移修正) ================= */
+    /* ================= 7. 旁注标点 (最终修正) ================= */
     .punct-wrapper {
         position: relative; display: inline; width: 0; height: 0;
     }
@@ -160,13 +157,13 @@
         position: absolute;
         width: 0.45em; height: 0.45em;
         left: 0.85em;   
-        /* 【位置调整】继续上移 (-0.15em -> -0.25em) */
-        top: -0.35em;     
+        top: -0.25em; /* 紧贴上方 */    
         pointer-events: none; z-index: 20;
     }
     .punct-dun {
         background-color: var(--theme-red);
         width: 0.35em; height: 0.6em;
+        /* 左上尖水滴 */
         border-radius: 0 100% 100% 100%;
         transform: rotate(-15deg);
         margin-top: -0.1em;
@@ -219,7 +216,7 @@
             </span>
         </div>
 
-        <div class="content-block">
+        <div class="content-block break-to-left">
             <span class="section-title">创作</span>
         </div>
 
@@ -257,11 +254,11 @@
                 关于动态随机一般均衡模型，代码库与数据集。
             </div>
         </div>
-
-        <div class="content-block">
-            <a href="#" class="project-title">测试长文排版</a>
+        
+         <div class="content-block">
+            <a href="#" class="project-title">项目标题陆</a>
             <div class="project-content">
-                这是一段测试文本，用来展示当内容写满当前页面后，会自动跳转到下一页的左边，或者生成全新的页面。
+                这是更多内容的测试，确保它能顺滑地排布到下一页去。
             </div>
         </div>
 
@@ -279,9 +276,9 @@
         function layoutBook() {
             const source = document.getElementById('source-content');
             const bookContainer = document.getElementById('book-container');
-            const blocks = Array.from(source.children); // 获取所有内容块
+            const blocks = Array.from(source.children); 
 
-            // 页面模板生成器
+            // 创建新页面的辅助函数
             function createNewPage() {
                 const page = document.createElement('div');
                 page.className = 'ancient-page';
@@ -307,60 +304,62 @@
                 return page;
             }
 
-            // 初始化第一页
+            // 初始化状态
             let currentPage = createNewPage();
             let currentRight = currentPage.querySelector('.content-right');
             let currentLeft = currentPage.querySelector('.content-left');
             
-            // 填充逻辑
+            // 当前正在填充的容器，默认为右侧
+            let targetContainer = currentRight;
+
             blocks.forEach(block => {
-                // 克隆节点
+                // 克隆内容块
                 const node = block.cloneNode(true);
                 
-                // 1. 尝试放入当前页右侧
-                currentRight.appendChild(node);
+                // 1. 检查强制换列标记
+                // 如果块包含 break-to-left 且当前还在第一页的右边，强制切到左边
+                if (block.classList.contains('break-to-left') && targetContainer === currentRight) {
+                    targetContainer = currentLeft;
+                }
+
+                // 2. 尝试放入目标容器
+                targetContainer.appendChild(node);
                 
-                // 检查是否溢出 (scrollWidth > clientWidth 说明内容超出了容器宽度)
-                // 注意：在 vertical-rl 模式下，横向溢出意味着列数太多了
-                if (checkOverflow(currentRight)) {
-                    // 溢出了，把它拿出来
-                    currentRight.removeChild(node);
+                // 3. 检查是否溢出 (错版修正核心)
+                // scrollWidth > clientWidth 说明内容挤出了容器宽度
+                if (targetContainer.scrollWidth > targetContainer.clientWidth + 5) {
+                    // 溢出了，撤回操作
+                    targetContainer.removeChild(node);
                     
-                    // 2. 尝试放入当前页左侧
-                    currentLeft.appendChild(node);
-                    
-                    if (checkOverflow(currentLeft)) {
-                        // 左侧也溢出了，拿出来
-                        currentLeft.removeChild(node);
-                        
-                        // 3. 创建新页面
+                    // 决定下一个容器是谁
+                    if (targetContainer === currentRight) {
+                        // 如果右边满了，去左边
+                        targetContainer = currentLeft;
+                    } else {
+                        // 如果左边也满了，创建新的一页，回到右边
                         currentPage = createNewPage();
                         currentRight = currentPage.querySelector('.content-right');
                         currentLeft = currentPage.querySelector('.content-left');
-                        
-                        // 放入新页面的右侧
-                        currentRight.appendChild(node);
+                        targetContainer = currentRight;
                     }
+                    
+                    // 在新容器里再次放入
+                    targetContainer.appendChild(node);
+                    
+                    // 极端情况检查：如果一个块太大，连新页面都放不下（通常不应发生，除非单段文字极长）
+                    // 这里可以加额外的保险逻辑，但对于本项目结构通常不需要
                 }
             });
         }
 
-        // 检查容器是否横向溢出
-        function checkOverflow(container) {
-            // 给一点容差，防止只有一点点误差就换页
-            return container.scrollWidth > container.clientWidth + 2; 
-        }
-
-        // 标点自动处理脚本 (通用版)
         function styleAllPunctuation() {
             const wrappers = document.querySelectorAll('.content-block, .project-content');
-            
             wrappers.forEach(container => {
                 processNode(container);
             });
 
             function processNode(node) {
-                if (node.nodeType === 3) { // 文本节点
+                if (node.nodeType === 3) { 
                     const text = node.nodeValue;
                     const regex = /([，、。])/g; 
                     if (regex.test(text)) {
