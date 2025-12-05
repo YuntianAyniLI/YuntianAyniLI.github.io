@@ -53,7 +53,7 @@
         pointer-events: none; z-index: 1;
     }
 
-    /* ================= 4. 版心 (上细下粗修正版) ================= */
+    /* ================= 4. 版心 (上粗下细双线) ================= */
     .banxin-container {
         writing-mode: horizontal-tb;
         position: absolute;
@@ -84,32 +84,38 @@
         letter-spacing: 0.6em; padding: 0.2em 0;
     }
 
-    /* ================= 5. 内容填充区 (左右两大块) ================= */
+    /* ================= 5. 内容填充区 (核心修正：右锚点定位) ================= */
     .content-half {
         position: absolute;
         top: 10vh; bottom: 10vh;
         z-index: 5;
         
-        /* 核心排版：竖向书写，列从右向左排 */
+        /* 竖向书写，列从右向左排 */
         writing-mode: vertical-rl;
         text-orientation: upright;
         
         display: flex;
-        flex-wrap: wrap; /* 允许换列 */
-        align-content: flex-start; /* 列靠右对齐 */
+        flex-wrap: wrap; 
+        align-content: flex-start; /* 内容靠右对齐 (Start=Right in Vertical-RL) */
         gap: var(--col-gap);
         
-        /* 限制最大宽度，防止内容跑到版心里去 */
-        max-width: 38%; 
+        /* 【核心修改】宽度自动，最大宽度限制。
+           这样容器会紧贴着 right 锚点，随着内容增加向左生长。
+        */
+        width: auto;
+        max-width: 38%;
     }
 
+    /* 右半页：锚定在页面最右侧 (8vh处) */
     .content-right {
-        right: 8vh; /* 靠右定位 */
-        /* width auto, max-width限制 */
+        right: 8vh; 
+        left: auto; /* 允许向左自由生长 */
     }
 
+    /* 左半页：锚定在版心左侧 (54%处) */
     .content-left {
-        left: 15vh; /* 靠左定位 */
+        right: 54%; /* 【关键】紧贴版心开始 */
+        left: auto; /* 允许向左自由生长 */
     }
 
     /* ================= 6. 文本单元样式 ================= */
@@ -119,7 +125,6 @@
         letter-spacing: var(--char-spacing);
         color: black;
         position: relative;
-        /* 防止块内部断裂 */
         break-inside: avoid;
         -webkit-column-break-inside: avoid;
     }
@@ -149,7 +154,7 @@
         vertical-align: middle; margin: 0 0.2em;
     }
 
-    /* ================= 7. 旁注标点 (最终修正) ================= */
+    /* ================= 7. 旁注标点 ================= */
     .punct-wrapper {
         position: relative; display: inline; width: 0; height: 0;
     }
@@ -157,17 +162,18 @@
         position: absolute;
         width: 0.45em; height: 0.45em;
         left: 0.85em;   
-        top: -0.25em; /* 紧贴上方 */    
+        top: -0.25em;     
         pointer-events: none; z-index: 20;
     }
+    /* 左上尖水滴顿号 */
     .punct-dun {
         background-color: var(--theme-red);
         width: 0.35em; height: 0.6em;
-        /* 左上尖水滴 */
         border-radius: 0 100% 100% 100%;
         transform: rotate(-15deg);
         margin-top: -0.1em;
     }
+    /* 空心圆句号 */
     .punct-period {
         width: 0.45em; height: 0.45em;
         border: 2px solid var(--theme-red);
@@ -188,7 +194,7 @@
     }
     .nushu-img:hover { opacity: 1; }
 
-    /* ================= 9. 隐藏的内容源 ================= */
+    /* ================= 9. 内容源 ================= */
     #source-content { display: none; }
     </style>
 </head>
@@ -258,7 +264,7 @@
          <div class="content-block">
             <a href="#" class="project-title">项目标题陆</a>
             <div class="project-content">
-                这是更多内容的测试，确保它能顺滑地排布到下一页去。
+                这是更多内容的测试，确保它能顺滑地排布到下一页去，并且总是从右边开始写。
             </div>
         </div>
 
@@ -278,7 +284,6 @@
             const bookContainer = document.getElementById('book-container');
             const blocks = Array.from(source.children); 
 
-            // 创建新页面的辅助函数
             function createNewPage() {
                 const page = document.createElement('div');
                 page.className = 'ancient-page';
@@ -304,50 +309,37 @@
                 return page;
             }
 
-            // 初始化状态
             let currentPage = createNewPage();
             let currentRight = currentPage.querySelector('.content-right');
             let currentLeft = currentPage.querySelector('.content-left');
             
-            // 当前正在填充的容器，默认为右侧
             let targetContainer = currentRight;
 
             blocks.forEach(block => {
-                // 克隆内容块
                 const node = block.cloneNode(true);
                 
-                // 1. 检查强制换列标记
-                // 如果块包含 break-to-left 且当前还在第一页的右边，强制切到左边
+                // 强制换列逻辑
                 if (block.classList.contains('break-to-left') && targetContainer === currentRight) {
                     targetContainer = currentLeft;
                 }
 
-                // 2. 尝试放入目标容器
                 targetContainer.appendChild(node);
                 
-                // 3. 检查是否溢出 (错版修正核心)
-                // scrollWidth > clientWidth 说明内容挤出了容器宽度
+                // 溢出检测逻辑
+                // 使用 scrollWidth > clientWidth + 5 来检测内容是否被挤出了容器的 Max-Width
                 if (targetContainer.scrollWidth > targetContainer.clientWidth + 5) {
-                    // 溢出了，撤回操作
                     targetContainer.removeChild(node);
                     
-                    // 决定下一个容器是谁
                     if (targetContainer === currentRight) {
-                        // 如果右边满了，去左边
                         targetContainer = currentLeft;
                     } else {
-                        // 如果左边也满了，创建新的一页，回到右边
                         currentPage = createNewPage();
                         currentRight = currentPage.querySelector('.content-right');
                         currentLeft = currentPage.querySelector('.content-left');
                         targetContainer = currentRight;
                     }
                     
-                    // 在新容器里再次放入
                     targetContainer.appendChild(node);
-                    
-                    // 极端情况检查：如果一个块太大，连新页面都放不下（通常不应发生，除非单段文字极长）
-                    // 这里可以加额外的保险逻辑，但对于本项目结构通常不需要
                 }
             });
         }
