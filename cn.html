@@ -178,37 +178,50 @@
     .punct {
         position: absolute;
         
-        /* 【核心修改】统一大小和位置 */
-        width: 0.45em;  /* 统一宽度 */
-        height: 0.45em; /* 统一高度 */
+        /* 基础大小 (句号用这个，顿号会单独覆盖) */
+        width: 0.45em; 
+        height: 0.45em; 
         
-        /* 统一坐标：确保它们在列的右侧完全对齐 */
+        /* 统一坐标 */
         left: 0.85em;   
-        /* 【位置调整】往上一点点 (从 0.25em 改为 0.05em) */
-        top: 0.25em;     
+        /* 【位置调整】往上提，紧贴文字上方 */
+        top: 0.05em;     
         
         pointer-events: none;
         z-index: 20;
     }
 
-    /* 顿号：CSS绘制的水滴/瓜子状（还原书法顿号） */
+    /* 顿号：瘦长水滴状，左上角尖 */
     .punct-dun {
         background-color: var(--theme-red); /* 实心 */
         
-        /* 【形状绘制】三个角是圆的，右下角是尖的，形成水滴状 */
-        border-radius: 50% 50% 0 50%; 
+        /* 【形状修改】宽度变窄，高度变长，实现“瘦长” */
+        width: 0.35em;
+        height: 0.6em;
         
-        /* 【角度微调】稍微旋转，让尖头指向自然的运笔方向 */
-        transform: rotate(5deg);
+        /* 【核心技巧】左上角(0)是尖的，其他角是圆的 */
+        /* 这会形成一个像水滴一样的形状，起笔在左上 */
+        border-radius: 0 100% 100% 100%;
+        
+        /* 【角度微调】稍微向左旋转一点，模拟书写角度 */
+        transform: rotate(-15deg);
+        
+        /* 微调顿号的垂直位置，因为变长了，稍微提一点让重心对齐 */
+        margin-top: -0.1em;
     }
 
-    /* 句号：空心圆 (CSS绘制) */
+    /* 句号：空心圆 (保持正圆) */
     .punct-period {
-        border: 2px solid var(--theme-red); /* 空心线框 */
-        border-radius: 50%; /* 圆形 */
+        /* 强制宽高相等，确保是正圆，不受顿号瘦长影响 */
+        width: 0.45em;
+        height: 0.45em;
+        
+        border: 2px solid var(--theme-red); 
+        border-radius: 50%; 
         background-color: transparent;
-        box-sizing: border-box; /* 边框计入大小 */
+        box-sizing: border-box; 
     }
+        
     /* ================= 10. 女书图片 ================= */
     .nushu-stamp {
         position: absolute;
