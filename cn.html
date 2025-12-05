@@ -19,51 +19,48 @@
     :root {
         --theme-purple: #500650; 
         --theme-red: #d43628;    
-        --paper-bg: #fdfbf7;     /* 统一背景色 */
+        --paper-bg: #fdfbf7;     
         --outer-border: 4px;     
         --inner-border: 1px;     
         --char-spacing: 0.45em;  
-        --col-gap: 3.5em;        /* 列间距 */
+        --col-gap: 3.5em;        
     }
 
-    /* ================= 3. 基础布局 ================= */
+    /* ================= 3. 基础布局 (垂直堆叠) ================= */
     body {
         margin: 0;
         padding: 0;
-        /* 【修改点】背景色与纸张融为一体 */
         background-color: var(--paper-bg); 
         font-family: 'ZYSongKeBen', "Times New Roman", serif;
         
+        /* 【核心修改】改为垂直方向 */
         display: flex;
-        flex-direction: row; 
-        /* 【修改点】让页面在屏幕中居中 */
-        justify-content: center; 
-        align-items: center;
+        flex-direction: column; 
+        align-items: center; /* 水平居中 */
         
-        overflow-x: auto; /* 横向滚动 */
-        overflow-y: hidden;
-        height: 100vh;
+        /* 恢复正常的网页垂直滚动 */
+        overflow-y: auto; 
+        overflow-x: hidden;
+        min-height: 100vh;
         
-        /* 页面之间的间距 */
-        gap: 5vw; 
-        /* 左右留白，防止居中时首尾贴边 */
-        padding: 0 5vw; 
+        /* 页面上下的间距 */
+        gap: 60px; 
+        padding: 60px 0; /* 给第一页上面和最后一页下面留白 */
     }
 
     /* ================= 4. 页面容器 (16:9) ================= */
     .ancient-page {
+        /* 固定高度或宽度，这里以高度为基准保持 16:9 */
         height: 85vh; 
         aspect-ratio: 16 / 9; 
         
         background-color: var(--paper-bg);
         position: relative; 
-        flex-shrink: 0; /* 防止挤压 */
+        flex-shrink: 0; 
         
         border: var(--outer-border) solid var(--theme-purple); 
+        box-shadow: 0 10px 40px rgba(80, 6, 80, 0.15); /* 加强阴影，体现层叠感 */
         box-sizing: border-box;
-        
-        /* 增加阴影区分页面与背景（因为背景色一样了） */
-        box-shadow: 0 0 30px rgba(80, 6, 80, 0.1);
     }
 
     /* ================= 5. 内边框 ================= */
@@ -121,7 +118,6 @@
         align-items: flex-start;
     }
 
-    /* 每一列 */
     .text-column {
         font-size: 2.0vh;
         line-height: 2.2; 
@@ -161,7 +157,7 @@
         margin: 0 0.2em;
     }
 
-    /* ================= 9. 旁注标点 (样式修复) ================= */
+    /* ================= 9. 旁注标点 ================= */
     .punct-wrapper {
         position: relative;
         display: inline;
@@ -173,14 +169,11 @@
         font-family: "SimSun", serif; 
         color: var(--theme-red);
         font-weight: bold;
-        
-        /* 【位置校准】确保在右侧 */
         left: 0.8em;  
         top: 0.3em;   
-        
         white-space: nowrap;
         pointer-events: none;
-        z-index: 20; /* 确保不被遮挡 */
+        z-index: 20;
     }
 
     .punct-dun {
@@ -188,7 +181,6 @@
     }
 
     .punct-period {
-        /* 空心圆 */
         width: 0.45em; height: 0.45em;
         border: 2px solid var(--theme-red);
         border-radius: 50%;
@@ -214,13 +206,16 @@
     /* ================= 11. 移动端适配 ================= */
     @media screen and (max-aspect-ratio: 1/1) {
         body { 
-            justify-content: flex-start; /* 手机上靠左开始，方便滑动 */
-            padding-left: 20px; 
+            padding: 20px 0; /* 手机上减小上下边距 */
+            gap: 20px;
         }
         .ancient-page { 
-            height: 60vh; 
+            /* 手机上保持横向比例可能会太小，如果字看不清，可以调整高度 */
+            height: auto; 
+            width: 95vw; /* 占满屏幕宽度 */
+            aspect-ratio: 9/16; /* 手机上竖过来显示？或者保持 16/9 但允许缩小 */
+            /* 建议：为了保持版式，手机上最好还是横屏看，或者这里我们强制宽大于高 */
             aspect-ratio: 16/9;
-            margin-right: 20px; 
         }
     }
     </style>
@@ -299,7 +294,6 @@
              </div>
 
         <div class="content-area text-left-area">
-            
             <div class="text-column">
                 <a href="#">** 项目标题叁 **</a>
                 <br>
@@ -338,10 +332,7 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            // 【修正】选择所有 text-column 类，而不依赖具体的 ID
-            // 这样所有页面、所有列的标点都会自动生效
             const columns = document.querySelectorAll('.text-column');
-            
             columns.forEach(node => {
                 stylePunctuation(node);
             });
