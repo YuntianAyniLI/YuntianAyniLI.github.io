@@ -21,7 +21,7 @@
         --theme-red: #d43628;    
         --paper-bg: #fdfbf7;     
         --outer-border: 4px;     /* 外框粗细 */
-        --inner-border: 1px;     
+        --inner-border: 1px;     /* 内框细 */
         --char-spacing: 0.45em;  
         --col-gap: 3.5em;        
     }
@@ -69,7 +69,7 @@
         z-index: 1;
     }
 
-    /* ================= 6. 版心 (锋利横线) ================= */
+    /* ================= 6. 版心 (锋利横线 + 底部双线) ================= */
     .banxin-container {
         writing-mode: horizontal-tb;
         position: absolute;
@@ -84,12 +84,26 @@
         gap: 0.6em; /* 字与线的距离 */
     }
 
-    /* 【修改点】横线样式：变细、变锋利 */
+    /* 粗横线样式 */
     .thick-line {
         width: 3.5em; 
-        height: var(--outer-border); /* 与外边框一样粗 (4px) */
+        height: var(--outer-border); /* 与外边框一样粗 */
         background-color: var(--theme-purple);
-        border-radius: 0; /* 锋利直角，不要圆角 */
+        border-radius: 0; /* 锋利直角 */
+    }
+
+    /* 底部线条包裹器 */
+    .bottom-lines-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 1px; /* 粗细线之间留 1px 缝隙，显得更精致 */
+    }
+
+    /* 细横线样式 */
+    .thin-line {
+        width: 3.5em;
+        height: 1px;
+        background-color: var(--theme-purple);
     }
 
     .banxin-name {
@@ -126,21 +140,20 @@
         position: relative; 
     }
 
-    /* 右侧区域 (Vertical-RL 的起始区域) */
+    /* 右侧区域 */
     .text-right-area { 
         right: 8vh; 
         padding-right: 2vh; 
-        /* 限制宽度，防止撞到版心 */
         max-width: 35%;
     }
 
-    /* 左侧区域 (Vertical-RL 的结束区域) */
+    /* 左侧区域 */
     .text-left-area { 
         left: 15vh; 
         max-width: 35%;
     }
 
-    /* ================= 8. 文本样式细节 ================= */
+    /* ================= 8. 文本与项目样式细节 ================= */
     .section-title {
         font-weight: bold;
         font-size: 1.3em;
@@ -151,13 +164,30 @@
         text-decoration: none;
         color: black;
         transition: color 0.3s;
-        border-bottom: 1px dashed var(--theme-purple); 
+        /* 【核心修改】移除虚线 */
+        border-bottom: none; 
     }
     a:hover {
         color: var(--theme-purple);
-        border-bottom: 1px solid var(--theme-purple);
+        border-bottom: none; 
     }
 
+    /* 【新增】项目标题样式 */
+    .project-title {
+        font-weight: bold;
+        font-size: 1em; /* 保持正常大小 */
+        color: var(--theme-purple);
+        display: block; /* 独占一行 */
+        margin-bottom: 0.3em;
+    }
+
+    /* 【新增】项目内容样式 */
+    .project-content {
+        color: black;
+        font-size: 1em; /* 正常大小 */
+    }
+
+    /* 旧的割注样式保留备用，虽然项目部分已不用 */
     .ge-zhu {
         display: inline-block;
         font-size: 0.6em;
@@ -167,7 +197,7 @@
         margin: 0 0.2em;
     }
 
-    /* ================= 9. 旁注标点 (完美对齐版) ================= */
+    /* ================= 9. 旁注标点 (最新定制版) ================= */
     .punct-wrapper {
         position: relative;
         display: inline;
@@ -178,13 +208,13 @@
     .punct {
         position: absolute;
         
-        /* 基础大小 (句号用这个，顿号会单独覆盖) */
+        /* 【核心修改】统一大小 */
         width: 0.45em; 
         height: 0.45em; 
         
         /* 统一坐标 */
         left: 0.85em;   
-        /* 【位置调整】往上提，紧贴文字上方 */
+        /* 【核心修改】往上提，紧贴文字上方 */
         top: 0.05em;     
         
         pointer-events: none;
@@ -195,24 +225,23 @@
     .punct-dun {
         background-color: var(--theme-red); /* 实心 */
         
-        /* 【形状修改】宽度变窄，高度变长，实现“瘦长” */
+        /* 【形状修改】宽度变窄，高度变长 */
         width: 0.35em;
         height: 0.6em;
         
-        /* 【核心技巧】左上角(0)是尖的，其他角是圆的 */
-        /* 这会形成一个像水滴一样的形状，起笔在左上 */
+        /* 【形状核心】左上角是尖的，其他角是圆的 */
         border-radius: 0 100% 100% 100%;
         
-        /* 【角度微调】稍微向左旋转一点，模拟书写角度 */
+        /* 【角度微调】稍微向左旋转 */
         transform: rotate(-15deg);
         
-        /* 微调顿号的垂直位置，因为变长了，稍微提一点让重心对齐 */
+        /* 微调顿号的垂直位置 */
         margin-top: -0.1em;
     }
 
-    /* 句号：空心圆 (保持正圆) */
+    /* 句号：空心圆 */
     .punct-period {
-        /* 强制宽高相等，确保是正圆，不受顿号瘦长影响 */
+        /* 强制宽高相等 */
         width: 0.45em;
         height: 0.45em;
         
@@ -221,7 +250,7 @@
         background-color: transparent;
         box-sizing: border-box; 
     }
-        
+
     /* ================= 10. 女书图片 ================= */
     .nushu-stamp {
         position: absolute;
@@ -257,8 +286,13 @@
 
         <div class="banxin-container">
             <div class="thick-line"></div>
+            
             <div class="banxin-name">李韵天</div>
-            <div class="thick-line"></div>
+            
+            <div class="bottom-lines-wrapper">
+                <div class="thick-line"></div>
+                <div class="thin-line"></div>
+            </div>
         </div>
 
         <div class="content-area text-right-area">
@@ -285,21 +319,19 @@
             <div class="text-column">
                 <span class="section-title">创作</span>
             </div>
+            
             <div class="text-column">
-                <a href="#">** 项目标题壹 **</a>
-                <br>
-                <span class="ge-zhu">
-                    此处为项目壹的简短摘要<br>
-                    关于宏观经济模型的讨论
-                </span>
+                <a href="#" class="project-title">项目标题壹</a>
+                <div class="project-content">
+                    此处为项目壹的简短摘要，关于宏观经济模型的讨论。
+                </div>
             </div>
+
             <div class="text-column">
-                <a href="#">** 项目标题贰 **</a>
-                <br>
-                <span class="ge-zhu">
-                    项目贰的摘要<br>
-                    更多关于数据的分析
-                </span>
+                <a href="#" class="project-title">项目标题贰</a>
+                <div class="project-content">
+                    项目贰的摘要，更多关于数据的分析。
+                </div>
             </div>
         </div>
 
@@ -317,38 +349,35 @@
         <div class="banxin-container">
             <div class="thick-line"></div>
             <div class="banxin-name">李韵天</div>
-            <div class="thick-line"></div>
+            <div class="bottom-lines-wrapper">
+                <div class="thick-line"></div>
+                <div class="thin-line"></div>
+            </div>
         </div>
 
         <div class="content-area text-right-area">
             
             <div class="text-column">
-                <a href="#">** 项目标题叁 **</a>
-                <br>
-                <span class="ge-zhu">
-                    关于货币政策的历史演变<br>
-                    基于面板数据的实证研究
-                </span>
+                <a href="#" class="project-title">项目标题叁</a>
+                <div class="project-content">
+                    关于货币政策的历史演变，基于面板数据的实证研究。
+                </div>
             </div>
 
             <div class="text-column">
-                <a href="#">** 项目标题肆 **</a>
-                <br>
-                <span class="ge-zhu">
-                    制度经济学视角的思考<br>
-                    工作论文草稿
-                </span>
+                <a href="#" class="project-title">项目标题肆</a>
+                <div class="project-content">
+                    制度经济学视角的思考，工作论文草稿。
+                </div>
             </div>
         </div>
 
         <div class="content-area text-left-area">
             <div class="text-column">
-                <a href="#">** 项目标题伍 **</a>
-                <br>
-                <span class="ge-zhu">
-                    关于动态随机一般均衡模型<br>
-                    代码库与数据集
-                </span>
+                <a href="#" class="project-title">项目标题伍</a>
+                <div class="project-content">
+                    关于动态随机一般均衡模型，代码库与数据集。
+                </div>
             </div>
         </div>
 
@@ -362,13 +391,14 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
+            // 选择所有列，脚本会自动递归处理里面的文本
             const columns = document.querySelectorAll('.text-column');
             columns.forEach(node => {
                 stylePunctuation(node);
             });
             
             function stylePunctuation(node) {
-                if (node.nodeType === 3) { 
+                if (node.nodeType === 3) { // 文本节点
                     const text = node.nodeValue;
                     const regex = /([，、。])/g; 
                     if (regex.test(text)) {
@@ -386,7 +416,7 @@
                             if (char === '。') {
                                 punctSpan.classList.add('punct-period');
                             } else {
-                                // 无论输入逗号还是顿号，统一显示为 CSS 绘制的实心顿号
+                                // 无论输入逗号还是顿号，统一使用瘦长左尖顿号
                                 punctSpan.classList.add('punct-dun');
                             }
                             
@@ -399,6 +429,7 @@
                         node.parentNode.replaceChild(fragment, node);
                     }
                 } else if (node.nodeType === 1 && node.nodeName !== 'SCRIPT' && node.nodeName !== 'A') {
+                    // 递归处理子元素（如 div.project-content），跳过A标签（标题）
                     Array.from(node.childNodes).forEach(stylePunctuation);
                 }
             }
