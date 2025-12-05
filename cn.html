@@ -9,31 +9,29 @@
     /* ================= 字体加载 ================= */
     @font-face {
         font-family: 'ZYSongKeBen';
-        /* 请确保 fonts 文件夹和 cn.html 在同一级目录 */
+        /* 确保路径正确 */
         src: url('fonts/ZYSongKeBen.otf') format('opentype');
         font-weight: normal;
         font-style: normal;
         font-display: swap;
     }
 
-    /* ================= 全局设定 ================= */
+    /* ================= 全局变量 ================= */
     :root {
-        --theme-purple: #500650; /* 深紫色 */
-        --theme-red: #d43628;    /* 朱红色：用于标点 */
+        --theme-purple: #500650; /* 深紫色：主色调 */
+        --theme-red: #d43628;    /* 朱红色：用于鱼尾和标点 */
         --paper-bg: #fdfbf7;     /* 仿宣纸底色 */
-        --line-width: 1px;       /* 内框线细 */
-        --border-width: 4px;     /* 外框线粗 */
-        
-        /* 间距控制 */
-        --char-spacing: 0.35em;  /* 字与字的垂直间距 (调整为宽松) */
+        --line-width: 1px;       /* 细线宽 */
+        --border-width: 4px;     /* 粗线宽 */
+        --char-spacing: 0.35em;  /* 字间距 */
     }
 
     body {
         margin: 0;
         padding: 0;
-        /* 【修改点1】背景色改为和纸张一样，去除灰色背景 */
         background-color: var(--paper-bg); 
         font-family: 'ZYSongKeBen', "Times New Roman", serif;
+        /* 强制横向滚动 */
         overflow-x: auto; 
         overflow-y: hidden; 
         height: 100vh;
@@ -42,93 +40,104 @@
         justify-content: center; 
     }
 
-    /* ================= 古籍页面容器 (The Paper) ================= */
+    /* ================= 页面容器 (The Paper) ================= */
     .ancient-page {
         height: 90vh; 
-        aspect-ratio: 1.414 / 1; 
+        aspect-ratio: 1.414 / 1; /* 保持 A4 横向比例 */
         background-color: var(--paper-bg);
         margin: auto; 
-        position: relative;
-        /* 移除阴影，因为背景色融为一体了，或者保留微弱阴影增加立体感 */
-        box-shadow: 0 0 20px rgba(0,0,0,0.05);
+        position: relative; /* 作为绝对定位的参考坐标系 */
         
         /* 外粗框 */
         border: var(--border-width) solid var(--theme-purple); 
         box-sizing: border-box;
-        
-        /* 弹性布局，用于放置内部内容 */
-        display: flex;
-        flex-direction: row-reverse; 
-        flex-shrink: 0; 
     }
 
-    /* ================= 内边框容器 (修复溢出问题) ================= */
-    /* 【修改点3】改用绝对定位，确保内边框严格在内 */
+    /* ================= 内边框 (绝对定位) ================= */
     .inner-border {
         position: absolute;
-        top: 12px;    /* 距离上外框的距离 */
-        bottom: 12px; /* 距离下外框的距离 */
-        left: 12px;
-        right: 12px;
+        top: 12px; bottom: 12px; left: 12px; right: 12px;
+        border: var(--line-width) solid var(--theme-purple); 
         
-        border: var(--line-width) solid var(--theme-purple); /* 内细框 */
-        
-        /* 排版引擎 */
+        /* 核心排版：竖排从右向左 */
         writing-mode: vertical-rl; 
         text-orientation: upright; 
         
-        padding: 3vh 4vh; 
+        padding: 4vh 6vh; /* 增加内边距，让文字呼吸 */
         
-        /* 【修改点5】字体缩小，字间距加大 */
-        font-size: 2.2vh; /* 原 2.8vh -> 缩小 */
-        line-height: 2.2; /* 行距 */
-        letter-spacing: var(--char-spacing); /* 字间距加大 */
-        
+        font-size: 2.0vh; /* 字号适中 */
+        line-height: 2.5; /* 行距宽阔，容纳旁注标点 */
+        letter-spacing: var(--char-spacing); 
         color: black;    
     }
 
-    /* ================= 版心 (Banxin) - 样式重制 ================= */
+    /* ================= 版心 (Fish-tail Banxin) ================= */
+    /* 模拟《庄子注疏》的鱼尾版心 */
     .banxin-wrapper {
+        /* 在竖排流中，作为一个块级元素 */
         height: 100%;
         display: flex;
-        flex-direction: column;
-        justify-content: center; /* 垂直居中 */
+        flex-direction: column; /* 内部变为垂直布局，从上到下绘制鱼尾 */
         align-items: center;
-        margin-left: 3.5em; 
-        margin-right: 3.5em;
+        justify-content: center; /* 垂直居中 */
+        margin-left: 4em; 
+        margin-right: 4em;
+        
+        /* 这里不需要 border，border 在内部元素画 */
     }
 
-    /* 【修改点4】参考红框图片：简单的长方框，无花哨遮罩 */
+    /* 鱼尾版心容器：细长矩形 */
+    .banxin-container {
+        width: 1.2em; /* 宽度固定 */
+        height: 70%;  /* 高度占据页面的大部分 */
+        border: 1px solid var(--theme-purple); /* 细实线框 */
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between; /* 上下鱼尾撑开，中间是字 */
+        align-items: center;
+        padding: 2px 0;
+    }
+
+    /* 鱼尾 (The Fish Tail) - CSS绘制三角形 */
+    .fish-tail {
+        width: 0;
+        height: 0;
+        border-left: 0.6em solid transparent;
+        border-right: 0.6em solid transparent;
+        /* 调整形状 */
+    }
+
+    /* 上鱼尾：倒三角，指向内 */
+    .fish-tail.top {
+        border-top: 0.8em solid var(--theme-red);
+        margin-top: 1em; /* 距离顶框的距离 */
+    }
+
+    /* 下鱼尾：正三角，指向内 */
+    .fish-tail.bottom {
+        border-bottom: 0.8em solid var(--theme-red);
+        margin-bottom: 1em; /* 距离底框的距离 */
+    }
+
+    /* 版心文字 */
     .banxin-text {
-        /* 字体大小与标题一致或稍大 */
-        font-size: 1.4em; 
-        color: var(--theme-purple);
+        writing-mode: vertical-rl; /* 确保文字是竖着的 */
+        font-size: 1.2em;
         font-weight: bold;
-        
-        /* 核心样式：细实线框 */
-        border: 1px solid var(--theme-purple);
-        padding: 1.5em 0.3em; /* 拉长高度，收紧宽度 */
-        
-        /* 如果需要那个“红框图”里的双线效果，可以用 outline */
-        /* outline: 1px solid var(--theme-purple); outline-offset: 2px; */
-        
-        background-color: transparent; /* 填充透明（即纸色） */
-        letter-spacing: 0.6em;
+        color: var(--theme-purple);
+        letter-spacing: 0.5em;
     }
 
     /* ================= 文本样式 ================= */
-    
-    /* 【修改点2】统一“你好”和“创作”的样式 */
     .section-title {
         font-weight: bold;
-        font-size: 1.3em; /* 统一字号 */
-        color: var(--theme-purple); /* 统一深紫色 */
+        font-size: 1.3em;
+        color: var(--theme-purple);
         margin: 0;
-        margin-left: 1em; /* 标题顶格留空 */
-        display: inline-block; /* 保持整块 */
+        margin-left: 1em; 
+        display: inline-block;
     }
 
-    /* 链接样式 */
     a {
         text-decoration: none;
         color: black;
@@ -138,72 +147,97 @@
         color: var(--theme-purple);
     }
 
-    /* ================= 割注/双行夹注 ================= */
+    /* 双行夹注 */
     .ge-zhu {
         display: inline-block;
-        font-size: 0.6em; /* 随主字号缩小而缩小 */
+        font-size: 0.6em; 
         line-height: 1.2;
         color: var(--theme-purple);
         vertical-align: middle;
-        margin: 0 0.3em; /* 上下留白也稍微增加 */
-        letter-spacing: 0; /* 割注内部字间距不用太大，否则太散 */
+        margin: 0 0.2em; 
     }
 
-    /* ================= 自动标点样式 ================= */
+    /* ================= 旁注标点 (Side-note Punctuation) ================= */
+    /* 核心逻辑：绝对定位，不占位，悬挂在左侧 */
+    .punct-wrapper {
+        position: relative; /* 给标点提供锚点 */
+        display: inline;    /* 保持在文本流中 */
+        width: 0;           /* 不占宽度 */
+        height: 0;          /* 不占高度 */
+    }
+
     .punct {
+        position: absolute;
+        font-family: "SimSun", "Songti SC", serif; /* 使用宋体以获得标准的顿号形状 */
         color: var(--theme-red);
         font-weight: bold;
-        font-family: "Times New Roman", serif;
-        position: relative;
-        left: -0.2em;
-        top: 0.1em;
-        font-size: 1.1em; 
+        
+        /* 定位调整：vertical-rl 中，left 是视觉上的左侧（下一行方向） */
+        left: -0.7em; /* 向左偏移，挂在两行之间 */
+        top: 0.2em;   /* 垂直微调，对齐上一字 */
+        
+        /* 标点不换行 */
+        white-space: nowrap;
+        pointer-events: none; /* 不干扰鼠标点击 */
     }
 
-    /* ================= 女书切换按钮 ================= */
+    /* 顿号：实心、大 */
+    .punct-dun {
+        font-size: 1.0em; /* 调大 */
+        transform: scale(1.5); /* 再次放大确保视觉冲击 */
+    }
+
+    /* 句号：小、圆 */
+    .punct-period {
+        font-size: 0.6em; /* 调小 */
+        top: 0.4em;       /* 位置微调 */
+        /* 空心圆通常字体自带，如果不行可用 CSS border-radius 模拟 */
+    }
+
+    /* ================= 女书切换按钮 (绝对左侧) ================= */
     .switch-btn-container {
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-end;
-        align-items: center;
-        padding-top: 50px;
-        margin-left: 2em;
+        position: absolute; /* 绝对定位 */
+        left: 20px;         /* 靠纸张最左边 */
+        bottom: 20px;       /* 靠纸张最下边 */
+        z-index: 10;
+        
+        /* 不参与 flex 布局，独立存在 */
+        writing-mode: horizontal-tb; /* 图片恢复水平容器 */
     }
 
     .switch-img {
-        width: 3vw;
-        max-width: 60px;
+        width: 3.5vw;
+        max-width: 70px;
         cursor: pointer;
         opacity: 0.8;
         transition: opacity 0.3s;
         border: 2px solid transparent;
     }
-    
     .switch-img:hover {
         opacity: 1;
         border: 2px solid var(--theme-purple);
-        padding: 2px;
     }
 
     /* ================= 移动端适配 ================= */
     @media screen and (max-aspect-ratio: 1/1) {
         body {
-            justify-content: flex-start; /* 允许左侧开始滑动 */
-            background-color: var(--paper-bg);
+            justify-content: flex-start; /* 允许左侧滑动 */
         }
         .ancient-page {
             height: 80vh;      
             aspect-ratio: 1.414 / 1;
             margin: 0 20px; 
-            /* 移动端恢复一点阴影以便区分 */
             box-shadow: 0 0 10px rgba(0,0,0,0.1); 
         }
         .inner-border {
-            font-size: 1.8vh; /* 移动端再小一点 */
+            font-size: 1.8vh;
             padding: 2vh;
         }
         .switch-img {
             width: 8vw;
+        }
+        .banxin-wrapper {
+            margin-left: 2em; margin-right: 2em;
         }
     }
     </style>
@@ -211,6 +245,7 @@
 <body>
 
     <div class="ancient-page">
+        
         <div class="inner-border" id="text-content">
             
             <div style="margin-left: 1em;">
@@ -230,12 +265,20 @@
             </div>
 
             <div class="banxin-wrapper">
-                <div class="banxin-text">李韵天</div>
+                <div class="banxin-container">
+                    <div class="fish-tail top"></div>
+                    
+                    <div class="banxin-text">李韵天</div>
+                    
+                    <div class="fish-tail bottom"></div>
+                </div>
             </div>
 
             <div style="margin-left: 1em;">
                 <span class="section-title">创作</span>
-                <br><br> <div>
+                <br><br>
+                
+                <div>
                     <a href="#">** 项目标题壹 **</a>
                     <br>
                     <span class="ge-zhu">
@@ -244,34 +287,65 @@
                     </span>
                 </div>
             </div>
-
-            <div class="switch-btn-container">
-                <a href="index.html">
-                    <img src="https://raw.githubusercontent.com/YuntianAyniLI/YuntianAyniLI.github.io/main/NametaginNyuShu.png" alt="English Version" class="switch-img">
-                </a>
-            </div>
-
+            
+            </div> <div class="switch-btn-container">
+            <a href="index.html">
+                <img src="https://raw.githubusercontent.com/YuntianAyniLI/YuntianAyniLI.github.io/main/NametaginNyuShu.png" alt="English Version" class="switch-img">
+            </a>
         </div>
+
     </div>
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             const container = document.getElementById('text-content');
+            
+            // 递归遍历替换文本
             function stylePunctuation(node) {
-                if (node.nodeType === 3) {
+                if (node.nodeType === 3) { // 文本节点
                     const text = node.nodeValue;
-                    const regex = /([，。、])/g;
+                    // 匹配逗号(，)和句号(。)
+                    const regex = /([，。])/g;
+                    
                     if (regex.test(text)) {
-                        const newHtml = text.replace(regex, function(match) {
-                            let char = match;
-                            if(match === '。') char = '〇';
-                            return `<span class="punct">${char}</span>`;
+                        const fragment = document.createDocumentFragment();
+                        let lastIndex = 0;
+                        
+                        text.replace(regex, function(match, char, index) {
+                            // 1. 添加标点前的文字
+                            const prevText = text.slice(lastIndex, index);
+                            if (prevText) fragment.appendChild(document.createTextNode(prevText));
+                            
+                            // 2. 创建标点 wrapper
+                            const wrapper = document.createElement('span');
+                            wrapper.className = 'punct-wrapper';
+                            
+                            const punctSpan = document.createElement('span');
+                            punctSpan.className = 'punct';
+                            
+                            // 逻辑：逗号变顿号，句号变小圈
+                            if (char === '，') {
+                                punctSpan.textContent = '、'; // 强制替换为顿号
+                                punctSpan.classList.add('punct-dun');
+                            } else if (char === '。') {
+                                punctSpan.textContent = '。'; // 保持句号字符，样式控制大小
+                                punctSpan.classList.add('punct-period');
+                            }
+                            
+                            wrapper.appendChild(punctSpan);
+                            fragment.appendChild(wrapper);
+                            
+                            lastIndex = index + 1;
                         });
-                        const wrapper = document.createElement('span');
-                        wrapper.innerHTML = newHtml;
-                        node.parentNode.replaceChild(wrapper, node);
+                        
+                        // 3. 添加剩余文字
+                        const remainingText = text.slice(lastIndex);
+                        if (remainingText) fragment.appendChild(document.createTextNode(remainingText));
+                        
+                        node.parentNode.replaceChild(fragment, node);
                     }
                 } else if (node.nodeType === 1 && node.nodeName !== 'SCRIPT' && node.nodeName !== 'STYLE' && node.nodeName !== 'A') {
+                    // 递归处理，跳过链接内部避免打断（如果链接内有标点可移除 A 的限制）
                     Array.from(node.childNodes).forEach(stylePunctuation);
                 }
             }
