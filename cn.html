@@ -17,12 +17,13 @@
 
     /* ================= 2. 全局变量 ================= */
     :root {
-        --theme-purple: #500650; 
-        --theme-red: #d43628;    
-        --paper-bg: #fdfbf7;     
-        --border-width: 4px;     
+        --theme-purple: #500650; /* 主色调 */
+        --theme-red: #d43628;    /* 标点红 */
+        --paper-bg: #fdfbf7;     /* 纸张底色 */
+        --outer-border: 4px;     /* 外框粗 */
+        --inner-border: 1px;     /* 内框细 */
         --char-spacing: 0.45em;  /* 字间距 */
-        --col-gap: 2.5em;        /* 【关键】列与列之间的固定间距 */
+        --col-gap: 3.5em;        /* 【关键】列间距加大，给右侧标点留足空间 */
     }
 
     /* ================= 3. 基础布局 ================= */
@@ -34,7 +35,7 @@
         
         display: flex;
         flex-direction: row; 
-        align-items: center;
+        align-items: center; /* 垂直居中 */
         
         overflow-x: auto; 
         overflow-y: hidden;
@@ -44,19 +45,34 @@
         padding: 0 50px; 
     }
 
-    /* ================= 4. 单张页面 ================= */
+    /* ================= 4. 页面容器 (16:9 宽银幕) ================= */
     .ancient-page {
-        height: 90vh; 
-        aspect-ratio: 1.414 / 1; 
+        /* 【修改点】改为 16/9 比例，更适配网页宽屏，不再是方方正正的 A4 */
+        height: 85vh; 
+        aspect-ratio: 16 / 9; 
+        
         background-color: var(--paper-bg);
         position: relative; 
         flex-shrink: 0; 
-        border: var(--border-width) solid var(--theme-purple); 
-        box-shadow: 5px 5px 15px rgba(0,0,0,0.2);
+        
+        /* 外边框 */
+        border: var(--outer-border) solid var(--theme-purple); 
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15); /* 增加一点悬浮质感 */
         box-sizing: border-box;
     }
 
-    /* ================= 5. 版心 (绝对居中) ================= */
+    /* ================= 5. 内边框 (Inner Border) ================= */
+    /* 【修改点】找回消失的内边框，并使用绝对定位 */
+    .inner-border-box {
+        position: absolute;
+        top: 12px; bottom: 12px; left: 12px; right: 12px;
+        /* 恢复显示：细实线 */
+        border: var(--inner-border) solid var(--theme-purple);
+        pointer-events: none; /* 让鼠标能穿透边框选中文字 */
+        z-index: 1;
+    }
+
+    /* ================= 6. 版心 (上下粗横线) ================= */
     .banxin-absolute {
         position: absolute;
         left: 50%;
@@ -64,35 +80,34 @@
         transform: translate(-50%, -50%);
         z-index: 10; 
         
-        /* 内部水平排列，实现垂直堆叠 */
-        writing-mode: horizontal-tb; 
+        writing-mode: vertical-rl; /* 名字竖排 */
         display: flex;
-        flex-direction: column; 
+        flex-direction: row; /* 在 vertical-rl 下，row 是垂直方向（上下）吗？不，是水平。 */
+        /* CSS vertical-rl 比较绕。
+           为了稳妥，我们用 Flex column (垂直堆叠) 且容器设为 horizontal-tb */
+    }
+    
+    /* 修正版心容器：水平书写，垂直堆叠 */
+    .banxin-container {
+        writing-mode: horizontal-tb;
+        position: absolute;
+        left: 50%; top: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 10;
+        
+        display: flex;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
-        
-        width: 4em;
+        gap: 0.8em; /* 线与字的距离 */
     }
 
-    .curly-brace {
-        font-family: "Times New Roman", serif; 
-        font-size: 3.5em; 
-        color: var(--theme-purple);
-        line-height: 0.6; 
-        position: relative;
-    }
-
-    .curly-brace.top { transform: rotate(90deg) scaleY(1.5); margin-bottom: 0.2em; }
-    .curly-brace.bottom { transform: rotate(-90deg) scaleY(1.5); margin-top: 0.2em; }
-
-    .curly-brace::before {
-        content: '';
-        position: absolute;
-        width: 5px; height: 5px;
-        background-color: var(--theme-red);
-        border-radius: 50%;
-        left: -10px; top: 50%;
-        transform: translateY(-50%);
+    /* 粗横线样式 */
+    .thick-line {
+        width: 3.5em; /* 线条宽度（稍微比名字宽一点） */
+        height: 6px;  /* 线条厚度 */
+        background-color: var(--theme-purple);
+        border-radius: 2px;
     }
 
     .banxin-name {
@@ -101,40 +116,39 @@
         font-weight: bold;
         color: var(--theme-purple);
         letter-spacing: 0.6em;
-        padding: 0.5em 0; 
+        padding: 0.2em 0;
     }
 
-    /* ================= 6. 内容区域 (严格分列布局) ================= */
-    /* 这是一个 Flex 容器，里面的每一个 div 就是一列 */
+    /* ================= 7. 内容区域 (严格分列) ================= */
     .content-area {
         position: absolute;
-        top: 8vh; 
-        bottom: 8vh; /* 上下留白 */
+        top: 10vh; 
+        bottom: 10vh; 
+        z-index: 5; /* 在内边框之上 */
         
         writing-mode: vertical-rl;
         text-orientation: upright;
         
         display: flex;
-        flex-direction: column; /* 在 vertical-rl 下，这是从右向左排列 */
-        gap: var(--col-gap);    /* 【关键】固定列间距 */
-        align-items: flex-start; /* 顶部对齐 */
+        flex-direction: column; /* 竖排模式下，flex-direction column 意味着从右向左排类 */
+        gap: var(--col-gap);    /* 列间距 */
+        align-items: flex-start;
     }
 
     /* 每一列的通用样式 */
     .text-column {
         font-size: 2.0vh;
-        line-height: 2.8; 
+        line-height: 2.2; /* 行距适中，太宽会散，因为我们有专门的列间距 */
         letter-spacing: var(--char-spacing);
         color: black;
-        /* 不允许列内文字换行到下一列，保持单列纯净 */
-        /* 如果文字太长，会自动撑开高度，或者溢出。古籍通常是自然排。 */
-        height: 100%; /* 撑满高度 */
+        height: 100%;
+        position: relative; /* 为标点定位做参考 */
     }
 
     /* 右侧区域位置 */
     .text-right-area {
         right: 8vh;
-        /* 宽度自动，由列数决定 */
+        padding-right: 2vh; /* 微调 */
     }
 
     /* 左侧区域位置 */
@@ -142,13 +156,12 @@
         left: 15vh; 
     }
 
-    /* ================= 7. 文本样式细节 ================= */
+    /* ================= 8. 文本样式细节 ================= */
     .section-title {
         font-weight: bold;
         font-size: 1.3em;
         color: var(--theme-purple);
-        display: inline-block;
-        /* 标题作为一列时，稍微往下一点，或顶格 */
+        /* 标题单独处理 */
     }
 
     a {
@@ -171,7 +184,7 @@
         margin: 0 0.2em;
     }
 
-    /* ================= 8. 旁注标点 ================= */
+    /* ================= 9. 旁注标点 (精修位置) ================= */
     .punct-wrapper {
         position: relative;
         display: inline;
@@ -180,37 +193,44 @@
 
     .punct {
         position: absolute;
-        font-family: "SimSun", serif;
+        font-family: "SimSun", serif; /* 宋体标点最好看 */
         color: var(--theme-red);
         font-weight: bold;
         
-        /* 定位到右侧 */
-        left: 1.2em;  
-        top: 0.2em;   
+        /* 【位置精修】 
+           在竖排 vertical-rl 中：
+           left: 正值 -> 往物理右边（上一列方向）推
+           top: 正值 -> 往物理下边推
+        */
+        left: 0.8em;  /* 距离文字中心向右偏移 */
+        top: 0.3em;   /* 稍微向下一点，对齐文字右下角 */
         
         white-space: nowrap;
         pointer-events: none;
     }
 
     .punct-dun {
-        font-size: 1.5em; 
-        transform: rotate(180deg); 
+        font-size: 1.4em; 
+        /* 旋转顿号，让水滴头朝左上，尾朝右下，更自然 */
+        /* transform: rotate(0deg); 默认宋体顿号就是右下斜的 */
     }
 
     .punct-period {
-        width: 0.5em; height: 0.5em;
+        /* 空心圆 */
+        width: 0.45em; height: 0.45em;
         border: 2px solid var(--theme-red);
         border-radius: 50%;
         box-sizing: border-box;
-        top: 0.5em; 
+        top: 0.5em; /* 句号位置再低一点 */
+        left: 0.9em;
     }
 
-    /* ================= 9. 女书图片 ================= */
+    /* ================= 10. 女书图片 ================= */
     .nushu-stamp {
         position: absolute;
-        left: 20px; bottom: 20px;
+        left: 25px; bottom: 25px;
         z-index: 20;
-        width: 60px; 
+        width: 55px; 
     }
     .nushu-img {
         width: 100%; height: auto;
@@ -219,10 +239,15 @@
     }
     .nushu-img:hover { opacity: 1; }
 
-    /* ================= 10. 移动端适配 ================= */
+    /* ================= 11. 移动端适配 ================= */
     @media screen and (max-aspect-ratio: 1/1) {
-        body { align-items: flex-start; padding-top: 50px; }
-        .ancient-page { height: 60vh; margin-bottom: 20px; }
+        body { align-items: flex-start; padding-top: 50px; padding-left: 20px; }
+        .ancient-page { 
+            height: 60vh; 
+            aspect-ratio: 9/16; /* 手机上竖过来？或者保持横向让用户滑？保持横向更像卷轴 */
+            aspect-ratio: 16/9;
+            margin-bottom: 20px; 
+        }
     }
     </style>
 </head>
@@ -230,10 +255,12 @@
 
     <div class="ancient-page">
         
-        <div class="banxin-absolute">
-            <div class="curly-brace top">{</div>
+        <div class="inner-border-box"></div>
+
+        <div class="banxin-container">
+            <div class="thick-line"></div>
             <div class="banxin-name">李韵天</div>
-            <div class="curly-brace bottom">{</div>
+            <div class="thick-line"></div>
         </div>
 
         <div class="content-area text-right-area" id="content-right-1">
@@ -251,8 +278,8 @@
                     学士学位，并于2024/2025学年在斯德哥尔摩经济学院攻读经济学硕士项目。
                 </span>
             </div>
-
-            <div class="text-column">
+            
+             <div class="text-column">
                 <span>
                     我的研究兴趣在于政治经济学与宏观定量分析。
                 </span>
@@ -311,29 +338,13 @@
                         text.replace(regex, function(match, char, index) {
                             const prevText = text.slice(lastIndex, index);
                             if (prevText) fragment.appendChild(document.createTextNode(prevText));
+                            
                             const wrapper = document.createElement('span');
                             wrapper.className = 'punct-wrapper';
                             const punctSpan = document.createElement('span');
                             punctSpan.className = 'punct';
+                            
                             if (char === '。') {
                                 punctSpan.classList.add('punct-period');
                             } else {
-                                punctSpan.textContent = '、'; 
-                                punctSpan.classList.add('punct-dun');
-                            }
-                            wrapper.appendChild(punctSpan);
-                            fragment.appendChild(wrapper);
-                            lastIndex = index + 1;
-                        });
-                        const remainingText = text.slice(lastIndex);
-                        if (remainingText) fragment.appendChild(document.createTextNode(remainingText));
-                        node.parentNode.replaceChild(fragment, node);
-                    }
-                } else if (node.nodeType === 1 && node.nodeName !== 'SCRIPT' && node.nodeName !== 'A') {
-                    Array.from(node.childNodes).forEach(stylePunctuation);
-                }
-            }
-        });
-    </script>
-</body>
-</html>
+                                punctSpan.textContent = '、';
