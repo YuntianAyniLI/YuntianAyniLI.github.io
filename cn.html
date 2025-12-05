@@ -69,7 +69,7 @@
         z-index: 1;
     }
 
-    /* ================= 6. 版心 (锋利横线 + 底部双线) ================= */
+    /* ================= 6. 版心 (锋利横线 + 底部细线在粗线上方) ================= */
     .banxin-container {
         writing-mode: horizontal-tb;
         position: absolute;
@@ -96,7 +96,7 @@
     .bottom-lines-wrapper {
         display: flex;
         flex-direction: column;
-        gap: 1px; /* 粗细线之间留 1px 缝隙，显得更精致 */
+        gap: 1px; /* 粗细线之间留 1px 缝隙 */
     }
 
     /* 细横线样式 */
@@ -164,7 +164,6 @@
         text-decoration: none;
         color: black;
         transition: color 0.3s;
-        /* 【核心修改】移除虚线 */
         border-bottom: none; 
     }
     a:hover {
@@ -172,22 +171,22 @@
         border-bottom: none; 
     }
 
-    /* 【新增】项目标题样式 */
+    /* 项目标题样式 */
     .project-title {
         font-weight: bold;
-        font-size: 1em; /* 保持正常大小 */
+        font-size: 1em; 
         color: var(--theme-purple);
-        display: block; /* 独占一行 */
+        display: block; 
         margin-bottom: 0.3em;
     }
 
-    /* 【新增】项目内容样式 */
+    /* 项目内容样式 */
     .project-content {
         color: black;
-        font-size: 1em; /* 正常大小 */
+        font-size: 1em; 
     }
 
-    /* 旧的割注样式保留备用，虽然项目部分已不用 */
+    /* 旧割注保留 */
     .ge-zhu {
         display: inline-block;
         font-size: 0.6em;
@@ -197,7 +196,7 @@
         margin: 0 0.2em;
     }
 
-    /* ================= 9. 旁注标点 (最新定制版) ================= */
+    /* ================= 9. 旁注标点 (最新微调版) ================= */
     .punct-wrapper {
         position: relative;
         display: inline;
@@ -208,14 +207,13 @@
     .punct {
         position: absolute;
         
-        /* 【核心修改】统一大小 */
         width: 0.45em; 
         height: 0.45em; 
         
         /* 统一坐标 */
         left: 0.85em;   
-        /* 【核心修改】往上提，紧贴文字上方 */
-        top: 0.05em;     
+        /* 【核心修改】再往上提 (0.05em -> -0.15em) */
+        top: -0.15em;     
         
         pointer-events: none;
         z-index: 20;
@@ -225,17 +223,15 @@
     .punct-dun {
         background-color: var(--theme-red); /* 实心 */
         
-        /* 【形状修改】宽度变窄，高度变长 */
         width: 0.35em;
         height: 0.6em;
         
-        /* 【形状核心】左上角是尖的，其他角是圆的 */
+        /* 左上角尖 */
         border-radius: 0 100% 100% 100%;
         
-        /* 【角度微调】稍微向左旋转 */
+        /* 角度微调 */
         transform: rotate(-15deg);
         
-        /* 微调顿号的垂直位置 */
         margin-top: -0.1em;
     }
 
@@ -290,9 +286,7 @@
             <div class="banxin-name">李韵天</div>
             
             <div class="bottom-lines-wrapper">
-                <div class="thick-line"></div>
-                <div class="thin-line"></div>
-            </div>
+                <div class="thin-line"></div> <div class="thick-line"></div> </div>
         </div>
 
         <div class="content-area text-right-area">
@@ -350,8 +344,8 @@
             <div class="thick-line"></div>
             <div class="banxin-name">李韵天</div>
             <div class="bottom-lines-wrapper">
-                <div class="thick-line"></div>
                 <div class="thin-line"></div>
+                <div class="thick-line"></div>
             </div>
         </div>
 
@@ -429,7 +423,7 @@
                         node.parentNode.replaceChild(fragment, node);
                     }
                 } else if (node.nodeType === 1 && node.nodeName !== 'SCRIPT' && node.nodeName !== 'A') {
-                    // 递归处理子元素（如 div.project-content），跳过A标签（标题）
+                    // 递归处理子元素，跳过A标签
                     Array.from(node.childNodes).forEach(stylePunctuation);
                 }
             }
