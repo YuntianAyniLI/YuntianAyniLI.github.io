@@ -20,7 +20,7 @@
         --outer-border: 4px;     
         --inner-border: 1px;     
         --char-spacing: 0.45em;  
-        --col-gap: 3.0em; /* 列间距 */
+        --col-gap: 3.0em; 
     }
 
     /* ================= 2. 基础布局 ================= */
@@ -30,7 +30,7 @@
         font-family: 'ZYSongKeBen', "Times New Roman", serif;
         display: flex; flex-direction: column; align-items: center;
         min-height: 100vh;
-        gap: 60px; /* 页面间距 */
+        gap: 60px; 
         overflow-x: hidden;
     }
 
@@ -53,7 +53,7 @@
         pointer-events: none; z-index: 1;
     }
 
-    /* ================= 4. 版心 (上粗下细双线) ================= */
+    /* ================= 4. 版心 ================= */
     .banxin-container {
         writing-mode: horizontal-tb;
         position: absolute;
@@ -89,32 +89,27 @@
         position: absolute;
         top: 10vh; bottom: 10vh;
         z-index: 5;
-        
-        /* 竖向书写，列从右向左排 */
         writing-mode: vertical-rl;
         text-orientation: upright;
-        
         display: flex;
         flex-wrap: wrap; 
-        align-content: flex-start; /* 内容靠右对齐 */
+        align-content: flex-start; 
         gap: var(--col-gap);
-        
         width: auto;
         max-width: 40%;
     }
 
-    /* 右半页 */
     .content-right {
         right: 4vh; 
         left: auto; 
     }
 
-    /* 左半页：【关键修改】去掉了之前的强制左内边距 */
     .content-left {
         right: 50%; 
-        padding-right: 4em; /* 给版心留空 */
+        padding-right: 4em; 
         left: auto; 
-        /* padding-left 和 box-sizing 已移除，交由 JS 处理避让 */
+        /* 【核心修改】增加左侧留白，让文字距离左边框更宽一点 */
+        padding-left: 5vh; 
     }
 
     /* ================= 6. 文本单元样式 ================= */
@@ -124,8 +119,8 @@
         letter-spacing: var(--char-spacing);
         color: black;
         position: relative;
-        break-inside: avoid;
-        -webkit-column-break-inside: avoid;
+        /* 允许内部断裂，这是流式排版的基础 */
+        break-inside: auto; 
     }
 
     .section-title {
@@ -153,12 +148,9 @@
         line-height: 1.2; 
         color: var(--theme-purple);
         margin: 0 0.1em;
-        
         text-align: left;
         text-align-last: left; 
-        
         vertical-align: text-bottom; 
-        
         position: relative;
         left: -0.45em; 
     }
@@ -194,7 +186,6 @@
         position: absolute;
         left: 25px; bottom: 25px;
         z-index: 20; width: 55px; 
-        /* 确保图片在最上层，即使文字重叠也能看到（虽然我们会避让） */
         pointer-events: auto; 
     }
     .nushu-img {
@@ -262,7 +253,7 @@
         <div class="content-block">
             <a href="#" class="project-title">项目标题伍</a>
             <div class="project-content">
-                关于动态随机一般均衡模型，代码库与数据集。我需要写一个长长长长长，长长长。长长长长长长长。长长长长长长。长长长长长长。长长长长长长。长长长长长长。长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长的测试。
+                关于动态随机一般均衡模型，代码库与数据集。这是一个非常长的测试段落，用来验证当文字遇到页面边缘或者遇到左下角的图片时，是否能够自动断开。如果文字撞到了图片，它应该在图片上方停止，然后剩余的文字自动流转到下一页的起始位置（右侧）继续书写，保持阅读的连续性，而不是生硬地换页或者遮挡图片。这需要非常精确的计算。
             </div>
         </div>
         
@@ -287,8 +278,10 @@
         function layoutBook() {
             const source = document.getElementById('source-content');
             const bookContainer = document.getElementById('book-container');
-            const blocks = Array.from(source.children); 
+            // 将节点列表转换为数组，方便操作
+            let blocks = Array.from(source.children).map(node => node.cloneNode(true));
 
+            // 创建新页面模板
             function createNewPage() {
                 const page = document.createElement('div');
                 page.className = 'ancient-page';
@@ -317,66 +310,139 @@
             let currentPage = createNewPage();
             let currentRight = currentPage.querySelector('.content-right');
             let currentLeft = currentPage.querySelector('.content-left');
-            
             let targetContainer = currentRight;
 
-            // 【核心修改】处理单个块的移动逻辑
-            function moveToNextContainer(node) {
-                targetContainer.removeChild(node);
-                
-                if (targetContainer === currentRight) {
-                    targetContainer = currentLeft;
-                } else {
-                    currentPage = createNewPage();
-                    currentRight = currentPage.querySelector('.content-right');
-                    currentLeft = currentPage.querySelector('.content-left');
-                    targetContainer = currentRight;
-                }
-                targetContainer.appendChild(node);
-            }
+            // 核心排版循环：只要还有块没处理完，就继续
+            while (blocks.length > 0) {
+                let block = blocks.shift(); // 取出第一个块
 
-            blocks.forEach(block => {
-                const node = block.cloneNode(true);
-                
-                // 强制换列逻辑
+                // 1. 处理强制换列标记
                 if (block.classList.contains('break-to-left') && targetContainer === currentRight) {
                     targetContainer = currentLeft;
                 }
 
-                targetContainer.appendChild(node);
-                
-                let moved = false;
+                // 2. 尝试放入容器
+                targetContainer.appendChild(block);
 
-                // 1. 标准溢出检测 (宽过容器)
-                if (targetContainer.scrollWidth > targetContainer.clientWidth + 5) {
-                    moveToNextContainer(node);
-                    moved = true;
-                }
-                
-                // 2. 【新增】左下角图片碰撞检测
-                // 只有在左半页才需要检测
-                if (!moved && targetContainer === currentLeft) {
-                    const nodeRect = node.getBoundingClientRect();
-                    const pageRect = currentPage.getBoundingClientRect();
+                // 3. 检查是否溢出或碰撞
+                let overflowType = checkOverflowOrCollision(block, targetContainer, currentPage);
 
-                    // 计算块相对于页面的位置
-                    // 离左边缘的距离
-                    const distanceToLeftEdge = nodeRect.left - pageRect.left;
-                    // 离底边缘的距离
-                    const distanceToBottomEdge = pageRect.bottom - nodeRect.bottom;
+                if (overflowType) {
+                    // 如果有问题，进行切割
+                    // console.log('Overflow detected:', overflowType);
+                    
+                    // 核心拆分逻辑：把放得下的留下，放不下的切出来
+                    let remainder = splitBlockToFit(block, targetContainer, currentPage);
+                    
+                    if (remainder) {
+                        // 如果切出了剩余部分，把它放回队列头部，下次处理
+                        blocks.unshift(remainder);
+                    }
 
-                    // 设定危险区域阈值 (根据图片位置和大小估算)
-                    // 图片左距25 + 宽55 + 安全距20 = 100px
-                    const dangerLeft = 100; 
-                    // 图片底距25 + 高约70 + 安全距20 = 115px
-                    const dangerBottom = 115; 
-
-                    // 如果块同时处于太靠左 AND 太靠下的位置 -> 碰撞！
-                    if (distanceToLeftEdge < dangerLeft && distanceToBottomEdge < dangerBottom) {
-                        moveToNextContainer(node);
+                    // 切换到下一个容器
+                    if (targetContainer === currentRight) {
+                        targetContainer = currentLeft;
+                    } else {
+                        // 左边也满了，建新页
+                        currentPage = createNewPage();
+                        currentRight = currentPage.querySelector('.content-right');
+                        currentLeft = currentPage.querySelector('.content-left');
+                        targetContainer = currentRight;
                     }
                 }
-            });
+            }
+        }
+
+        // 检测函数：返回 'width' (溢出边界) 或 'collision' (撞到图片) 或 null (正常)
+        function checkOverflowOrCollision(block, container, page) {
+            // 1. 宽度溢出检测 (竖排的横向溢出)
+            // 给5px容差
+            if (container.scrollWidth > container.clientWidth + 5) {
+                return 'width';
+            }
+
+            // 2. 图片碰撞检测 (仅左侧容器需要)
+            if (container.classList.contains('content-left')) {
+                const nodeRect = block.getBoundingClientRect();
+                const pageRect = page.getBoundingClientRect();
+
+                // 离页面左边缘的距离
+                const distanceToLeft = nodeRect.left - pageRect.left;
+                // 离页面下边缘的距离
+                const distanceToBottom = pageRect.bottom - nodeRect.bottom;
+
+                // 危险区域：左100px, 下115px (图片区域)
+                if (distanceToLeft < 100 && distanceToBottom < 115) {
+                    return 'collision';
+                }
+            }
+            return null;
+        }
+
+        // 拆分函数：二分法查找断点，返回剩余部分的节点
+        function splitBlockToFit(block, container, page) {
+            // 如果块里只有纯文本（简单情况）
+            // 或者结构比较简单。这里我们采用“逐字删除直到适配”的倒序策略。
+            
+            // 复制一份原始内容，用于稍后恢复剩余部分
+            let originalContent = block.innerHTML;
+            let originalClone = block.cloneNode(true);
+            
+            // 我们需要深入到 block 内部的最后一个文本节点进行切割
+            // 为了简化，我们假设最末尾的是文本。如果有嵌套标签（如ge-zhu），逻辑会很复杂。
+            // 这里实现一个简易版：不断移除最后一个子节点/字符，直到不溢出。
+            
+            // 这是一个临时容器，用来存放被切下来的东西（倒序）
+            let extractedNodes = []; 
+
+            // 循环直到适配
+            while (checkOverflowOrCollision(block, container, page)) {
+                let lastChild = block.lastChild;
+                if (!lastChild) break; // 删光了
+
+                if (lastChild.nodeType === 3) { // 文本节点
+                    let text = lastChild.nodeValue;
+                    if (text.length > 0) {
+                        // 切下一个字
+                        let char = text.slice(-1);
+                        lastChild.nodeValue = text.slice(0, -1);
+                        // 把字存起来
+                        extractedNodes.unshift(document.createTextNode(char));
+                        
+                        // 如果删空了该节点，移除它
+                        if (lastChild.nodeValue.length === 0) {
+                            block.removeChild(lastChild);
+                        }
+                    } else {
+                        block.removeChild(lastChild);
+                    }
+                } else {
+                    // 元素节点 (如 span, a, br)
+                    // 整个移走
+                    block.removeChild(lastChild);
+                    extractedNodes.unshift(lastChild);
+                }
+            }
+
+            // 如果 block 被删空了，说明这个块在这个位置完全放不下
+            // 这种情况下，不要切割，直接返回整个块（让它去下一个容器）
+            if (block.childNodes.length === 0) {
+                container.removeChild(block);
+                // 恢复原状返回
+                return originalClone;
+            }
+
+            // 如果有切下来的东西，组装成一个新的 block
+            if (extractedNodes.length > 0) {
+                let newBlock = block.cloneNode(false); // 浅拷贝壳子 (class等)
+                // 移除 ID 以免重复
+                newBlock.removeAttribute('id');
+                // 重新填入切下来的内容
+                extractedNodes.forEach(node => newBlock.appendChild(node));
+                return newBlock;
+            }
+
+            return null;
         }
 
         function styleAllPunctuation() {
