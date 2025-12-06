@@ -1,47 +1,4 @@
-// 核心排版循环
-            while (blocks.length > 0) {
-                let block = blocks.shift(); // 取出队列中的第一个块
-
-                // 1. 处理强制换列逻辑 (class="break-to-left")
-                // 如果块要求从左边开始，且当前还在右边，则强制切换
-                if (block.classList.contains('break-to-left') && targetContainer === currentRight) {
-                    targetContainer = currentLeft;
-                }
-
-                // 2. 尝试将块放入当前容器
-                targetContainer.appendChild(block);
-
-                // 3. 检测是否溢出或碰撞
-                let overflowType = checkOverflowOrCollision(block, targetContainer, currentPage);
-
-                if (overflowType) {
-                    // 如果发生溢出，尝试递归切分
-                    let remainder = recursiveSplit(block, targetContainer, currentPage);
-                    
-                    if (remainder) {
-                        // 如果切分成功（即留了一部分在当前页，切下来一部分 remainder）
-                        
-                        // 移除 remainder 上的强制换列标记，防止在下一页重复触发换列
-                        remainder.classList.remove('break-to-left');
-                        
-                        // 将剩余部分放回队列头部，等待下一次循环处理
-                        blocks.unshift(remainder);
-                        
-                        // 既然当前容器已满（切分了），切换到下一个容器
-                        switchToNextContainer();
-                    } else {
-                        // 如果切分结果为 null，说明这个块连一个字都放不下
-                        // 此时只能将整个块从当前容器移除
-                        targetContainer.removeChild(block);
-                        
-                        // 切换到下一个容器
-                        switchToNextContainer();
-                        
-                        // 将原块放回队列，在新的容器中重新尝试
-                        blocks.unshift(block);
-                    }
-                }
-            }<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -383,14 +340,10 @@
                 let overflowType = checkOverflowOrCollision(block, targetContainer, currentPage);
 
                 if (overflowType) {
-                    console.log('检测到溢出:', overflowType, '块内容:', block.textContent.substring(0, 50));
-                    console.log('容器宽度:', targetContainer.clientWidth, '滚动宽度:', targetContainer.scrollWidth);
-                    
                     // 如果发生溢出，尝试递归切分
                     let remainder = recursiveSplit(block, targetContainer, currentPage);
                     
                     if (remainder) {
-                        console.log('切分成功，剩余内容:', remainder.textContent.substring(0, 30));
                         // 如果切分成功（即留了一部分在当前页，切下来一部分 remainder）
                         
                         // 移除 remainder 上的强制换列标记，防止在下一页重复触发换列
@@ -402,7 +355,6 @@
                         // 既然当前容器已满（切分了），切换到下一个容器
                         switchToNextContainer();
                     } else {
-                        console.log('切分失败，整体移动块');
                         // 如果切分结果为 null，说明这个块连一个字都放不下
                         // 此时只能将整个块从当前容器移除
                         targetContainer.removeChild(block);
@@ -418,7 +370,7 @@
         }
 
         function checkOverflowOrCollision(block, container, page) {
-            const tolerance = 30; // 增加容差到30px，避免因测量误差或字间距导致的误判
+            const tolerance = 40; // 增加容差到40px，避免因测量误差或字间距导致的误判
             if (container.scrollWidth > container.clientWidth + tolerance) {
                 return 'width';
             }
@@ -442,10 +394,10 @@
                 return null;
             }
 
-            // 【新增】检查是否只是轻微溢出（容差 30px）
+            // 【新增】检查是否只是轻微溢出（容差 40px）
             // 如果只是轻微溢出，可能是测量误差，不应该切分
             const overflowAmount = container.scrollWidth - container.clientWidth;
-            if (overflowAmount < 30) {
+            if (overflowAmount < 40) {
                 return null;
             }
 
@@ -478,7 +430,7 @@
                 }
 
                 // --- 情况 A: 元素节点 (Element) ---
-                if (lastChild.nodeType === 1) {
+                if (lastChild.nodeType === 1) { 
                     // 【关键逻辑】检查是否为"不可断行"的胶水容器 (.no-break)
                     // 这是我们在 styleAllPunctuation 中生成的 [汉字+标点] 组合
                     if (lastChild.classList.contains('no-break')) {
