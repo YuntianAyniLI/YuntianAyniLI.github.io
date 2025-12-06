@@ -1,4 +1,47 @@
-<!DOCTYPE html>
+// 核心排版循环
+            let blockIndex = 0;
+            while (blocks.length > 0) {
+                let block = blocks.shift(); // 取出队列中的第一个块
+                blockIndex++;
+                
+                const blockPreview = block.textContent.substring(0, 20).replace(/\s+/g, '');
+                console.log(`\n处理第 ${blockIndex} 个块: "${blockPreview}..."`);
+
+                // 1. 处理强制换列逻辑 (class="break-to-left")
+                // 如果块要求从左边开始，且当前还在右边，则强制切换
+                if (block.classList.contains('break-to-left') && targetContainer === currentRight) {
+                    console.log('  → 强制切换到左侧');
+                    targetContainer = currentLeft;
+                }
+
+                // 2. 尝试将块放入当前容器
+                const containerSide = targetContainer === currentRight ? '右侧' : '左侧';
+                console.log(`  → 放入${containerSide}容器`);
+                targetContainer.appendChild(block);
+
+                // 3. 检测是否溢出或碰撞
+                let overflowType = checkOverflowOrCollision(block, targetContainer, currentPage);
+
+                if (overflowType) {
+                    console.log('  ❌ 检测到溢出:', overflowType);
+                    console.log('     容器宽度:', targetContainer.clientWidth, '滚动宽度:', targetContainer.scrollWidth);
+                    
+                    // 如果发生溢出，尝试递归切分
+                    let remainder = recursiveSplit(block, targetContainer, currentPage);
+                    
+                    if (remainder) {
+                        console.log('  ✂️ 切分成功，剩余:', remainder.textContent.substring(0, 20));
+                        // 如果切分成功（即留了一部分在当前页，切下来一部分 remainder）
+                        
+                        // 移除 remainder 上的强制换列标记，防止在下一页重复触发换列
+                        remainder.classList.remove('break-to-left');
+                        
+                        // 将剩余部分放回队列头部，等待下一次循环处理
+                        blocks.unshift(remainder);
+                        
+                        // 既然当前容器已满（切分了），切换到下一个容器
+                        switchToNextContainer();
+                        console.log('  → 切换容器');<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -265,15 +308,19 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
+            console.log('页面开始加载');
             layoutBook();
             styleAllPunctuation();
+            console.log('页面加载完成');
         });
 
         function layoutBook() {
+            console.log('开始排版');
             const source = document.getElementById('source-content');
             const bookContainer = document.getElementById('book-container');
             // 克隆所有节点，避免修改源
             let blocks = Array.from(source.children).map(node => node.cloneNode(true));
+            console.log('总共有', blocks.length, '个块需要排版');
 
             // 创建新页面模板函数
             function createNewPage() {
@@ -402,7 +449,9 @@
             // 【新增】检查是否只是轻微溢出（容差 10px）
             // 如果只是轻微溢出，可能是测量误差，不应该切分
             const overflowAmount = container.scrollWidth - container.clientWidth;
+            console.log('    溢出量:', overflowAmount, 'px');
             if (overflowAmount < 10) {
+                console.log('    溢出量小于10px，忽略');
                 return null;
             }
 
@@ -411,16 +460,26 @@
             // 移除 id 避免重复
             remainder.removeAttribute('id');
             
+            console.log('    开始切分节点:', node.nodeName, node.className);
+            
             // 存放切下来的节点（倒序堆栈）
             let extractedNodes = [];
 
             // 循环：只要当前块还在溢出，就持续从末尾移除内容
             // 我们从后往前删，直到刚好能放下
+            let iterationCount = 0;
             while (checkOverflowOrCollision(node, container, page)) {
+                iterationCount++;
+                if (iterationCount > 500) {
+                    console.error('    切分循环超过500次，强制退出');
+                    break;
+                }
+                
                 let lastChild = node.lastChild;
                 
                 // 如果当前节点被删空了，说明这个 node 在这里一点都放不下
                 if (!lastChild) {
+                    console.log('    节点已空，切分失败');
                     // 从容器中移除这个空壳
                     if (node.parentNode) node.parentNode.removeChild(node);
                     // 返回 null，告诉上层逻辑"切分失败，请整体移动"
@@ -429,11 +488,13 @@
 
                 // --- 情况 A: 元素节点 (Element) ---
                 if (lastChild.nodeType === 1) { 
+                    console.log('      处理元素节点:', lastChild.nodeName, lastChild.className);
                     // 【关键逻辑】检查是否为"不可断行"的胶水容器 (.no-break)
                     // 这是我们在 styleAllPunctuation 中生成的 [汉字+标点] 组合
                     if (lastChild.classList.contains('no-break')) {
                         // 这是一个原子组合，严禁拆分！
                         // 直接整体移走
+                        console.log('      → no-break 容器，整体移动');
                         node.removeChild(lastChild);
                         extractedNodes.unshift(lastChild);
                     }
@@ -441,6 +502,7 @@
                     else {
                         // 只有当它有子节点时才尝试深入
                         if (lastChild.childNodes.length > 0) {
+                            console.log('      → 深入元素内部切分');
                             let grandChild = lastChild.lastChild;
                             
                             // --- 处理孙子节点 (GrandChild) ---
@@ -450,6 +512,7 @@
                                     // 切一个字
                                     let char = gText.slice(-1); 
                                     grandChild.nodeValue = gText.slice(0, -1);
+                                    console.log('      → 切出文字:', char);
                                     
                                     // 为了保持结构，准备一个和 lastChild 一样的"壳子"
                                     let wrapper;
@@ -482,6 +545,7 @@
                                 }
                             } else { 
                                 // 孙子是元素（比如更深层的标签，或者是 no-break），直接移走整个孙子
+                                console.log('      → 孙子是元素，整体移动');
                                 lastChild.removeChild(grandChild);
                                 
                                 // 为了保持结构，准备一个和 lastChild 一样的"壳子"
@@ -509,6 +573,7 @@
                             }
                         } else {
                             // 空元素，直接移走
+                            console.log('      → 空元素，移走');
                             node.removeChild(lastChild);
                             extractedNodes.unshift(lastChild);
                         }
@@ -521,6 +586,7 @@
                         // 切一个字
                         let char = text.slice(-1);
                         lastChild.nodeValue = text.slice(0, -1);
+                        console.log('      → 切出文字(顶层):', char);
                         extractedNodes.unshift(document.createTextNode(char));
                         
                         if (lastChild.nodeValue.length === 0) {
@@ -532,9 +598,12 @@
                 }
             }
 
+            console.log('    切分完成，共切出', extractedNodes.length, '个节点');
+
             // 组装 remainder (剩余部分)
             if (extractedNodes.length > 0) {
                 extractedNodes.forEach(child => remainder.appendChild(child));
+                console.log('    remainder 内容:', remainder.textContent.substring(0, 30));
                 return remainder;
             }
             
