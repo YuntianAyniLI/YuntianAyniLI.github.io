@@ -6,49 +6,7 @@
     <title>李韵天 | Yuntian LI</title>
     
     <style>
-    /* ================= 1. 全局排版规则重置 ================= */
-    * {
-        /* 禁用浏览器的智能断行控制 */
-        orphans: 1 !important;  /* 允许列底只留 1 行 */
-        widows: 1 !important;   /* 允许下页开头只留 1 行 */
-        
-        /* 确保盒子模型计算准确 */
-        box-sizing: border-box;
-    }
-
-    /* ================= 2. 文本块样式优化 ================= */
-    .content-block {
-        font-size: 2.25vh;
-        line-height: 2.2;
-        letter-spacing: var(--char-spacing);
-        color: black;
-        position: relative;
-        
-        /* 【关键】允许在块内部任意位置断开 */
-        break-inside: auto; 
-        -webkit-column-break-inside: auto;
-        page-break-inside: auto;
-        
-        /* 禁用文本两端对齐，防止拉伸导致计算错误 */
-        text-align: justify; 
-        text-align-last: left; /* 或者 start */
-        
-        /* 确保没有意外的 margin/padding 干扰高度计算 */
-        margin: 0;
-        padding: 0;
-    }
-
-    /* ================= 3. 容器强制对齐 ================= */
-    .content-half {
-        /* ... 其他样式不变 ... */
-        
-        /* 确保 Flex 子项紧凑排列，不要试图均分空间 */
-        align-content: flex-start !important; 
-        justify-content: flex-start !important;
-        
-        /* 允许溢出（虽然我们会用 JS 控制，但 CSS 上先放开） */
-        overflow: visible; 
-    }
+    
         
     /* ================= 1. 字体与变量 ================= */
     @font-face {
@@ -452,13 +410,13 @@
                 if (!lastChild) {
                     // 从容器中移除这个空壳
                     if (node.parentNode) node.parentNode.removeChild(node);
-                    // 返回 null，告诉上层逻辑“切分失败，请整体移动”
+                    // 返回 null，告诉上层逻辑"切分失败，请整体移动"
                     return null; 
                 }
 
                 // --- 情况 A: 元素节点 (Element) ---
                 if (lastChild.nodeType === 1) { 
-                    // 【关键逻辑】检查是否为“不可断行”的胶水容器 (.no-break)
+                    // 【关键逻辑】检查是否为"不可断行"的胶水容器 (.no-break)
                     // 这是我们在 styleAllPunctuation 中生成的 [汉字+标点] 组合
                     if (lastChild.classList.contains('no-break')) {
                         // 这是一个原子组合，严禁拆分！
@@ -472,23 +430,6 @@
                         if (lastChild.childNodes.length > 0) {
                             let grandChild = lastChild.lastChild;
                             
-                            // 为了保持结构，我们需要在 extractedNodes 里为切出来的东西
-                            // 准备一个和 lastChild 一样的“壳子”
-                            let wrapper;
-                            
-                            // 检查 extractedNodes 的第一个元素是否已经是这个壳子
-                            // 如果是，我们复用它，把新切下来的内容插到它最前面
-                            if (extractedNodes.length > 0 && 
-                                extractedNodes[0].nodeName === lastChild.nodeName && 
-                                extractedNodes[0].className === lastChild.className) {
-                                wrapper = extractedNodes[0];
-                            } else {
-                                // 如果不是，创建一个新壳子
-                                wrapper = lastChild.cloneNode(false);
-                                wrapper.removeAttribute('id');
-                                extractedNodes.unshift(wrapper);
-                            }
-
                             // --- 处理孙子节点 (GrandChild) ---
                             if (grandChild.nodeType === 3) { // 孙子是文本
                                 let gText = grandChild.nodeValue;
@@ -496,6 +437,20 @@
                                     // 切一个字
                                     let char = gText.slice(-1); 
                                     grandChild.nodeValue = gText.slice(0, -1);
+                                    
+                                    // 为了保持结构，准备一个和 lastChild 一样的"壳子"
+                                    let wrapper;
+                                    
+                                    // 检查 extractedNodes 的第一个元素是否已经是这个壳子
+                                    if (extractedNodes.length > 0 && 
+                                        extractedNodes[0].nodeName === lastChild.nodeName && 
+                                        extractedNodes[0].className === lastChild.className) {
+                                        wrapper = extractedNodes[0];
+                                    } else {
+                                        wrapper = lastChild.cloneNode(false);
+                                        wrapper.removeAttribute('id');
+                                        extractedNodes.unshift(wrapper);
+                                    }
                                     
                                     // 把切下来的字插入 wrapper 的最前面
                                     if (wrapper.firstChild) {
@@ -513,14 +468,31 @@
                                     lastChild.removeChild(grandChild);
                                 }
                             } else { 
-                                // 孙子是元素（比如更深层的标签，或者是 no-break），直接移走
-                                // 这里简化递归，不再无限深入，直接移动孙子节点
+                                // 孙子是元素（比如更深层的标签，或者是 no-break），直接移走整个孙子
                                 lastChild.removeChild(grandChild);
+                                
+                                // 为了保持结构，准备一个和 lastChild 一样的"壳子"
+                                let wrapper;
+                                if (extractedNodes.length > 0 && 
+                                    extractedNodes[0].nodeName === lastChild.nodeName && 
+                                    extractedNodes[0].className === lastChild.className) {
+                                    wrapper = extractedNodes[0];
+                                } else {
+                                    wrapper = lastChild.cloneNode(false);
+                                    wrapper.removeAttribute('id');
+                                    extractedNodes.unshift(wrapper);
+                                }
+                                
                                 if (wrapper.firstChild) {
                                     wrapper.insertBefore(grandChild, wrapper.firstChild);
                                 } else {
                                     wrapper.appendChild(grandChild);
                                 }
+                            }
+                            
+                            // 如果 lastChild 被清空了，移除它
+                            if (lastChild.childNodes.length === 0) {
+                                node.removeChild(lastChild);
                             }
                         } else {
                             // 空元素，直接移走
