@@ -270,9 +270,10 @@
         function layoutBook() {
             const source = document.getElementById('source-content');
             const bookContainer = document.getElementById('book-container');
-            // 克隆所有节点
+            // 克隆所有节点，避免修改源
             let blocks = Array.from(source.children).map(node => node.cloneNode(true));
 
+            // 创建新页面模板函数
             function createNewPage() {
                 const page = document.createElement('div');
                 page.className = 'ancient-page';
@@ -298,15 +299,21 @@
                 return page;
             }
 
+            // 初始化第一页
             let currentPage = createNewPage();
             let currentRight = currentPage.querySelector('.content-right');
             let currentLeft = currentPage.querySelector('.content-left');
+            
+            // 初始填充目标为右侧
             let targetContainer = currentRight;
 
+            // 切换到下一个容器的辅助函数
             function switchToNextContainer() {
                 if (targetContainer === currentRight) {
+                    // 如果当前在右边，切换到左边
                     targetContainer = currentLeft;
                 } else {
+                    // 如果当前在左边，创建新页面，并切换到新页面的右边
                     currentPage = createNewPage();
                     currentRight = currentPage.querySelector('.content-right');
                     currentLeft = currentPage.querySelector('.content-left');
@@ -314,35 +321,46 @@
                 }
             }
 
+            // 核心排版循环
             while (blocks.length > 0) {
-                let block = blocks.shift();
+                let block = blocks.shift(); // 取出队列中的第一个块
 
-                // 1. 处理强制换列逻辑
+                // 1. 处理强制换列逻辑 (class="break-to-left")
+                // 如果块要求从左边开始，且当前还在右边，则强制切换
                 if (block.classList.contains('break-to-left') && targetContainer === currentRight) {
                     targetContainer = currentLeft;
                 }
 
-                // 2. 尝试放入容器
+                // 2. 尝试将块放入当前容器
                 targetContainer.appendChild(block);
 
-                // 3. 溢出/碰撞检测
+                // 3. 检测是否溢出或碰撞
                 let overflowType = checkOverflowOrCollision(block, targetContainer, currentPage);
 
                 if (overflowType) {
-                    // 尝试递归切分
+                    // 如果发生溢出，尝试递归切分
                     let remainder = recursiveSplit(block, targetContainer, currentPage);
                     
                     if (remainder) {
-                        // 移除可能存在的强制换列标记，防止在下一页重复触发
+                        // 如果切分成功（即留了一部分在当前页，切下来一部分 remainder）
+                        
+                        // 移除 remainder 上的强制换列标记，防止在下一页重复触发换列
                         remainder.classList.remove('break-to-left');
-                        // 将剩余部分放回队列头部
+                        
+                        // 将剩余部分放回队列头部，等待下一次循环处理
                         blocks.unshift(remainder);
-                        // 切换容器
+                        
+                        // 既然当前容器已满（切分了），切换到下一个容器
                         switchToNextContainer();
                     } else {
-                        // 如果切分失败（即这块完全放不下），则整个移走
+                        // 如果切分结果为 null，说明这个块连一个字都放不下
+                        // 此时只能将整个块从当前容器移除
                         targetContainer.removeChild(block);
+                        
+                        // 切换到下一个容器
                         switchToNextContainer();
+                        
+                        // 将原块放回队列，在新的容器中重新尝试
                         blocks.unshift(block);
                     }
                 }
@@ -366,16 +384,14 @@
             return null;
         }
 
-        // 【核心修改】递归切分函数
-        // 能够深入 Element 内部切分文字，而不是仅仅切除 Element 节点
-        // 同时支持识别 .no-break 类，防止切断避头尾组合
+        // 递归切分函数：深入元素内部切分文字
         function recursiveSplit(node, container, page) {
-            // 如果已经不溢出了，停止切分，返回 null
+            // 如果当前节点已经不再导致溢出，说明切分完成，不需要再切了，返回 null
             if (!checkOverflowOrCollision(node, container, page)) {
                 return null;
             }
 
-            // 准备存放剩余内容的容器（浅拷贝节点结构，保留 class 等属性）
+            // 准备存放剩余内容的容器（浅拷贝节点结构，复制标签名、类名等）
             let remainder = node.cloneNode(false);
             // 移除 id 避免重复
             remainder.removeAttribute('id');
@@ -383,7 +399,8 @@
             // 存放切下来的节点（倒序堆栈）
             let extractedNodes = [];
 
-            // 循环：只要当前块还在溢出，就持续从末尾切内容
+            // 循环：只要当前块还在溢出，就持续从末尾移除内容
+            // 我们从后往前删，直到刚好能放下
             while (checkOverflowOrCollision(node, container, page)) {
                 let lastChild = node.lastChild;
                 
@@ -395,40 +412,45 @@
                     return null; 
                 }
 
-                // --- 情况 A: 元素节点 ---
+                // --- 情况 A: 元素节点 (Element) ---
                 if (lastChild.nodeType === 1) { 
-                    // 【关键逻辑】检查是否为“不可断行”的胶水容器
+                    // 【关键逻辑】检查是否为“不可断行”的胶水容器 (.no-break)
+                    // 这是我们在 styleAllPunctuation 中生成的 [汉字+标点] 组合
                     if (lastChild.classList.contains('no-break')) {
-                        // 这是一个“汉字+标点”的原子组合，严禁拆分！
+                        // 这是一个原子组合，严禁拆分！
                         // 直接整体移走
                         node.removeChild(lastChild);
                         extractedNodes.unshift(lastChild);
                     }
-                    // 普通元素（如 div），尝试深入内部切分
+                    // 普通元素（如 span, div, a），尝试深入内部切分
                     else {
+                        // 只有当它有子节点时才尝试深入
                         if (lastChild.childNodes.length > 0) {
-                            // 获取孙子节点
                             let grandChild = lastChild.lastChild;
                             
                             // 为了保持结构，我们需要在 extractedNodes 里为切出来的东西
                             // 准备一个和 lastChild 一样的“壳子”
                             let wrapper;
+                            
                             // 检查 extractedNodes 的第一个元素是否已经是这个壳子
+                            // 如果是，我们复用它，把新切下来的内容插到它最前面
                             if (extractedNodes.length > 0 && 
                                 extractedNodes[0].nodeName === lastChild.nodeName && 
                                 extractedNodes[0].className === lastChild.className) {
                                 wrapper = extractedNodes[0];
                             } else {
+                                // 如果不是，创建一个新壳子
                                 wrapper = lastChild.cloneNode(false);
                                 wrapper.removeAttribute('id');
                                 extractedNodes.unshift(wrapper);
                             }
 
-                            // --- 处理孙子节点 ---
+                            // --- 处理孙子节点 (GrandChild) ---
                             if (grandChild.nodeType === 3) { // 孙子是文本
                                 let gText = grandChild.nodeValue;
                                 if (gText.length > 0) {
-                                    let char = gText.slice(-1); // 切一个字
+                                    // 切一个字
+                                    let char = gText.slice(-1); 
                                     grandChild.nodeValue = gText.slice(0, -1);
                                     
                                     // 把切下来的字插入 wrapper 的最前面
@@ -438,14 +460,17 @@
                                         wrapper.appendChild(document.createTextNode(char));
                                     }
                                     
+                                    // 如果切完后孙子空了，移除孙子
                                     if (grandChild.nodeValue.length === 0) {
                                         lastChild.removeChild(grandChild);
                                     }
                                 } else {
+                                    // 空文本节点，移除
                                     lastChild.removeChild(grandChild);
                                 }
                             } else { 
-                                // 孙子是元素（比如更深层的标签），直接移走
+                                // 孙子是元素（比如更深层的标签，或者是 no-break），直接移走
+                                // 这里简化递归，不再无限深入，直接移动孙子节点
                                 lastChild.removeChild(grandChild);
                                 if (wrapper.firstChild) {
                                     wrapper.insertBefore(grandChild, wrapper.firstChild);
@@ -460,7 +485,7 @@
                         }
                     }
                 } 
-                // --- 情况 B: 文本节点 ---
+                // --- 情况 B: 文本节点 (Text) ---
                 else if (lastChild.nodeType === 3) { 
                     let text = lastChild.nodeValue;
                     if (text.length > 0) {
@@ -478,12 +503,13 @@
                 }
             }
 
-            // 组装 remainder
+            // 组装 remainder (剩余部分)
             if (extractedNodes.length > 0) {
                 extractedNodes.forEach(child => remainder.appendChild(child));
                 return remainder;
             }
             
+            // 理论上走不到这里，但作为保险
             return null;
         }
 
