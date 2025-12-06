@@ -370,7 +370,8 @@
         }
 
         function checkOverflowOrCollision(block, container, page) {
-            if (container.scrollWidth > container.clientWidth + 5) {
+            const tolerance = 15; // 增加容差，避免因测量误差导致的误判
+            if (container.scrollWidth > container.clientWidth + tolerance) {
                 return 'width';
             }
             if (container.classList.contains('content-left')) {
@@ -390,6 +391,13 @@
         function recursiveSplit(node, container, page) {
             // 如果当前节点已经不再导致溢出，说明切分完成，不需要再切了，返回 null
             if (!checkOverflowOrCollision(node, container, page)) {
+                return null;
+            }
+
+            // 【新增】检查是否只是轻微溢出（容差 10px）
+            // 如果只是轻微溢出，可能是测量误差，不应该切分
+            const overflowAmount = container.scrollWidth - container.clientWidth;
+            if (overflowAmount < 10) {
                 return null;
             }
 
