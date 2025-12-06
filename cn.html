@@ -148,13 +148,26 @@
     a { text-decoration: none; color: black; border-bottom: none; }
     a:hover { color: var(--theme-purple); }
 
+    /* 【核心修复】割注样式增强版 */
     .ge-zhu {
-        display: inline-block; font-size: 0.6em;
-        line-height: 1.2; color: var(--theme-purple);
-        vertical-align: middle; margin: 0 0.2em;
+        display: inline-block;
+        font-size: 0.6em;
+        line-height: 1.2;
+        color: var(--theme-purple);
+        
+        /* 1. 垂直对齐：让整个割注块在主列中居中 */
+        vertical-align: middle; 
+        
+        /* 2. 内部对齐：在竖排模式下，center 代表“垂直居中” */
         text-align: center;
+        
+        /* 3. 强制最后一行也居中（关键修复） */
+        /* 很多浏览器会忽略短行的 text-align，除非加这句 */
+        text-align-last: center; 
+        
+        /* 4. 上下留白 */
+        margin: 0 0.2em;
     }
-
     /* ================= 7. 旁注标点 ================= */
     .punct-wrapper {
         position: relative; display: inline; width: 0; height: 0;
@@ -215,7 +228,7 @@
 
         <div class="content-block">
             <span>
-                我的研究兴趣在于政治经济学<span class="ge-zhu">法经济学<br>政治理论</span>与计算宏观<span class="ge-zhu">异质性<br>代理人</span>。
+                我的兴趣在于政治经济学<span class="ge-zhu">法经济学<br>政治理论</span>与计算宏观<span class="ge-zhu">异质性<br>代理人</span>。
             </span>
         </div>
 
