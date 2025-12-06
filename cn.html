@@ -340,10 +340,14 @@
                 let overflowType = checkOverflowOrCollision(block, targetContainer, currentPage);
 
                 if (overflowType) {
+                    console.log('检测到溢出:', overflowType, '块内容:', block.textContent.substring(0, 50));
+                    console.log('容器宽度:', targetContainer.clientWidth, '滚动宽度:', targetContainer.scrollWidth);
+                    
                     // 如果发生溢出，尝试递归切分
                     let remainder = recursiveSplit(block, targetContainer, currentPage);
                     
                     if (remainder) {
+                        console.log('切分成功，剩余内容:', remainder.textContent.substring(0, 30));
                         // 如果切分成功（即留了一部分在当前页，切下来一部分 remainder）
                         
                         // 移除 remainder 上的强制换列标记，防止在下一页重复触发换列
@@ -355,6 +359,7 @@
                         // 既然当前容器已满（切分了），切换到下一个容器
                         switchToNextContainer();
                     } else {
+                        console.log('切分失败，整体移动块');
                         // 如果切分结果为 null，说明这个块连一个字都放不下
                         // 此时只能将整个块从当前容器移除
                         targetContainer.removeChild(block);
