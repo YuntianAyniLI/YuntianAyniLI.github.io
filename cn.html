@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>李韵天</title>
+    <title>李韵天 | Yuntian LI</title>
     
     <style>
     /* ================= 1. 字体与变量 ================= */
@@ -84,7 +84,7 @@
         letter-spacing: 0.6em; padding: 0.2em 0;
     }
 
-    /* ================= 5. 内容填充区 (核心修正：右锚点定位) ================= */
+    /* ================= 5. 内容填充区 ================= */
     .content-half {
         position: absolute;
         top: 10vh; bottom: 10vh;
@@ -96,26 +96,25 @@
         
         display: flex;
         flex-wrap: wrap; 
-        align-content: flex-start; /* 内容靠右对齐 (Start=Right in Vertical-RL) */
+        align-content: flex-start; /* 内容靠右对齐 */
         gap: var(--col-gap);
         
-        /* 【核心修改】宽度自动，最大宽度限制。
-           这样容器会紧贴着 right 锚点，随着内容增加向左生长。
-        */
         width: auto;
-        max-width: 38%;
+        max-width: 40%;
     }
 
-    /* 右半页：锚定在页面最右侧 (8vh处) */
+    /* 右半页 */
     .content-right {
-        right: 8vh; 
-        left: auto; /* 允许向左自由生长 */
+        right: 4vh; 
+        left: auto; 
     }
 
-    /* 左半页：锚定在版心左侧 (54%处) */
+    /* 左半页：【关键修改】去掉了之前的强制左内边距 */
     .content-left {
-        right: 54%; /* 【关键】紧贴版心开始 */
-        left: auto; /* 允许向左自由生长 */
+        right: 50%; 
+        padding-right: 4em; /* 给版心留空 */
+        left: auto; 
+        /* padding-left 和 box-sizing 已移除，交由 JS 处理避让 */
     }
 
     /* ================= 6. 文本单元样式 ================= */
@@ -148,28 +147,19 @@
     a { text-decoration: none; color: black; border-bottom: none; }
     a:hover { color: var(--theme-purple); }
 
-   
     .ge-zhu {
         display: inline-block; 
-        
-        /* 1. 字体大小 */
         font-weight: bold; font-size: 0.6em; 
         line-height: 1.2; 
         color: var(--theme-purple);
         margin: 0 0.1em;
         
-        /* 2. 内部文字对齐：靠上（物理右侧/视觉顶部） */
         text-align: left;
         text-align-last: left; 
         
-        /* 3. 【关键】垂直对齐基准 */
-        /* 先让它对齐到文本的底边（物理左侧） */
         vertical-align: text-bottom; 
         
-        /* 4. 【暴力左移】如果 vertical-align 不够，用这个强制推 */
         position: relative;
-        /* 负值 = 向左移动；正值 = 向右移动 */
-        
         left: -0.45em; 
     }
         
@@ -184,7 +174,6 @@
         top: -0.6em;     
         pointer-events: none; z-index: 20;
     }
-    /* 左上尖水滴顿号 */
     .punct-dun {
         background-color: var(--theme-red);
         width: 0.35em; height: 0.6em;
@@ -192,7 +181,6 @@
         transform: rotate(-15deg);
         margin-top: -0.1em;
     }
-    /* 空心圆句号 */
     .punct-period {
         width: 0.45em; height: 0.45em;
         border: 2px solid var(--theme-red);
@@ -206,6 +194,8 @@
         position: absolute;
         left: 25px; bottom: 25px;
         z-index: 20; width: 55px; 
+        /* 确保图片在最上层，即使文字重叠也能看到（虽然我们会避让） */
+        pointer-events: auto; 
     }
     .nushu-img {
         width: 100%; height: auto;
@@ -272,7 +262,7 @@
         <div class="content-block">
             <a href="#" class="project-title">项目标题伍</a>
             <div class="project-content">
-                关于动态随机一般均衡模型，代码库与数据集。我需要写一个长长长长长，长长长。长长长长长长长。长长长长长长。长长长长长长。长长长长长长。长长长长长长。长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长的测试。
+                关于动态随机一般均衡模型，代码库与数据集。我需要写一个长长长长长，长长长。长长长长长长长。长长长长长长。长长长长长长。长长长长长长。长长长长长长。长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长的测试。
             </div>
         </div>
         
@@ -330,6 +320,21 @@
             
             let targetContainer = currentRight;
 
+            // 【核心修改】处理单个块的移动逻辑
+            function moveToNextContainer(node) {
+                targetContainer.removeChild(node);
+                
+                if (targetContainer === currentRight) {
+                    targetContainer = currentLeft;
+                } else {
+                    currentPage = createNewPage();
+                    currentRight = currentPage.querySelector('.content-right');
+                    currentLeft = currentPage.querySelector('.content-left');
+                    targetContainer = currentRight;
+                }
+                targetContainer.appendChild(node);
+            }
+
             blocks.forEach(block => {
                 const node = block.cloneNode(true);
                 
@@ -340,21 +345,36 @@
 
                 targetContainer.appendChild(node);
                 
-                // 溢出检测逻辑
-                // 使用 scrollWidth > clientWidth + 5 来检测内容是否被挤出了容器的 Max-Width
+                let moved = false;
+
+                // 1. 标准溢出检测 (宽过容器)
                 if (targetContainer.scrollWidth > targetContainer.clientWidth + 5) {
-                    targetContainer.removeChild(node);
-                    
-                    if (targetContainer === currentRight) {
-                        targetContainer = currentLeft;
-                    } else {
-                        currentPage = createNewPage();
-                        currentRight = currentPage.querySelector('.content-right');
-                        currentLeft = currentPage.querySelector('.content-left');
-                        targetContainer = currentRight;
+                    moveToNextContainer(node);
+                    moved = true;
+                }
+                
+                // 2. 【新增】左下角图片碰撞检测
+                // 只有在左半页才需要检测
+                if (!moved && targetContainer === currentLeft) {
+                    const nodeRect = node.getBoundingClientRect();
+                    const pageRect = currentPage.getBoundingClientRect();
+
+                    // 计算块相对于页面的位置
+                    // 离左边缘的距离
+                    const distanceToLeftEdge = nodeRect.left - pageRect.left;
+                    // 离底边缘的距离
+                    const distanceToBottomEdge = pageRect.bottom - nodeRect.bottom;
+
+                    // 设定危险区域阈值 (根据图片位置和大小估算)
+                    // 图片左距25 + 宽55 + 安全距20 = 100px
+                    const dangerLeft = 100; 
+                    // 图片底距25 + 高约70 + 安全距20 = 115px
+                    const dangerBottom = 115; 
+
+                    // 如果块同时处于太靠左 AND 太靠下的位置 -> 碰撞！
+                    if (distanceToLeftEdge < dangerLeft && distanceToBottomEdge < dangerBottom) {
+                        moveToNextContainer(node);
                     }
-                    
-                    targetContainer.appendChild(node);
                 }
             });
         }
