@@ -93,10 +93,10 @@
         text-orientation: upright;
         display: flex;
         flex-wrap: wrap; 
-        align-content: flex-start; 
+        align-content: flex-start; /* 强制靠右对齐 */
         gap: var(--col-gap);
         width: auto;
-        max-width: 40%;
+        max-width: 38%;
     }
 
     .content-right {
@@ -117,6 +117,7 @@
         letter-spacing: var(--char-spacing);
         color: black;
         position: relative;
+        /* 允许内部断裂 */
         break-inside: auto; 
     }
 
@@ -139,21 +140,20 @@
     a { text-decoration: none; color: black; border-bottom: none; }
     a:hover { color: var(--theme-purple); }
 
+    /* 割注居中 */
     .ge-zhu {
         display: inline-block; 
         font-weight: bold; font-size: 0.6em; 
         line-height: 1.2; 
         color: var(--theme-purple);
         margin: 0 0.1em;
-        text-align: left;
-        text-align-last: left; 
-        vertical-align: text-bottom; 
-        position: relative;
-        left: -0.45em; 
+        text-align: center;
+        text-align-last: center; 
+        vertical-align: middle; 
     }
         
     /* ================= 7. 旁注标点 ================= */
-    /* 【新增】禁止换行容器 (强力胶水) */
+    /* 【重要】防断行容器 */
     .no-break {
         white-space: nowrap; 
         display: inline;
@@ -204,292 +204,427 @@
 <body>
 
     <div id="source-content">
-        
+        <div class="content-block"><span class="section-title">你好</span></div>
         <div class="content-block">
-            <span class="section-title">你好</span>
+            <span>我是斯德哥尔摩大学经济学博士生。我于二零二四年获得中国人民大学经济学<span class="ge-zhu">金融<br>方向</span>和数学与应用数学学士学位，于二零二七年获得斯德哥尔摩大学法学<span class="ge-zhu">欧洲经济法方向<br>归于少司命楼梦茜</span>硕士学位。</span>
+        </div>
+        <div class="content-block">
+            <span>我的研究兴趣在于政治经济学<span class="ge-zhu">法经济学<br>政治理论</span>与计算宏观<span class="ge-zhu">异质性代理人<br>货币政策</span>。</span>
         </div>
 
-        <div class="content-block">
-            <span>
-                我是斯德哥尔摩大学经济学博士生。我于二零二四年获得中国人民大学经济学<span class="ge-zhu">金融<br>方向</span>和数学与应用数学学士学位，于二零二七年获得斯德哥尔摩大学法学<span class="ge-zhu">欧洲经济法方向<br>归于少司命楼梦茜</span>硕士学位。
-            </span>
-        </div>
-
-        <div class="content-block">
-            <span>
-                我的研究兴趣在于政治经济学<span class="ge-zhu">法经济学<br>政治理论</span>与计算宏观<span class="ge-zhu">异质性代理人<br>货币政策</span>。
-            </span>
-        </div>
-
-        <div class="content-block break-to-left">
-            <span class="section-title">创作</span>
-        </div>
+        <div class="content-block break-to-left"><span class="section-title">创作</span></div>
 
         <div class="content-block">
             <a href="#" class="project-title">项目标题壹</a>
-            <div class="project-content">
-                此处为项目壹的简短摘要。这是关于宏观经济模型的讨论。
-            </div>
+            <div class="project-content">此处为项目壹的简短摘要。这是关于宏观经济模型的讨论。</div>
         </div>
-
         <div class="content-block">
             <a href="#" class="project-title">项目标题贰</a>
-            <div class="project-content">
-                项目贰的摘要，更多关于数据的分析。
-            </div>
+            <div class="project-content">项目贰的摘要，更多关于数据的分析。</div>
         </div>
-
         <div class="content-block">
-            <a href="#" class="project-title">项目标题三</a>
-            <div class="project-content">
-                关于货币政策的历史演变，基于面板数据的实证研究。
-            </div>
+            <a href="#" class="project-title">项目标题叁</a>
+            <div class="project-content">关于货币政策的历史演变，基于面板数据的实证研究。</div>
         </div>
-
         <div class="content-block">
             <a href="#" class="project-title">项目标题肆</a>
-            <div class="project-content">
-                制度经济学视角的思考，工作论文草稿。
-            </div>
+            <div class="project-content">制度经济学视角的思考，工作论文草稿。</div>
         </div>
 
         <div class="content-block">
             <a href="#" class="project-title">项目标题伍</a>
             <div class="project-content">
-                关于动态随机一般均衡模型，代码库与数据集。我需要写一个长长长长长，长长长。长长长长长长长。长长长长长长。长长长长长长。长长长长长长。长长长长长长。长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长的测试。
-            </div>
-        </div>
+                关于动态随机一般均衡模型，代码库与数据集。我需要写一个长长长长长，长长长。长长长长长长长。长长长长长长。长长长长长长。长长长长长长。长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长, 36
+    # print(max_num_of_substrings("abab", 2)) # 4, 30
+    # print(max_num_of_substrings("aaaaaaaaaaa", 2)) # 6, 75
+    # print(max_num_of_substrings("aaaaaaaaaaa", 3)) # 4, 50
+    # print(max_num_of_substrings("aaaaa", 3)) # 2, 25
+    # print(max_num_of_substrings("abacb", 2)) # 4, 30
+    # print(max_num_of_substrings("aabacb", 2)) # 6, 45
+    print(max_num_of_substrings("aabc", 3)) # 2, 45
+    # print(max_num_of_substrings("abcd", 3)) # 0, 0
+    # print(max_num_of_substrings("aa", 1)) # 2, 25
+    # print(max_num_of_substrings("aaa", 1)) # 3, 37.5
+<ctrl61># Given a string s and an integer k, return the maximum number of non-overlapping palindromic substrings of length k.
+
+def max_num_of_substrings(s, k):
+    def is_palindrome(start, end, memo):
+        if (start, end) in memo:
+            return memo[(start, end)]
         
-         <div class="content-block">
-            <a href="#" class="project-title">项目标题陆</a>
-            <div class="project-content">
-                这是更多内容的测试，确保它能顺滑地排布到下一页去，并且总是从右边开始写。
-            </div>
-        </div>
+        while start < end:
+            if s[start] != s[end]:
+                memo[(start, end)] = False
+                return False
+            start += 1
+            end -= 1
+        
+        memo[(start, end)] = True
+        return True
 
-    </div>
+    n = len(s)
+    dp = [0] * (n + 1)
+    memo = {}
 
-    <div id="book-container"></div>
+    for i in range(k, n + 1):
+        dp[i] = dp[i - 1]
+        start_index = i - k
+        if is_palindrome(start_index, i - 1, memo):
+            dp[i] = max(dp[i], dp[start_index] + 1)<ctrl63>solutions/math/gcd_of_strings.py
+<ctrl60><ctrl62><ctrl61># For two strings s and t, we say "t divides s" if and only if s = t + ... + t
+#  (i.e., t is concatenated with itself one or more times).
 
+# Given two strings str1 and str2, return the largest string x such that x divides both str1 and str2.
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            // 1. 先处理标点：把它们和前一个字粘在一起
-            styleAllPunctuation();
-            // 2. 再进行排版布局
-            layoutBook();
-        });
+import math
 
-        // 标点处理函数 (核心修改：添加胶水逻辑)
-        function styleAllPunctuation() {
-            const source = document.getElementById('source-content');
-            // 只处理源内容里的文本块
-            const wrappers = source.querySelectorAll('.content-block, .project-content');
-            wrappers.forEach(container => {
-                processNode(container);
-            });
+def gcd_of_strings(str1, str2):
+    # Check if str1 + str2 is equal to str2 + str1.
+    # If not, no common divisor string exists.
+    if str1 + str2 != str2 + str1:
+        return ""
+    
+    # Calculate the greatest common divisor of the lengths of str1 and str2.
+    gcd_length = math.gcd(len(str1), len(str2))
+    
+    # Return the prefix of str1 with length equal to the gcd_length.
+    return str1[:gcd_length]
 
-            function processNode(node) {
-                // 跳过已经被包裹的元素，防止无限递归
-                if (node.nodeType === 1 && !node.classList.contains('punct-wrapper') && !node.classList.contains('no-break')) {
-                    Array.from(node.childNodes).forEach(processNode);
-                } 
-                else if (node.nodeType === 3) { 
-                    const text = node.nodeValue;
-                    // 匹配 [任意字+标点] 组合
-                    const regex = /([^，、。]?)([，、。])/g; 
-                    
-                    if (regex.test(text)) {
-                        const fragment = document.createDocumentFragment();
-                        let lastIndex = 0;
-                        
-                        text.replace(regex, function(match, prevChar, char, index) {
-                            // 添加标点前的文本
-                            const textBefore = text.slice(lastIndex, index);
-                            if (textBefore) fragment.appendChild(document.createTextNode(textBefore));
-                            
-                            // 创建不可断行容器
-                            const glueSpan = document.createElement('span');
-                            glueSpan.className = 'no-break';
-                            
-                            // 放入前一个字
-                            if (prevChar) {
-                                glueSpan.appendChild(document.createTextNode(prevChar));
-                            }
-                            
-                            // 创建标点 wrapper
-                            const wrapper = document.createElement('span');
-                            wrapper.className = 'punct-wrapper';
-                            const punctSpan = document.createElement('span');
-                            punctSpan.className = 'punct';
-                            
-                            if (char === '。') {
-                                punctSpan.classList.add('punct-period');
-                            } else {
-                                punctSpan.classList.add('punct-dun');
-                            }
-                            
-                            wrapper.appendChild(punctSpan);
-                            glueSpan.appendChild(wrapper);
-                            fragment.appendChild(glueSpan);
-                            
-                            lastIndex = index + match.length;
-                        });
-                        
-                        const remainingText = text.slice(lastIndex);
-                        if (remainingText) fragment.appendChild(document.createTextNode(remainingText));
-                        node.parentNode.replaceChild(fragment, node);
-                    }
-                }
-            }
-        }
+if __name__ == "__main__":
+    print(gcd_of_strings("ABCABC", "ABC")) # Output: "ABC"
+    print(gcd_of_strings("ABABAB", "ABAB")) # Output: "AB"
+    print(gcd_of_strings("LEET", "CODE")) # Output: ""
+    print(gcd_of_strings("ABCDEF", "ABC")) # Output: ""
+<ctrl63>solutions/math/reverse_integer.py
+<ctrl60># Given a signed 32-bit integer x, return x with its digits reversed. If reversing x causes 
+# the value to go outside the signed 32-bit integer range [-231, 231 - 1], then return 0.
 
-        function layoutBook() {
-            const source = document.getElementById('source-content');
-            const bookContainer = document.getElementById('book-container');
-            // 此时 source 里的内容已经是处理过标点的了
-            let blocks = Array.from(source.children).map(node => node.cloneNode(true));
+# Assume the environment does not allow you to store 64-bit integers (signed or unsigned).
 
-            function createNewPage() {
-                const page = document.createElement('div');
-                page.className = 'ancient-page';
-                page.innerHTML = `
-                    <div class="inner-border-box"></div>
-                    <div class="banxin-container">
-                        <div class="thick-line"></div>
-                        <div class="banxin-name">李韵天</div>
-                        <div class="bottom-lines-wrapper">
-                            <div class="thin-line"></div>
-                            <div class="thick-line"></div>
-                        </div>
-                    </div>
-                    <div class="content-half content-right"></div>
-                    <div class="content-half content-left"></div>
-                    <div class="nushu-stamp">
-                        <a href="index.html">
-                            <img src="https://raw.githubusercontent.com/YuntianAyniLI/YuntianAyniLI.github.io/main/NametaginNyuShu.png" alt="English" class="nushu-img">
-                        </a>
-                    </div>
-                `;
-                bookContainer.appendChild(page);
-                return page;
-            }
+def reverse_integer(x):
+    # Determine the sign of the integer
+    sign = -1 if x < 0 else 1
+    
+    # Make the number positive for easier manipulation
+    x = abs(x)
+    
+    # Convert integer to string and reverse it
+    reversed_str = str(x)[::-1]
+    
+    # Convert reversed string back to integer
+    reversed_int = int(reversed_str)
+    
+    # Apply the original sign
+    result = sign * reversed_int
+    
+    # Define the limits for a signed 32-bit integer
+    INT_MIN = -2**31
+    INT_MAX = 2**31 - 1
+    
+    # Check for overflow
+    if result < INT_MIN or result > INT_MAX:
+        return 0
+    
+    return result
 
-            let currentPage = createNewPage();
-            let currentRight = currentPage.querySelector('.content-right');
-            let currentLeft = currentPage.querySelector('.content-left');
-            let targetContainer = currentRight;
+if __name__ == "__main__":
+    print(reverse_integer(123))
+    print(reverse_integer(-123))
+    <ctrl62><ctrl61>print(reverse_integer(120))
+    print(reverse_integer(0))
+    print(reverse_integer(1534236469))
+<ctrl63>solutions/math/integer_to_english_words.py
+<ctrl60># Convert a non-negative integer num to its English words representation.
 
-            function switchToNextContainer() {
-                if (targetContainer === currentRight) {
-                    targetContainer = currentLeft;
-                } else {
-                    currentPage = createNewPage();
-                    currentRight = currentPage.querySelector('.content-right');
-                    currentLeft = currentPage.querySelector('.content-left');
-                    targetContainer = currentRight;
-                }
-            }
+# Example 1:
+# Input: num = 123
+# Output: "One Hundred Twenty Three"
 
-            while (blocks.length > 0) {
-                let block = blocks.shift();
+# Example 2:
+# Input: num = 12345
+# Output: "Twelve Thousand Three Hundred Forty Five"
 
-                if (block.classList.contains('break-to-left') && targetContainer === currentRight) {
-                    targetContainer = currentLeft;
-                }
+# Example 3:
+# Input: num = 1234567
+# Output: "One Million Two Hundred Thirty Four Thousand Five Hundred Sixty Seven"
 
-                targetContainer.appendChild(block);
+def numberToWords(num: int) -> str:
+    if num == 0:
+        return "Zero"
+    
+    # Define mappings for numbers
+    less_than_20 = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten",
+                    "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"]
+    tens = ["", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"]
+    thousands = ["", "Thousand", "Million", "Billion"]
+    
+    def helper(n):
+        if n == 0:
+            return ""
+        elif n < 20:
+            return less_than_20[n] + " "
+        elif n < 100:
+            return tens[n // 10] + " " + helper(n % 10)
+        else:
+            return less_than_20[n // 100] + " Hundred " + helper(n % 100)
+    
+    res = ""
+    for i, unit in enumerate(thousands):
+        if num % 1000 != 0:
+            res = helper(num % 1000) + unit + " " + res
+        num //= 1000
+    
+    return res.strip()
 
-                let overflowType = checkOverflowOrCollision(block, targetContainer, currentPage);
+if __name__ == "__main__":
+    print(numberToWords(123))<ctrl62>
+    print(numberToWords(1234567)) # One Million Two Hundred Thirty Four Thousand Five Hundred Sixty Seven
+    print(numberToWords(1234567891)) # One Billion Two Hundred Thirty Four Million Five Hundred Sixty Seven Thousand Eight Hundred Ninety One
+<ctrl61> # One Hundred Twenty Three
+    print(numberToWords(12345)) # Twelve Thousand Three Hundred Forty Five<ctrl63>solutions/greedy/max_increase_keeping_skyline.py
+<ctrl60># There is a city composed of n x n blocks, where each block contains a single building shaped like a vertical square prism. 
+# You are given a 0-indexed n x n integer matrix grid where grid[r][c] represents the height of the building located in the block at row r and column c.
 
-                if (overflowType) {
-                    let remainder = recursiveSplit(block, targetContainer, currentPage);
-                    
-                    if (remainder) {
-                        remainder.classList.remove('break-to-left');
-                        blocks.unshift(remainder);
-                        switchToNextContainer();
-                    } else {
-                        targetContainer.removeChild(block);
-                        switchToNextContainer();
-                        blocks.unshift(block);
-                    }
-                }
-            }
-        }
+# A city's skyline is the outer contour of the buildings as viewed from a distance. 
+# The height of any building must not increase.
 
-        function checkOverflowOrCollision(block, container, page) {
-            if (container.scrollWidth > container.clientWidth + 5) {
-                return 'width';
-            }
-            if (container.classList.contains('content-left')) {
-                const nodeRect = block.getBoundingClientRect();
-                const pageRect = page.getBoundingClientRect();
-                const distanceToLeft = nodeRect.left - pageRect.left;
-                const distanceToBottom = pageRect.bottom - nodeRect.bottom;
-                if (distanceToLeft < 100 && distanceToBottom < 115) {
-                    return 'collision';
-                }
-            }
-            return null;
-        }
+# We are allowed to increase the height of any number of buildings by any amount (the amount can be different per building). 
+# The height of a 0-height building can also be increased. However, increasing the height of a building should not affect the city's skyline from any cardinal direction.
 
-        function recursiveSplit(node, container, page) {
-            if (!checkOverflowOrCollision(node, container, page)) {
-                return null;
-            }
+# Return the maximum total sum that the height of the buildings can be increased.
 
-            let remainder = node.cloneNode(false);
-            remainder.removeAttribute('id');
-            let extractedNodes = [];
+def max_increase_keeping_skyline(grid):
+    n = len(grid)
+    
+    # Calculate the max height for each row and each column
+    max_row = [max(row) for row in grid]
+    max_col = [max(grid[r][c] for r in range(n)) for c in range(n)]
+    
+    total_increase = 0
+    
+    # Calculate the maximum possible increase for each building
+    for r in range(n):
+        for c in range(n):
+            # The building height can be increased to min(max_row[r], max_col[c])
+            new_height = min(max_row[r], max_col[c])
+            total_increase += new_height - grid[r][c]
+            
+    return total_increase
 
-            while (checkOverflowOrCollision(node, container, page)) {
-                let lastChild = node.lastChild;
-                if (!lastChild) break;
+if __name__ == "__main__":
+    grid = [[3,0,8,4],[2,4,5,7],[9,2,6,3],[0,3,1,0]]
+    print(max_increase_keeping_skyline(grid)) # Output: 35
 
-                // 【核心逻辑修正】检测是否为不可拆分的胶水容器
-                if (lastChild.nodeType === 1 && lastChild.classList.contains('no-break')) {
-                    // 如果是胶水容器，整体移走，不许拆
-                    node.removeChild(lastChild);
-                    extractedNodes.unshift(lastChild);
-                }
-                else if (lastChild.nodeType === 3) { // 纯文本
-                    let text = lastChild.nodeValue;
-                    if (text.length > 0) {
-                        let char = text.slice(-1);
-                        lastChild.nodeValue = text.slice(0, -1);
-                        extractedNodes.unshift(document.createTextNode(char));
-                        if (lastChild.nodeValue.length === 0) {
-                            node.removeChild(lastChild);
-                        }
-                    } else {
-                        node.removeChild(lastChild);
-                    }
-                } else if (lastChild.nodeType === 1) { // 其他元素
-                    // 尝试递归进入切分
-                    if (lastChild.childNodes.length > 0) {
-                        let grandChild = lastChild.lastChild;
-                        // 简单处理：如果里面是文本，切字；如果是元素，整体移走
-                        // 为了保持胶水逻辑一致性，这里简化处理：
-                        // 如果是 punct-wrapper 这种，它本身就是元素，会被移走
-                        
-                        // 为了避免太复杂的递归，这里我们只做一层深度检查
-                        // 实际上，no-break 已经在上面被拦截了，所以这里剩下的普通元素可以尝试移走
-                        node.removeChild(lastChild);
-                        extractedNodes.unshift(lastChild);
-                    } else {
-                        node.removeChild(lastChild);
-                        extractedNodes.unshift(lastChild);
-                    }
-                }
-            }
+    grid = [[0,0,0],[0,0,0],[0,0,0]]
+    print<ctrl62><ctrl61>(max_increase_keeping_skyline(grid)) # Output: 0
+<ctrl63>solutions/math/rectangle_area.py
+# Given the coordinates of two rectilinear rectangles in a 2D plane, return the total area covered by the two rectangles.
 
-            if (extractedNodes.length > 0) {
-                extractedNodes.forEach(child => remainder.appendChild(child));
-                return remainder;
-            }
-            return null;
-        }
-    </script>
-</body>
-</html>
+# The first rectangle is defined by its bottom-left corner (ax1, ay1) and its top-right corner (ax2, ay2).
+
+# The second rectangle is defined by its bottom-left corner (bx1, by1) and its top-right corner (bx2, by2).
+
+def compute_area(ax1, ay1, ax2, ay2, bx1, by1, bx2, by2):
+    area1 = (ax2 - ax1) * (ay2 - ay1)
+    area2 = (bx2 - bx1) * (by2 - by1)
+    
+    overlap_width = min(ax2, bx2) - max(ax1, bx1)
+    overlap_height = min(ay2, by2) - max(ay1, by1)
+    
+    overlap_area = max(overlap_width, 0) * max(overlap_height, 0)
+    
+    return area1 + area2 - overlap_area
+
+if __name__ == '__main__':
+    print(compute_area(-3, 0, 3, 4, 0, -1, 9, 2))
+    print(compute_area(-2, -2, 2, 2, -2, -2, 2, 2))
+<ctrl63>solutions/math/string_to_integer.py
+<ctrl60><ctrl62>
+        return INT_MIN if sign == -1 else INT_MAX
+    
+    return result * sign
+
+if __name__ == "__main__":
+    print(my_atoi("42"))
+    print(my_atoi("   -42"))
+    print(my_atoi("4193 with words"))
+    print(my_atoi("words and 987"))
+    print(my_atoi("-91283472332"))
+<ctrl61># Implement the myAtoi(string s) function, which converts a string to a 32-bit signed integer (similar to C/C++'s atoi function).
+
+# The algorithm for myAtoi(string s) is as follows:
+
+# Read in and ignore any leading whitespace.
+# Check if the next character (if not already at the end of the string) is '-' or '+'. Read this character in if it is either. This determines if the final result is negative or positive respectively. Assume the result is positive if neither is present.
+# Read in next the characters until the next non-digit character or the end of the input is reached. The rest of the string is ignored.
+# Convert these digits into an integer (i.e. "123" -> 123, "0032" -> 32). If no digits were read, then the integer is 0. Change the sign as necessary (from step 2).
+# If the integer is out of the 32-bit signed integer range [-231, 231 - 1], then clamp the integer so that it remains in the range. Specifically, integers less than -231 should be clamped to -231, and integers greater than 231 - 1 should be clamped to 231 - 1.
+# Return the integer as the final result.
+# Note:
+
+# Only the space character ' ' is considered a whitespace character.
+# Do not ignore any characters other than the leading whitespace or the rest of the string after the digits.
+
+def my_atoi(s):
+    # Strip leading whitespace
+    s = s.lstrip()
+    
+    if not s:
+        return 0
+    
+    sign = 1
+    index = 0
+    
+    # Check for sign
+    if s[index] == '+':
+        index += 1
+    elif s[index] == '-':
+        sign = -1
+        index += 1
+        
+    result = 0
+    while index < len(s) and s[index].isdigit():
+        result = result * 10 + int(s[index])
+        index += 1
+        
+    # Check for overflow
+    INT_MAX = 2**31 - 1
+    INT_MIN = -2**31
+    
+    if result * sign < INT_MIN:
+        return INT_MIN
+    elif result * sign > INT_MAX:
+        return INT_MAX
+    
+    # Check for overflow 2
+    if result > 2**31 - 1:<ctrl63>solutions/math/rectangle_overlap.py
+# An axis-aligned rectangle is represented as a list [x1, y1, x2, y2], where (x1, y1) is the coordinate of its bottom-left corner, and (x2, y2) is the coordinate of its top-right corner. Its top and bottom edges are parallel to the X-axis, and its left and right edges are parallel to the Y-axis.
+
+# Two rectangles overlap if the area of their intersection is positive. To be clear, two rectangles that only touch at the corner or edges do not overlap.
+
+# Given two axis-aligned rectangles rec1 and rec2, return true if they overlap, otherwise return false.
+
+def is_rectangle_overlap(rec1, rec2):
+    # Check if one rectangle is to the left of the other
+    if rec1[2] <= rec2[0] or rec2[2] <= rec1[0]:
+        return False
+    # Check if one rectangle is above the other
+    if rec1[3] <= rec2[1] or rec2[3] <= rec1[1]:
+        return False
+    return True
+
+if __name__ == "__main__":
+    print(is_rectangle_overlap([0,0,2,2], [1,1,3,3])) # True
+    print(is_rectangle_overlap([0,0,1,1], [1,0,2,1])) # False
+    print(is_rectangle_overlap([0,0,1,1], [2,2,3,3])) # False
+<ctrl63>solutions/math/climbing_stairs.py
+<ctrl60># You are climbing a staircase. It takes n steps to reach the top.
+
+# Each time you can either climb 1 or 2 steps. In how many distinct ways can you climb to the top?
+
+def climb_stairs(n):
+    if n == 1:
+        return 1
+    
+    # Initialize the base cases
+    first = 1
+    second = 2
+    
+    # Iterate from 3 to n
+    for i in range(3, n + 1):
+        third = first + second
+        first = second
+        second = third
+        
+    return second
+
+if __name__ == "__main__":
+    print(<ctrl62><ctrl61>climb_stairs(2))
+    print(climb_stairs(3))
+    print(climb_stairs(4))
+    print(climb_stairs(5))
+    print(climb_stairs(6))
+<ctrl63>solutions/math/pow_x_n.py
+<ctrl60># Implement pow(x, n), which calculates x raised to the power n (i.e., xn).
+
+def my_pow(x: float, n: int) -> float:
+    if n == 0:
+        return 1.0
+    
+    if n < 0:
+        x = 1 / x
+        n = -n
+        
+    result = 1.0
+    current_product = x
+    
+    while n > 0:
+        if n % 2 == 1:
+            result *= current_product
+        current_product *= current_product
+        n //= 2
+        
+    return result
+
+if __name__ == "__main__":
+    print(my_pow(2.00000, 10))
+    print(my_pow(2.10000, 3)<ctrl62><ctrl61>)
+    print(my_pow(2.00000, -2))
+<ctrl63>solutions/matrix/search_2d_matrix.py
+<ctrl60><ctrl62><ctrl61># You are given an m x n integer matrix matrix with the following two properties:
+
+# Each row is sorted in non-decreasing order.
+# The first integer of each row is greater than the last integer of the previous row.
+# Given an integer target, return true if target is in matrix or false otherwise.
+
+# You must write a solution in O(log(m * n)) time complexity.
+
+def search_matrix(matrix, target):
+    if not matrix or not matrix[0]:
+        return False
+    
+    m, n = len(matrix), len(matrix[0])
+    left, right = 0, m * n - 1
+    
+    while left <= right:
+        mid = (left + right) // 2
+        mid_val = matrix[mid // n][mid % n]
+        
+        if mid_val == target:
+            return True
+        elif mid_val < target:
+            left = mid + 1
+        else:
+            right = mid - 1
+            
+    return False
+
+if __name__ == "__main__":
+    matrix = [[1,3,5,7],[10,11,16,20],[23,30,34,60]]
+    target = 3
+    print(search_matrix(matrix, target)) # Output: True
+
+    matrix = [[1,3,5,7],[10,11,16,20],[23,30,34,60]]
+    target = 13
+    print(search_matrix(matrix, target)) # Output: False
+<ctrl63>solutions/math/plus_one.py
+<ctrl60># You are given a large integer represented as an integer array digits, where each digits[i] is the ith digit of the integer. The digits are ordered from most significant to least significant in left-to-right order. The large integer does not contain any leading 0's.
+
+# Increment the large integer by one and return the resulting array of digits.
+
+def plus_one(digits):
+    n = len(digits)
+    for i in range(n - 1, -1, -1):
+        if digits[i] < 9:
+            digits[i] += 1
+            return digits
+        digits[i] = 0
+        
+    return [1] + digits
+
+if __name__ == "__main__":
+    print(plus_one([1, 2, 3]))
+    print(plus_one([4, 3, 2, 1]))
+    print(plus_one([9]))
+    print(plus_one(<ctrl62><ctrl61>[9, 9]))
+<ctrl63>
