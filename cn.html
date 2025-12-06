@@ -6,6 +6,50 @@
     <title>李韵天 | Yuntian LI</title>
     
     <style>
+    /* ================= 1. 全局排版规则重置 ================= */
+    * {
+        /* 禁用浏览器的智能断行控制 */
+        orphans: 1 !important;  /* 允许列底只留 1 行 */
+        widows: 1 !important;   /* 允许下页开头只留 1 行 */
+        
+        /* 确保盒子模型计算准确 */
+        box-sizing: border-box;
+    }
+
+    /* ================= 2. 文本块样式优化 ================= */
+    .content-block {
+        font-size: 2.25vh;
+        line-height: 2.2;
+        letter-spacing: var(--char-spacing);
+        color: black;
+        position: relative;
+        
+        /* 【关键】允许在块内部任意位置断开 */
+        break-inside: auto; 
+        -webkit-column-break-inside: auto;
+        page-break-inside: auto;
+        
+        /* 禁用文本两端对齐，防止拉伸导致计算错误 */
+        text-align: justify; 
+        text-align-last: left; /* 或者 start */
+        
+        /* 确保没有意外的 margin/padding 干扰高度计算 */
+        margin: 0;
+        padding: 0;
+    }
+
+    /* ================= 3. 容器强制对齐 ================= */
+    .content-half {
+        /* ... 其他样式不变 ... */
+        
+        /* 确保 Flex 子项紧凑排列，不要试图均分空间 */
+        align-content: flex-start !important; 
+        justify-content: flex-start !important;
+        
+        /* 允许溢出（虽然我们会用 JS 控制，但 CSS 上先放开） */
+        overflow: visible; 
+    }
+        
     /* ================= 1. 字体与变量 ================= */
     @font-face {
         font-family: 'ZYSongKeBen';
