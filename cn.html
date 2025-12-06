@@ -108,7 +108,6 @@
         right: 50%; 
         padding-right: 4em; 
         left: auto; 
-        /* 移除强制padding，完全依赖JS避让 */
     }
 
     /* ================= 6. 文本单元样式 ================= */
@@ -252,7 +251,7 @@
         <div class="content-block">
             <a href="#" class="project-title">项目标题伍</a>
             <div class="project-content">
-                关于动态随机一般均衡模型，代码库与数据集。这是一个非常长的测试段落，我需要一个长长长长长长长长长长长长长长长长长长长长长长长长长长，长长长。长长长长长长长长长长长长长长长长长长长，长长长长长长长长长长长长长长长长长长长长长长长长长长长长用来验证当文字遇到页面边缘或者遇到左下角的图片时，是否能够自动断开。如果文字撞到了图片，它应该在图片上方停止，然后剩余的文字自动流转到下一页的起始位置（右侧）继续书写，保持阅读的连续性，而不是生硬地换页或者遮挡图片。这需要非常精确的计算。我再加一点字确保它足够长，长到可以跨越到下一页，测试一下“连续性”是否完美。
+                关于动态随机一般均衡模型，代码库与数据集。我需要写一个长长长长长，长长长。长长长长长长长。长长长长长长。长长长长长长。长长长长长长。长长长长长长。长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长的测试。
             </div>
         </div>
         
@@ -280,7 +279,6 @@
             // 克隆所有节点
             let blocks = Array.from(source.children).map(node => node.cloneNode(true));
 
-            // 创建新页
             function createNewPage() {
                 const page = document.createElement('div');
                 page.className = 'ancient-page';
@@ -311,7 +309,6 @@
             let currentLeft = currentPage.querySelector('.content-left');
             let targetContainer = currentRight;
 
-            // 切换容器函数
             function switchToNextContainer() {
                 if (targetContainer === currentRight) {
                     targetContainer = currentLeft;
@@ -323,38 +320,33 @@
                 }
             }
 
-            // 核心循环
             while (blocks.length > 0) {
                 let block = blocks.shift();
 
-                // 1. 处理强制换列逻辑 (break-to-left)
+                // 1. 处理强制换列逻辑
                 if (block.classList.contains('break-to-left') && targetContainer === currentRight) {
                     targetContainer = currentLeft;
                 }
 
-                // 2. 放入容器
+                // 2. 尝试放入容器
                 targetContainer.appendChild(block);
 
                 // 3. 溢出/碰撞检测
                 let overflowType = checkOverflowOrCollision(block, targetContainer, currentPage);
 
                 if (overflowType) {
-                    // 如果发生溢出或碰撞，尝试“原地切割”
-                    // console.log("Collision/Overflow detected:", overflowType);
-                    
-                    // 尝试把多余的部分切下来，返回剩余部分
-                    let remainder = splitBlockInPlace(block, targetContainer, currentPage);
+                    // 尝试递归切分
+                    let remainder = recursiveSplit(block, targetContainer, currentPage);
                     
                     if (remainder) {
-                        // 如果切下来了东西，说明当前块有一部分留下了
-                        // 把剩余部分放回队列头部，换个容器继续处理
-                        // 如果剩余部分有 break-to-left，切分后应该移除该属性，避免在新页重复触发
+                        // 移除可能存在的强制换列标记，防止在下一页重复触发
                         remainder.classList.remove('break-to-left');
+                        // 将剩余部分放回队列头部
                         blocks.unshift(remainder);
+                        // 切换容器
                         switchToNextContainer();
                     } else {
-                        // 如果连一个字都放不下（返回null），说明这个块太大或者位置太小
-                        // 此时只能把整个块移到下一个容器
+                        // 如果切分失败（即这块完全放不下），则整个移走
                         targetContainer.removeChild(block);
                         switchToNextContainer();
                         blocks.unshift(block);
@@ -363,21 +355,16 @@
             }
         }
 
-        // 检测函数
         function checkOverflowOrCollision(block, container, page) {
-            // 1. 宽度溢出 (横向)
             if (container.scrollWidth > container.clientWidth + 5) {
                 return 'width';
             }
-
-            // 2. 图片碰撞 (仅左侧)
             if (container.classList.contains('content-left')) {
                 const nodeRect = block.getBoundingClientRect();
                 const pageRect = page.getBoundingClientRect();
                 const distanceToLeft = nodeRect.left - pageRect.left;
                 const distanceToBottom = pageRect.bottom - nodeRect.bottom;
-
-                // 危险区域：左100px, 下115px
+                // 图片危险区域
                 if (distanceToLeft < 100 && distanceToBottom < 115) {
                     return 'collision';
                 }
@@ -385,54 +372,143 @@
             return null;
         }
 
-        // 原地切割函数 (关键逻辑修改)
-        function splitBlockInPlace(block, container, page) {
-            // 复制一份原始数据，作为剩余部分的基础
-            let remainderBlock = block.cloneNode(false); // 浅拷贝，不带子节点
+        // 【核心修改】递归切分函数
+        // 能够深入 Element 内部切分文字，而不是仅仅切除 Element 节点
+        function recursiveSplit(node, container, page) {
+            // 如果已经不溢出了，停止切分，返回 null
+            if (!checkOverflowOrCollision(node, container, page)) {
+                return null;
+            }
+
+            // 准备存放剩余内容的容器（浅拷贝节点结构）
+            let remainder = node.cloneNode(false);
+            // 移除 id 避免重复
+            remainder.removeAttribute('id');
             let extractedNodes = [];
 
-            // 倒序删除子节点/文字，直到刚好放下
-            while (checkOverflowOrCollision(block, container, page)) {
-                let lastChild = block.lastChild;
-                if (!lastChild) break; // 删空了
+            // 倒序遍历子节点
+            // 我们不能直接用 childNodes 循环，因为我们会动态移除它们
+            // 所以使用 while lastChild
+            while (checkOverflowOrCollision(node, container, page)) {
+                let lastChild = node.lastChild;
+                
+                // 如果删光了，说明这个 node 在这里一点都放不下
+                if (!lastChild) {
+                    // 从容器中移除这个空壳
+                    if (node.parentNode) node.parentNode.removeChild(node);
+                    // 返回整个 node 的克隆（包含所有之前尝试移除的内容）
+                    // 实际上，递归调用层会处理这个逻辑，这里我们只需要返回 null 让上层知道“我尽力了但空了”
+                    // 但为了简单，我们让上层 logic 处理空 block
+                    return null; 
+                }
 
                 if (lastChild.nodeType === 3) { // 文本节点
                     let text = lastChild.nodeValue;
                     if (text.length > 0) {
-                        // 切掉最后一个字
+                        // 切一个字
                         let char = text.slice(-1);
                         lastChild.nodeValue = text.slice(0, -1);
-                        
-                        // 把切下来的字存起来 (插到数组最前面，因为是倒序切的)
                         extractedNodes.unshift(document.createTextNode(char));
                         
-                        // 如果删空了该节点，移除它
                         if (lastChild.nodeValue.length === 0) {
-                            block.removeChild(lastChild);
+                            node.removeChild(lastChild);
                         }
                     } else {
-                        block.removeChild(lastChild);
+                        node.removeChild(lastChild);
                     }
-                } else {
-                    // 元素节点 (如 span, a)
-                    // 简单起见，元素节点作为一个整体移走 (如果包含ge-zhu等复杂结构)
-                    // 更高级的切割需要递归，但为了稳定性，暂且整体移走
-                    block.removeChild(lastChild);
-                    extractedNodes.unshift(lastChild);
+                } else if (lastChild.nodeType === 1) { // 元素节点 (div, span, a)
+                    // 【递归关键】深入子元素切分
+                    // 先把子元素克隆一份作为可能的剩余部分
+                    // 但我们需要修改 DOM 中的 lastChild，所以不能只克隆
+                    
+                    // 尝试递归切分这个子元素
+                    // 注意：checkOverflowOrCollision 是针对 block (顶层) 的
+                    // 但我们修改 lastChild 会改变 block 的大小
+                    
+                    // 我们假设子元素也是 overflow 的原因，尝试切分它
+                    // 我们需要构造一个临时的“剩余部分容器”给这个子元素
+                    
+                    // 简化的逻辑：
+                    // 1. 尝试把整个子元素移走，看看行不行？
+                    //    如果移走整个子元素太粗暴，我们才进去切。
+                    //    但为了“连续性”，我们优先尝试进去切。
+                    
+                    // 我们需要手动模拟递归：
+                    // 从 lastChild 里面抠内容，放到 extractedNodes 的最前面
+                    
+                    // 为了复用逻辑，我们可以这样：
+                    // 只要 block 溢出，我们就尝试从 lastChild 提取内容
+                    
+                    let childRemainder = null;
+                    
+                    // 如果子元素有内容，尝试深入
+                    if (lastChild.childNodes.length > 0) {
+                        // 我们在子元素上执行“微型切分”逻辑
+                        // 但这里的判断标准依然是“顶层 block 是否溢出”
+                        // 这比较麻烦，因为 splitBlockInPlace 依赖 overflow check
+                        
+                        // 替代方案：把 lastChild 的最后一个子节点切出来
+                        // 这种粒度控制太细，不如直接复用 recursiveSplit 思想：
+                        // "不断从 lastChild 提取最末尾的成分，直到 block 不溢出"
+                        
+                        // 获取 lastChild 的最后一个内容
+                        let grandChild = lastChild.lastChild;
+                        
+                        // 如果是文本，切一个字
+                        if (grandChild && grandChild.nodeType === 3) {
+                             let gText = grandChild.nodeValue;
+                             if (gText.length > 0) {
+                                 let char = gText.slice(-1);
+                                 grandChild.nodeValue = gText.slice(0, -1);
+                                 
+                                 // 构造对应的结构放到 extractedNodes
+                                 // 我们需要一个 lastChild 的克隆壳子来包裹这个字吗？
+                                 // 是的。如果 lastChild 是 <div class="content">，切出来的字也得包在 <div class="content"> 里
+                                 
+                                 // 检查 extractedNodes[0] 是否已经是 lastChild 的克隆？
+                                 let containerForChar;
+                                 if (extractedNodes.length > 0 && extractedNodes[0].nodeName === lastChild.nodeName && extractedNodes[0].className === lastChild.className) {
+                                     containerForChar = extractedNodes[0];
+                                 } else {
+                                     containerForChar = lastChild.cloneNode(false);
+                                     containerForChar.removeAttribute('id');
+                                     extractedNodes.unshift(containerForChar);
+                                 }
+                                 
+                                 // 把字插到这个壳子的最前面
+                                 if (containerForChar.firstChild) {
+                                     containerForChar.insertBefore(document.createTextNode(char), containerForChar.firstChild);
+                                 } else {
+                                     containerForChar.appendChild(document.createTextNode(char));
+                                 }
+                                 
+                                 if (grandChild.nodeValue.length === 0) {
+                                     lastChild.removeChild(grandChild);
+                                 }
+                             } else {
+                                 lastChild.removeChild(grandChild);
+                             }
+                        } else {
+                            // 如果 grandChild 是元素，或者 lastChild 空了
+                            // 直接把整个 lastChild 移出来 (简化递归)
+                            node.removeChild(lastChild);
+                            extractedNodes.unshift(lastChild);
+                        }
+                    } else {
+                        // 空元素，直接移走
+                        node.removeChild(lastChild);
+                        extractedNodes.unshift(lastChild);
+                    }
                 }
             }
 
-            // 如果当前块被删空了，说明连一个字都放不下
-            if (block.childNodes.length === 0) {
-                return null; // 告诉主循环：这里放不下，请整体移走
-            }
-
-            // 组装剩余部分
+            // 组装 remainder
             if (extractedNodes.length > 0) {
-                extractedNodes.forEach(node => remainderBlock.appendChild(node));
-                return remainderBlock;
+                extractedNodes.forEach(child => remainder.appendChild(child));
+                return remainder;
             }
-
+            
+            // 如果 block 空了，返回 null (外部逻辑会处理)
             return null;
         }
 
