@@ -117,7 +117,6 @@
         letter-spacing: var(--char-spacing);
         color: black;
         position: relative;
-        /* 允许断裂 */
         break-inside: auto; 
     }
 
@@ -154,6 +153,12 @@
     }
         
     /* ================= 7. 旁注标点 ================= */
+    /* 【新增】禁止换行容器 (强力胶水) */
+    .no-break {
+        white-space: nowrap; 
+        display: inline;
+    }
+
     .punct-wrapper {
         position: relative; display: inline; width: 0; height: 0;
     }
@@ -269,14 +274,80 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            layoutBook();
+            // 1. 先处理标点：把它们和前一个字粘在一起
             styleAllPunctuation();
+            // 2. 再进行排版布局
+            layoutBook();
         });
+
+        // 标点处理函数 (核心修改：添加胶水逻辑)
+        function styleAllPunctuation() {
+            const source = document.getElementById('source-content');
+            // 只处理源内容里的文本块
+            const wrappers = source.querySelectorAll('.content-block, .project-content');
+            wrappers.forEach(container => {
+                processNode(container);
+            });
+
+            function processNode(node) {
+                // 跳过已经被包裹的元素，防止无限递归
+                if (node.nodeType === 1 && !node.classList.contains('punct-wrapper') && !node.classList.contains('no-break')) {
+                    Array.from(node.childNodes).forEach(processNode);
+                } 
+                else if (node.nodeType === 3) { 
+                    const text = node.nodeValue;
+                    // 匹配 [任意字+标点] 组合
+                    const regex = /([^，、。]?)([，、。])/g; 
+                    
+                    if (regex.test(text)) {
+                        const fragment = document.createDocumentFragment();
+                        let lastIndex = 0;
+                        
+                        text.replace(regex, function(match, prevChar, char, index) {
+                            // 添加标点前的文本
+                            const textBefore = text.slice(lastIndex, index);
+                            if (textBefore) fragment.appendChild(document.createTextNode(textBefore));
+                            
+                            // 创建不可断行容器
+                            const glueSpan = document.createElement('span');
+                            glueSpan.className = 'no-break';
+                            
+                            // 放入前一个字
+                            if (prevChar) {
+                                glueSpan.appendChild(document.createTextNode(prevChar));
+                            }
+                            
+                            // 创建标点 wrapper
+                            const wrapper = document.createElement('span');
+                            wrapper.className = 'punct-wrapper';
+                            const punctSpan = document.createElement('span');
+                            punctSpan.className = 'punct';
+                            
+                            if (char === '。') {
+                                punctSpan.classList.add('punct-period');
+                            } else {
+                                punctSpan.classList.add('punct-dun');
+                            }
+                            
+                            wrapper.appendChild(punctSpan);
+                            glueSpan.appendChild(wrapper);
+                            fragment.appendChild(glueSpan);
+                            
+                            lastIndex = index + match.length;
+                        });
+                        
+                        const remainingText = text.slice(lastIndex);
+                        if (remainingText) fragment.appendChild(document.createTextNode(remainingText));
+                        node.parentNode.replaceChild(fragment, node);
+                    }
+                }
+            }
+        }
 
         function layoutBook() {
             const source = document.getElementById('source-content');
             const bookContainer = document.getElementById('book-container');
-            // 克隆所有节点
+            // 此时 source 里的内容已经是处理过标点的了
             let blocks = Array.from(source.children).map(node => node.cloneNode(true));
 
             function createNewPage() {
@@ -323,30 +394,22 @@
             while (blocks.length > 0) {
                 let block = blocks.shift();
 
-                // 1. 处理强制换列逻辑
                 if (block.classList.contains('break-to-left') && targetContainer === currentRight) {
                     targetContainer = currentLeft;
                 }
 
-                // 2. 尝试放入容器
                 targetContainer.appendChild(block);
 
-                // 3. 溢出/碰撞检测
                 let overflowType = checkOverflowOrCollision(block, targetContainer, currentPage);
 
                 if (overflowType) {
-                    // 尝试递归切分
                     let remainder = recursiveSplit(block, targetContainer, currentPage);
                     
                     if (remainder) {
-                        // 移除可能存在的强制换列标记，防止在下一页重复触发
                         remainder.classList.remove('break-to-left');
-                        // 将剩余部分放回队列头部
                         blocks.unshift(remainder);
-                        // 切换容器
                         switchToNextContainer();
                     } else {
-                        // 如果切分失败（即这块完全放不下），则整个移走
                         targetContainer.removeChild(block);
                         switchToNextContainer();
                         blocks.unshift(block);
@@ -364,7 +427,6 @@
                 const pageRect = page.getBoundingClientRect();
                 const distanceToLeft = nodeRect.left - pageRect.left;
                 const distanceToBottom = pageRect.bottom - nodeRect.bottom;
-                // 图片危险区域
                 if (distanceToLeft < 100 && distanceToBottom < 115) {
                     return 'collision';
                 }
@@ -372,186 +434,61 @@
             return null;
         }
 
-        // 【核心修改】递归切分函数
-        // 能够深入 Element 内部切分文字，而不是仅仅切除 Element 节点
         function recursiveSplit(node, container, page) {
-            // 如果已经不溢出了，停止切分，返回 null
             if (!checkOverflowOrCollision(node, container, page)) {
                 return null;
             }
 
-            // 准备存放剩余内容的容器（浅拷贝节点结构）
             let remainder = node.cloneNode(false);
-            // 移除 id 避免重复
             remainder.removeAttribute('id');
             let extractedNodes = [];
 
-            // 倒序遍历子节点
-            // 我们不能直接用 childNodes 循环，因为我们会动态移除它们
-            // 所以使用 while lastChild
             while (checkOverflowOrCollision(node, container, page)) {
                 let lastChild = node.lastChild;
-                
-                // 如果删光了，说明这个 node 在这里一点都放不下
-                if (!lastChild) {
-                    // 从容器中移除这个空壳
-                    if (node.parentNode) node.parentNode.removeChild(node);
-                    // 返回整个 node 的克隆（包含所有之前尝试移除的内容）
-                    // 实际上，递归调用层会处理这个逻辑，这里我们只需要返回 null 让上层知道“我尽力了但空了”
-                    // 但为了简单，我们让上层 logic 处理空 block
-                    return null; 
-                }
+                if (!lastChild) break;
 
-                if (lastChild.nodeType === 3) { // 文本节点
+                // 【核心逻辑修正】检测是否为不可拆分的胶水容器
+                if (lastChild.nodeType === 1 && lastChild.classList.contains('no-break')) {
+                    // 如果是胶水容器，整体移走，不许拆
+                    node.removeChild(lastChild);
+                    extractedNodes.unshift(lastChild);
+                }
+                else if (lastChild.nodeType === 3) { // 纯文本
                     let text = lastChild.nodeValue;
                     if (text.length > 0) {
-                        // 切一个字
                         let char = text.slice(-1);
                         lastChild.nodeValue = text.slice(0, -1);
                         extractedNodes.unshift(document.createTextNode(char));
-                        
                         if (lastChild.nodeValue.length === 0) {
                             node.removeChild(lastChild);
                         }
                     } else {
                         node.removeChild(lastChild);
                     }
-                } else if (lastChild.nodeType === 1) { // 元素节点 (div, span, a)
-                    // 【递归关键】深入子元素切分
-                    // 先把子元素克隆一份作为可能的剩余部分
-                    // 但我们需要修改 DOM 中的 lastChild，所以不能只克隆
-                    
-                    // 尝试递归切分这个子元素
-                    // 注意：checkOverflowOrCollision 是针对 block (顶层) 的
-                    // 但我们修改 lastChild 会改变 block 的大小
-                    
-                    // 我们假设子元素也是 overflow 的原因，尝试切分它
-                    // 我们需要构造一个临时的“剩余部分容器”给这个子元素
-                    
-                    // 简化的逻辑：
-                    // 1. 尝试把整个子元素移走，看看行不行？
-                    //    如果移走整个子元素太粗暴，我们才进去切。
-                    //    但为了“连续性”，我们优先尝试进去切。
-                    
-                    // 我们需要手动模拟递归：
-                    // 从 lastChild 里面抠内容，放到 extractedNodes 的最前面
-                    
-                    // 为了复用逻辑，我们可以这样：
-                    // 只要 block 溢出，我们就尝试从 lastChild 提取内容
-                    
-                    let childRemainder = null;
-                    
-                    // 如果子元素有内容，尝试深入
+                } else if (lastChild.nodeType === 1) { // 其他元素
+                    // 尝试递归进入切分
                     if (lastChild.childNodes.length > 0) {
-                        // 我们在子元素上执行“微型切分”逻辑
-                        // 但这里的判断标准依然是“顶层 block 是否溢出”
-                        // 这比较麻烦，因为 splitBlockInPlace 依赖 overflow check
-                        
-                        // 替代方案：把 lastChild 的最后一个子节点切出来
-                        // 这种粒度控制太细，不如直接复用 recursiveSplit 思想：
-                        // "不断从 lastChild 提取最末尾的成分，直到 block 不溢出"
-                        
-                        // 获取 lastChild 的最后一个内容
                         let grandChild = lastChild.lastChild;
+                        // 简单处理：如果里面是文本，切字；如果是元素，整体移走
+                        // 为了保持胶水逻辑一致性，这里简化处理：
+                        // 如果是 punct-wrapper 这种，它本身就是元素，会被移走
                         
-                        // 如果是文本，切一个字
-                        if (grandChild && grandChild.nodeType === 3) {
-                             let gText = grandChild.nodeValue;
-                             if (gText.length > 0) {
-                                 let char = gText.slice(-1);
-                                 grandChild.nodeValue = gText.slice(0, -1);
-                                 
-                                 // 构造对应的结构放到 extractedNodes
-                                 // 我们需要一个 lastChild 的克隆壳子来包裹这个字吗？
-                                 // 是的。如果 lastChild 是 <div class="content">，切出来的字也得包在 <div class="content"> 里
-                                 
-                                 // 检查 extractedNodes[0] 是否已经是 lastChild 的克隆？
-                                 let containerForChar;
-                                 if (extractedNodes.length > 0 && extractedNodes[0].nodeName === lastChild.nodeName && extractedNodes[0].className === lastChild.className) {
-                                     containerForChar = extractedNodes[0];
-                                 } else {
-                                     containerForChar = lastChild.cloneNode(false);
-                                     containerForChar.removeAttribute('id');
-                                     extractedNodes.unshift(containerForChar);
-                                 }
-                                 
-                                 // 把字插到这个壳子的最前面
-                                 if (containerForChar.firstChild) {
-                                     containerForChar.insertBefore(document.createTextNode(char), containerForChar.firstChild);
-                                 } else {
-                                     containerForChar.appendChild(document.createTextNode(char));
-                                 }
-                                 
-                                 if (grandChild.nodeValue.length === 0) {
-                                     lastChild.removeChild(grandChild);
-                                 }
-                             } else {
-                                 lastChild.removeChild(grandChild);
-                             }
-                        } else {
-                            // 如果 grandChild 是元素，或者 lastChild 空了
-                            // 直接把整个 lastChild 移出来 (简化递归)
-                            node.removeChild(lastChild);
-                            extractedNodes.unshift(lastChild);
-                        }
+                        // 为了避免太复杂的递归，这里我们只做一层深度检查
+                        // 实际上，no-break 已经在上面被拦截了，所以这里剩下的普通元素可以尝试移走
+                        node.removeChild(lastChild);
+                        extractedNodes.unshift(lastChild);
                     } else {
-                        // 空元素，直接移走
                         node.removeChild(lastChild);
                         extractedNodes.unshift(lastChild);
                     }
                 }
             }
 
-            // 组装 remainder
             if (extractedNodes.length > 0) {
                 extractedNodes.forEach(child => remainder.appendChild(child));
                 return remainder;
             }
-            
-            // 如果 block 空了，返回 null (外部逻辑会处理)
             return null;
-        }
-
-        function styleAllPunctuation() {
-            const wrappers = document.querySelectorAll('.content-block, .project-content');
-            wrappers.forEach(container => {
-                processNode(container);
-            });
-
-            function processNode(node) {
-                if (node.nodeType === 3) { 
-                    const text = node.nodeValue;
-                    const regex = /([，、。])/g; 
-                    if (regex.test(text)) {
-                        const fragment = document.createDocumentFragment();
-                        let lastIndex = 0;
-                        text.replace(regex, function(match, char, index) {
-                            const prevText = text.slice(lastIndex, index);
-                            if (prevText) fragment.appendChild(document.createTextNode(prevText));
-                            
-                            const wrapper = document.createElement('span');
-                            wrapper.className = 'punct-wrapper';
-                            const punctSpan = document.createElement('span');
-                            punctSpan.className = 'punct';
-                            
-                            if (char === '。') {
-                                punctSpan.classList.add('punct-period');
-                            } else {
-                                punctSpan.classList.add('punct-dun');
-                            }
-                            
-                            wrapper.appendChild(punctSpan);
-                            fragment.appendChild(wrapper);
-                            lastIndex = index + 1;
-                        });
-                        const remainingText = text.slice(lastIndex);
-                        if (remainingText) fragment.appendChild(document.createTextNode(remainingText));
-                        node.parentNode.replaceChild(fragment, node);
-                    }
-                } else if (node.nodeType === 1 && node.nodeName !== 'SCRIPT' && node.nodeName !== 'A') {
-                    Array.from(node.childNodes).forEach(processNode);
-                }
-            }
         }
     </script>
 </body>
