@@ -148,26 +148,31 @@
     a { text-decoration: none; color: black; border-bottom: none; }
     a:hover { color: var(--theme-purple); }
 
-    /* 【核心修复】割注样式增强版 */
+   
     .ge-zhu {
-        display: inline-block;
-        font-size: 0.5em;
-        line-height: 1.2;
-        color: var(--theme-purple);
+        display: inline-block; 
         
-        /* 1. 垂直对齐：让整个割注块在主列中居中 */
+        /* 1. 字体大小 */
+        font-size: 0.45em; 
+        line-height: 1.2; 
+        color: var(--theme-purple);
+        margin: 0 0.1em;
+        
+        /* 2. 内部文字对齐：靠上（物理右侧/视觉顶部） */
+        text-align: left;
+        text-align-last: left; 
+        
+        /* 3. 【关键】垂直对齐基准 */
+        /* 先让它对齐到文本的底边（物理左侧） */
         vertical-align: text-bottom; 
         
-        /* 2. 内部对齐：在竖排模式下，center 代表“垂直居中” */
-        text-align: center;
-        
-        /* 3. 强制最后一行也居中（关键修复） */
-        /* 很多浏览器会忽略短行的 text-align，除非加这句 */
-        text-align-last: center; 
-        
-        /* 4. 上下留白 */
-        margin: 0 0.1em;
+        /* 4. 【暴力左移】如果 vertical-align 不够，用这个强制推 */
+        position: relative;
+        /* 负值 = 向左移动；正值 = 向右移动 */
+        /* 您可以试着把 -0.3em 改成 -0.5em 或 -10px 直到满意为止 */
+        left: -0.3em; 
     }
+        
     /* ================= 7. 旁注标点 ================= */
     .punct-wrapper {
         position: relative; display: inline; width: 0; height: 0;
