@@ -16,6 +16,14 @@
         font-display: swap;
     }
 
+    @font-face {
+        font-family: 'ZYSongKeBen';
+        src: url('fonts/ZYSongKeBen.otf') format('opentype');
+        font-weight: normal;
+        font-style: normal;
+        font-display: swap;
+    }
+
     body {
         display: flex;
         flex-direction: column;
@@ -23,10 +31,15 @@
         margin: 0;
     }
 
-    /* 中文字体样式 */
+    /* 中文字体样式 - HY为主，ZYSong为备用 */
     body *:lang(zh), 
     body *:lang(zh-CN) {
-        font-family: 'HYChangLiSongKeBenTrad', "Times New Roman", Times, serif;
+        font-family: 'HYChangLiSongKeBenTrad', 'ZYSongKeBen', "Times New Roman", Times, serif;
+    }
+
+    /* 为特定的八个字指定字体优先级 */
+    .fallback-font {
+        font-family: 'HYChangLiSongKeBenTrad', 'ZYSongKeBen', "Times New Roman", Times, serif;
     }
 
     /* 侧边导航栏 - 桌面版 */
@@ -302,7 +315,7 @@
                     <form name="f" action="">
                         <center>Please Enter a four-digit number to answer the following question: <br></center>
 						<p></p>
-                        <center><span lang="zh-CN">舟如凫鹥，点破顷碧</span><br></center>
+                        <center><span lang="zh-CN" class="fallback-font">舟如凫鹥，点破顷碧</span><br></center>
                         <br />
 						<p></p>
                         <center><INPUT TYPE="password" NAME="" id="pass"><br></center>
