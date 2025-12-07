@@ -29,7 +29,7 @@
     body {
         margin: 0; padding: 60px 0;
         background-color: var(--paper-bg); 
-        font-family: 'ZYSongKeBen', "Times New Roman", serif;
+        font-family: 'HYChangLiSongKeBenTrad', "Times New Roman", serif;
         display: flex; flex-direction: column; align-items: center;
         min-height: 100vh;
         gap: 60px; 
@@ -312,10 +312,10 @@
             // 切换到下一个容器的辅助函数
             function switchToNextContainer() {
                 if (targetContainer === currentRight) {
-                    // 如果当前在右边，切换到左边
+                    // 如果当前在右边,切换到左边
                     targetContainer = currentLeft;
                 } else {
-                    // 如果当前在左边，创建新页面，并切换到新页面的右边
+                    // 如果当前在左边,创建新页面,并切换到新页面的右边
                     currentPage = createNewPage();
                     currentRight = currentPage.querySelector('.content-right');
                     currentLeft = currentPage.querySelector('.content-left');
@@ -328,7 +328,7 @@
                 let block = blocks.shift(); // 取出队列中的第一个块
 
                 // 1. 处理强制换列逻辑 (class="break-to-left")
-                // 如果块要求从左边开始，且当前还在右边，则强制切换
+                // 如果块要求从左边开始,且当前还在右边,则强制切换
                 if (block.classList.contains('break-to-left') && targetContainer === currentRight) {
                     targetContainer = currentLeft;
                 }
@@ -340,29 +340,29 @@
                 let overflowType = checkOverflowOrCollision(block, targetContainer, currentPage);
 
                 if (overflowType) {
-                    // 如果发生溢出，尝试递归切分
+                    // 如果发生溢出,尝试递归切分
                     let remainder = recursiveSplit(block, targetContainer, currentPage);
                     
                     if (remainder) {
-                        // 如果切分成功（即留了一部分在当前页，切下来一部分 remainder）
+                        // 如果切分成功（即留了一部分在当前页,切下来一部分 remainder）
                         
-                        // 移除 remainder 上的强制换列标记，防止在下一页重复触发换列
+                        // 移除 remainder 上的强制换列标记,防止在下一页重复触发换列
                         remainder.classList.remove('break-to-left');
                         
-                        // 将剩余部分放回队列头部，等待下一次循环处理
+                        // 将剩余部分放回队列头部,等待下一次循环处理
                         blocks.unshift(remainder);
                         
-                        // 既然当前容器已满（切分了），切换到下一个容器
+                        // 既然当前容器已满（切分了）,切换到下一个容器
                         switchToNextContainer();
                     } else {
-                        // 如果切分结果为 null，说明这个块连一个字都放不下
+                        // 如果切分结果为 null,说明这个块连一个字都放不下
                         // 此时只能将整个块从当前容器移除
                         targetContainer.removeChild(block);
                         
                         // 切换到下一个容器
                         switchToNextContainer();
                         
-                        // 将原块放回队列，在新的容器中重新尝试
+                        // 将原块放回队列,在新的容器中重新尝试
                         blocks.unshift(block);
                     }
                 }
@@ -370,7 +370,7 @@
         }
 
         function checkOverflowOrCollision(block, container, page) {
-            const tolerance = 80; // 增加容差到40px，避免因测量误差或字间距导致的误判
+            const tolerance = 80; // 增加容差到40px,避免因测量误差或字间距导致的误判
             if (container.scrollWidth > container.clientWidth + tolerance) {
                 return 'width';
             }
@@ -389,19 +389,19 @@
 
         // 递归切分函数：深入元素内部切分文字
         function recursiveSplit(node, container, page) {
-            // 如果当前节点已经不再导致溢出，说明切分完成，不需要再切了，返回 null
+            // 如果当前节点已经不再导致溢出,说明切分完成,不需要再切了,返回 null
             if (!checkOverflowOrCollision(node, container, page)) {
                 return null;
             }
 
             // 【新增】检查是否只是轻微溢出（容差 40px）
-            // 如果只是轻微溢出，可能是测量误差，不应该切分
+            // 如果只是轻微溢出,可能是测量误差,不应该切分
             const overflowAmount = container.scrollWidth - container.clientWidth;
             if (overflowAmount < 40) {
                 return null;
             }
 
-            // 准备存放剩余内容的容器（浅拷贝节点结构，复制标签名、类名等）
+            // 准备存放剩余内容的容器（浅拷贝节点结构,复制标签名、类名等）
             let remainder = node.cloneNode(false);
             // 移除 id 避免重复
             remainder.removeAttribute('id');
@@ -409,23 +409,23 @@
             // 存放切下来的节点（倒序堆栈）
             let extractedNodes = [];
 
-            // 循环：只要当前块还在溢出，就持续从末尾移除内容
-            // 我们从后往前删，直到刚好能放下
+            // 循环：只要当前块还在溢出,就持续从末尾移除内容
+            // 我们从后往前删,直到刚好能放下
             let iterationCount = 0;
             while (checkOverflowOrCollision(node, container, page)) {
                 iterationCount++;
                 if (iterationCount > 500) {
-                    console.error('切分循环超过500次，强制退出');
+                    console.error('切分循环超过500次,强制退出');
                     break;
                 }
                 
                 let lastChild = node.lastChild;
                 
-                // 如果当前节点被删空了，说明这个 node 在这里一点都放不下
+                // 如果当前节点被删空了,说明这个 node 在这里一点都放不下
                 if (!lastChild) {
                     // 从容器中移除这个空壳
                     if (node.parentNode) node.parentNode.removeChild(node);
-                    // 返回 null，告诉上层逻辑"切分失败，请整体移动"
+                    // 返回 null,告诉上层逻辑"切分失败,请整体移动"
                     return null; 
                 }
 
@@ -434,12 +434,12 @@
                     // 【关键逻辑】检查是否为"不可断行"的胶水容器 (.no-break)
                     // 这是我们在 styleAllPunctuation 中生成的 [汉字+标点] 组合
                     if (lastChild.classList.contains('no-break')) {
-                        // 这是一个原子组合，严禁拆分！
+                        // 这是一个原子组合,严禁拆分！
                         // 直接整体移走
                         node.removeChild(lastChild);
                         extractedNodes.unshift(lastChild);
                     }
-                    // 普通元素（如 span, div, a），尝试深入内部切分
+                    // 普通元素（如 span, div, a）,尝试深入内部切分
                     else {
                         // 只有当它有子节点时才尝试深入
                         if (lastChild.childNodes.length > 0) {
@@ -457,7 +457,7 @@
                                     let char = gText.slice(-1); 
                                     grandChild.nodeValue = gText.slice(0, -1);
                                     
-                                    // 为了保持结构，准备一个和 lastChild 一样的"壳子"
+                                    // 为了保持结构,准备一个和 lastChild 一样的"壳子"
                                     let wrapper;
                                     
                                     // 检查 extractedNodes 的第一个元素是否已经是这个壳子
@@ -478,19 +478,19 @@
                                         wrapper.appendChild(document.createTextNode(char));
                                     }
                                     
-                                    // 如果切完后孙子空了，移除孙子
+                                    // 如果切完后孙子空了,移除孙子
                                     if (grandChild.nodeValue.length === 0) {
                                         lastChild.removeChild(grandChild);
                                     }
                                 } else {
-                                    // 空文本节点或只有空白，移除
+                                    // 空文本节点或只有空白,移除
                                     lastChild.removeChild(grandChild);
                                 }
                             } else { 
-                                // 孙子是元素（比如更深层的标签，或者是 no-break），直接移走整个孙子
+                                // 孙子是元素（比如更深层的标签,或者是 no-break）,直接移走整个孙子
                                 lastChild.removeChild(grandChild);
                                 
-                                // 为了保持结构，准备一个和 lastChild 一样的"壳子"
+                                // 为了保持结构,准备一个和 lastChild 一样的"壳子"
                                 let wrapper;
                                 if (extractedNodes.length > 0 && 
                                     extractedNodes[0].nodeName === lastChild.nodeName && 
@@ -509,12 +509,12 @@
                                 }
                             }
                             
-                            // 如果 lastChild 被清空了，移除它
+                            // 如果 lastChild 被清空了,移除它
                             if (lastChild.childNodes.length === 0) {
                                 node.removeChild(lastChild);
                             }
                         } else {
-                            // 空元素，直接移走
+                            // 空元素,直接移走
                             node.removeChild(lastChild);
                             extractedNodes.unshift(lastChild);
                         }
@@ -537,7 +537,7 @@
                             node.removeChild(lastChild);
                         }
                     } else {
-                        // 空文本节点或只有空白，移除
+                        // 空文本节点或只有空白,移除
                         node.removeChild(lastChild);
                     }
                 }
@@ -549,7 +549,7 @@
                 return remainder;
             }
             
-            // 理论上走不到这里，但作为保险
+            // 理论上走不到这里,但作为保险
             return null;
         }
 
@@ -560,7 +560,7 @@
             });
 
             function processNode(node) {
-                // 递归处理元素节点，但跳过已经被我们包裹的元素，防止无限递归
+                // 递归处理元素节点,但跳过已经被我们包裹的元素,防止无限递归
                 if (node.nodeType === 1 && !node.classList.contains('punct-wrapper') && !node.classList.contains('no-break')) {
                     Array.from(node.childNodes).forEach(processNode);
                 } 
@@ -569,7 +569,7 @@
                     const text = node.nodeValue;
                     
                     // 正则修改：同时捕获 [前一个字] 和 [标点]
-                    // ([^，、。]?) 捕获标点前的一个非标点字符（可能是空，如果是开头）
+                    // ([^，、。]?) 捕获标点前的一个非标点字符（可能是空,如果是开头）
                     // ([，、。]) 捕获标点本身
                     const regex = /([^，、。]?)([，、。])/g; 
                     
@@ -582,7 +582,7 @@
                             const textBefore = text.slice(lastIndex, index);
                             if (textBefore) fragment.appendChild(document.createTextNode(textBefore));
                             
-                            // 2. 创建胶水容器 (No Break)，禁止内部换行
+                            // 2. 创建胶水容器 (No Break),禁止内部换行
                             const glueSpan = document.createElement('span');
                             glueSpan.className = 'no-break';
                             
